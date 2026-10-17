@@ -1,10 +1,10 @@
-import {createEquipmentSprites,HELD_PIXELS_PER_UNIT,sampleHeldPixels} from './equipment-sprites.js?v=e3a6ee50098f0c339207c14d31fb32c004d8491c';
-import {generateWeapon,makeWeaponSprite,CLASS_WEAPON_DEFAULTS} from './weapon-forge.js?v=e3a6ee50098f0c339207c14d31fb32c004d8491c';
-import {hydrateWeaponArt} from './loot-art.js?v=e3a6ee50098f0c339207c14d31fb32c004d8491c';
+import {createEquipmentSprites,HELD_PIXELS_PER_UNIT,sampleHeldPixels} from './equipment-sprites.js?v=3f0ffbf381cf1b61530dcf3d344db19a8e832b7d';
+import {generateWeapon,makeWeaponSprite,CLASS_WEAPON_DEFAULTS} from './weapon-forge.js?v=3f0ffbf381cf1b61530dcf3d344db19a8e832b7d';
+import {hydrateWeaponArt} from './loot-art.js?v=3f0ffbf381cf1b61530dcf3d344db19a8e832b7d';
 const kinds={wand:'staff',dagger:'sword'};
 // The fist establishes the grip axis. Keep swords slightly outward instead of
 // leaning their blades across the knuckles as the viewport becomes wider.
-const swordGripAngle=-.10;
+const swordGripAngle=-.14,swordHandAngle=.06;
 function matchHeldDensity(THREE,root,recipe,height){let mesh;root.traverse(o=>{if(o.isMesh)mesh??=o;});if(!mesh?.material?.map)return;const map=mesh.material.map,source=map.image.data,sourceWidth=recipe.width,sourceHeight=recipe.height,width=Math.max(1,Math.ceil(height*recipe.width/recipe.height*HELD_PIXELS_PER_UNIT)),rows=Math.max(1,Math.ceil(height*HELD_PIXELS_PER_UNIT));map.source=new THREE.Source({data:sampleHeldPixels(source,sourceWidth,sourceHeight,width,rows),width,height:rows});map.userData.pixelDensity={target:HELD_PIXELS_PER_UNIT,frameWidth:width,frameHeight:rows,frames:1,sourceWidth,sourceHeight};map.needsUpdate=true;let displayedVersion=map.version;function update(){if(map.version===displayedVersion)return;map.image.data.set(sampleHeldPixels(source,sourceWidth,sourceHeight,width,rows));map.needsUpdate=true;displayedVersion=map.version;}for(const method of ['setStain','setArtPixels']){const original=root.userData[method];if(typeof original==='function')root.userData[method]=(...args)=>{const result=original(...args);update();return result;};}}
 /** The gauntlet stays a separate cutout; forged blades/hafts are replaceable. */
 export function createLoadoutEquipment(THREE,actor={},equipmentOptions={}){
@@ -16,6 +16,7 @@ export function createLoadoutEquipment(THREE,actor={},equipmentOptions={}){
   const profile=Object.entries(CLASS_WEAPON_DEFAULTS).find(([name])=>name.toLowerCase()===actor.classId)?.[1],starter=item.seed==null&&profile?.kind===kind?profile:{};
   const blade=item.blade??item.parts?.blade,grip=item.base??item.parts?.base;
   recipe=generateWeapon({...starter,kind:['sword','axe','mace','hammer','bow','staff'].includes(kind)?kind:'sword',seed:item.seed??actor.id??'starter',theme:item.theme??starter.theme??'steel',...(blade!==undefined?{blade}:{}),...(grip!==undefined?{base:grip}:{}),...(item.color?{color:item.color}:{})});
+  hand.rotation.z=recipe.kind==='sword'?swordHandAngle:0;const handAnchor=hand.userData.gripAnchor;hand.position.copy(handGrip).sub(new THREE.Vector3(handAnchor.x-.5,1-handAnchor.y,0).multiply(hand.scale).applyQuaternion(hand.quaternion));
   const height=recipe.kind==='sword'?.90:recipe.kind==='bow'?.66:.76;weapon=makeWeaponSprite(THREE,recipe,{firstPerson:true,height});matchHeldDensity(THREE,weapon,recipe,height);weapon.userData.heldHeight=height;weapon.rotation.z=recipe.kind==='sword'?swordGripAngle:.28;right.add(weapon);
   const currentWeapon=weapon;weapon.userData.setGripAnchor=anchor=>{if(weapon!==currentWeapon||!anchor||!Number.isFinite(anchor.x)||!Number.isFinite(anchor.y)||anchor.x<0||anchor.x>1||anchor.y<0||anchor.y>1)return false;const local=new THREE.Vector3((anchor.x-.5)*height*recipe.width/recipe.height,(1-anchor.y)*height,0);weapon.userData.gripAnchor={x:anchor.x,y:anchor.y};weapon.userData.localGrip=local;weapon.position.copy(handGrip).sub(local.clone().multiply(weapon.scale).applyQuaternion(weapon.quaternion));return true;};weapon.userData.setGripAnchor(recipe.anchors?.grip??{x:.5,y:.75});weapon.userData.setStain?.(actor.weaponStains?.[weaponKey]??stain);Promise.resolve(hydrateWeaponArt(weapon,recipe)).catch(()=>{});
  }

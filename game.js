@@ -1,12 +1,12 @@
-import {combatTiming} from './combat-timing.js?v=e3a6ee50098f0c339207c14d31fb32c004d8491c';
-import {impactKind,stainWeapon,attachEnemyStain,makeImpactSprite} from './combat-blood.js?v=e3a6ee50098f0c339207c14d31fb32c004d8491c';
-import {random,DIRS} from './wfc.js?v=e3a6ee50098f0c339207c14d31fb32c004d8491c';
-import {makeCreature,MONSTER_CATALOG} from './monster-sprites.js?v=e3a6ee50098f0c339207c14d31fb32c004d8491c';
-import {makeDungeonProp as makePropSprite} from './dungeon-props.js?v=e3a6ee50098f0c339207c14d31fb32c004d8491c';
-import {createTorchFuel} from './torch-fuel.js?v=e3a6ee50098f0c339207c14d31fb32c004d8491c';
-import {ENEMY_BEHAVIORS,tickEnemyBehavior,serializeEnemyIntent,parseEnemyIntent,interruptEnemyIntent} from './enemy-behavior.js?v=e3a6ee50098f0c339207c14d31fb32c004d8491c';
-import {createEnemyNavigation} from './enemy-navigation.js?v=e3a6ee50098f0c339207c14d31fb32c004d8491c';
-import {makeEnemyTelegraph} from './enemy-telegraph.js?v=e3a6ee50098f0c339207c14d31fb32c004d8491c';
+import {combatTiming} from './combat-timing.js?v=3f0ffbf381cf1b61530dcf3d344db19a8e832b7d';
+import {impactKind,stainWeapon,attachEnemyStain,makeImpactSprite} from './combat-blood.js?v=3f0ffbf381cf1b61530dcf3d344db19a8e832b7d';
+import {random,DIRS} from './wfc.js?v=3f0ffbf381cf1b61530dcf3d344db19a8e832b7d';
+import {makeCreature,MONSTER_CATALOG} from './monster-sprites.js?v=3f0ffbf381cf1b61530dcf3d344db19a8e832b7d';
+import {makeDungeonProp as makePropSprite} from './dungeon-props.js?v=3f0ffbf381cf1b61530dcf3d344db19a8e832b7d';
+import {createTorchFuel} from './torch-fuel.js?v=3f0ffbf381cf1b61530dcf3d344db19a8e832b7d';
+import {ENEMY_BEHAVIORS,tickEnemyBehavior,serializeEnemyIntent,parseEnemyIntent,interruptEnemyIntent} from './enemy-behavior.js?v=3f0ffbf381cf1b61530dcf3d344db19a8e832b7d';
+import {createEnemyNavigation} from './enemy-navigation.js?v=3f0ffbf381cf1b61530dcf3d344db19a8e832b7d';
+import {makeEnemyTelegraph} from './enemy-telegraph.js?v=3f0ffbf381cf1b61530dcf3d344db19a8e832b7d';
 const encounterWeights={skeleton:20,goblin:18,rat:14,bat:10,crawler:9,spider:8,slime:8,drowned:6,'skeletal-mage':4,wraith:3};
 export const MONSTER_WEIGHTS=Object.freeze(Object.fromEntries(Object.keys(MONSTER_CATALOG).map(kind=>[kind,encounterWeights[kind]??5])));
 export function chooseMonsterType(roll){const entries=Object.entries(MONSTER_WEIGHTS),total=entries.reduce((sum,[,weight])=>sum+weight,0);let value=(Number.isFinite(roll)?Math.max(0,Math.min(1-Number.EPSILON,roll)):0)*total;for(const [kind,weight]of entries){value-=weight;if(value<0)return kind;}return entries.at(-1)[0];}
