@@ -1,7 +1,7 @@
-import {createDMEntranceOverlay} from './dm-entrance-overlay.js?v=d254ffd0166a8bf116fdee214c40cf5e7905e9ad';
-import {CLASSES} from './party-campaign.js?v=d254ffd0166a8bf116fdee214c40cf5e7905e9ad';
-import {createHeldInput} from './held-input.js?v=d254ffd0166a8bf116fdee214c40cf5e7905e9ad';
-import {MONSTER_KINDS} from './monster-sprites.js?v=d254ffd0166a8bf116fdee214c40cf5e7905e9ad';
+import {createDMEntranceOverlay} from './dm-entrance-overlay.js?v=07037d67ba60753b38369cf663434f52919a8df7';
+import {CLASSES} from './party-campaign.js?v=07037d67ba60753b38369cf663434f52919a8df7';
+import {createHeldInput} from './held-input.js?v=07037d67ba60753b38369cf663434f52919a8df7';
+import {MONSTER_KINDS} from './monster-sprites.js?v=07037d67ba60753b38369cf663434f52919a8df7';
 
 const HERO_IDS = ['hero-1', 'hero-2', 'hero-3'];
 const MOVEMENT = new Set(['w', 'a', 's', 'd', 'arrowup', 'arrowleft', 'arrowdown', 'arrowright']);
@@ -214,6 +214,7 @@ export function createPartyView(options = {}) {
   function updateUI() {
     if (!toolbar) return;
     const remote = syncMode(), w = world(), active = phase() === 'active', dm = w.dmResources;
+    setUIClass(document?.body,'mobile-adventurer-run',enabled&&active&&!!w.mobileLayout&&!!actor(remote??focusedId));
     if(overlayPoints!==w.ingressEntrances){overlayPoints=w.ingressEntrances;entranceOverlay.build(overlayPoints??[]);}entranceOverlay.update({selectedId:w.selectedEntranceId,pending:w.ingressPending,visible:enabled&&dmOpen&&active&&!remote});
     if(ingressPanel){
       setUI(ingressPanel,'hidden',!active||!!remote);

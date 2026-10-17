@@ -6,7 +6,7 @@ export function touchVector(dx,dy,radius=48){
 }
 
 // Optional focused-actor presentation from getState: offhand ('shield'/'magic'/
-// 'torch'), torchFuel, torchLit and interactionHint. Input remains independently
+// 'torch'), torchFuel, torchLit, interactionHint and objective. Input remains independently
 // gated; hints/labels never run actions or inspect a hidden actor's solo HUD.
 export function createMobileControls({document:doc=globalThis.document,window:win=globalThis,canvas,drawer,getState,onAction=()=>{},onLook=()=>{},onFocus=()=>{},onZoom=()=>{},onCancelGesture=()=>{}}){
  const root=doc.createElement('div');root.id='mobileControls';root.hidden=true;
@@ -39,6 +39,7 @@ export function createMobileControls({document:doc=globalThis.document,window:wi
   listen(b,'contextmenu',stop);
  }
  const interaction=make('p');interaction.className='mobile-interaction-hint';interaction.hidden=true;interaction.setAttribute('role','status');interaction.setAttribute('aria-live','polite');
+ const objective=make('p');objective.className='mobile-objective';objective.hidden=true;objective.setAttribute('role','status');objective.setAttribute('aria-live','polite');
  const label=(node,text,description)=>{if(node.textContent!==text)node.textContent=text;if(node.getAttribute?.('aria-label')!==description)node.setAttribute('aria-label',description);};
  function presentation(s,inactive){
   const offhand=s.offhand??s.leftHand,button=buttons.get('guard'),spent=offhand==='torch'&&Number.isFinite(s.torchFuel)&&s.torchFuel<=0;
@@ -49,6 +50,8 @@ export function createMobileControls({document:doc=globalThis.document,window:wi
   const raw=typeof s.interactionHint==='string'?s.interactionHint.replace(/\s+/g,' ').trim().slice(0,180):'';
   const hint=raw.replace(/^(E|Space|F)\s*[·:-]\s*/i,(_,key)=>({e:'Use · ',space:'',f:'Search traps · '}[key.toLowerCase()])).slice(0,180);
   if(interaction.textContent!==hint)interaction.textContent=hint;hide(interaction,inactive||!hint);
+  const goal=typeof s.objective==='string'?s.objective.replace(/\s+/g,' ').trim().slice(0,140):'';
+  if(objective.textContent!==goal)objective.textContent=goal;hide(objective,inactive||!goal);
  }
  function updateMove(e){const bounds=move.getBoundingClientRect(),radius=Math.max(24,Math.min(bounds.width,bounds.height)*.4);input=touchVector(e.clientX-bounds.left-bounds.width/2,e.clientY-bounds.top-bounds.height/2,radius);knob.style.transform=`translate(${input.side*radius*.65}px,${-input.forward*radius*.65}px)`;}
  listen(move,'pointerdown',e=>{if(!active()||moving!==null)return;stop(e);moving=e.pointerId;move.setPointerCapture?.(moving);updateMove(e);});

@@ -111,3 +111,18 @@ body.mobile-game.first-person #partyToggle{display:none}
 body.mobile-game .party-loadout-shortcut{top:calc(180px + env(safe-area-inset-top));left:8px;min-height:44px;font-size:11px}
 
 body.mobile-game #dmPalette .dm-placement-guide>label{display:flex;align-items:center;gap:8px;font-size:11px}body.mobile-game #dmPalette .dm-placement-guide>label select{min-width:0;flex:1}
+
+/* Adventurers keep role tabs, Menu, Bag and Map; setup/DM retains its toolbar. */
+body.mobile-game.mobile-adventurer-run #partyToolbar{display:none!important}
+body.mobile-game.mobile-adventurer-run #scene{inset:0}
+body.mobile-game.mobile-adventurer-run .mobile-view-tabs{top:calc(8px + env(safe-area-inset-top))}
+body.mobile-game.mobile-adventurer-run .mobile-quick{top:calc(64px + env(safe-area-inset-top))}
+body.mobile-game.mobile-adventurer-run .party-label{top:calc(58px + env(safe-area-inset-top))}
+body.mobile-game.mobile-adventurer-run .party-pane[data-actor] .party-hud{top:calc(108px + env(safe-area-inset-top))}
+body.mobile-game.mobile-adventurer-run .hollow-map:not(.expanded){top:calc(142px + env(safe-area-inset-top))!important}
+body.mobile-game.mobile-adventurer-run .mobile-look{top:calc(112px + env(safe-area-inset-top))}
+@media(orientation:landscape) and (max-height:540px){
+ body.mobile-game.mobile-adventurer-run .mobile-quick{top:calc(8px + env(safe-area-inset-top))}
+ body.mobile-game.mobile-adventurer-run .party-pane[data-actor] .party-hud{top:calc(108px + env(safe-area-inset-top))}
+ body.mobile-game.mobile-adventurer-run .hollow-map:not(.expanded){top:calc(62px + env(safe-area-inset-top))!important}
+}
