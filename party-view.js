@@ -1,7 +1,7 @@
-import {createDMEntranceOverlay} from './dm-entrance-overlay.js?v=07037d67ba60753b38369cf663434f52919a8df7';
-import {CLASSES} from './party-campaign.js?v=07037d67ba60753b38369cf663434f52919a8df7';
-import {createHeldInput} from './held-input.js?v=07037d67ba60753b38369cf663434f52919a8df7';
-import {MONSTER_KINDS} from './monster-sprites.js?v=07037d67ba60753b38369cf663434f52919a8df7';
+import {createDMEntranceOverlay} from './dm-entrance-overlay.js?v=a41d8717c0b0759a0ee7f52d5e24a2c40358be33';
+import {CLASSES} from './party-campaign.js?v=a41d8717c0b0759a0ee7f52d5e24a2c40358be33';
+import {createHeldInput} from './held-input.js?v=a41d8717c0b0759a0ee7f52d5e24a2c40358be33';
+import {MONSTER_KINDS} from './monster-sprites.js?v=a41d8717c0b0759a0ee7f52d5e24a2c40358be33';
 
 const HERO_IDS = ['hero-1', 'hero-2', 'hero-3'];
 const MOVEMENT = new Set(['w', 'a', 's', 'd', 'arrowup', 'arrowleft', 'arrowdown', 'arrowright']);
@@ -259,7 +259,7 @@ export function createPartyView(options = {}) {
       setUI(controls.label, 'textContent', `${id.slice(-1)} · ${CLASSES[a.classId]?.name ?? a.classId ?? 'Adventurer'}${!owned?' · REMOTE CONTROL':w.botIds?.includes(id)?' · BOT':selected?' · ACTIVE CONTROL':''}`);
       setUI(controls.label, 'disabled', !owned);setUIAttribute(controls.label,'aria-pressed',String(selected));setUI(controls.label, 'title', owned?(remote?'Your adventurer':`Click this pane or press ${id.slice(-1)} to control this adventurer`):'Controlled by a remote player');
       setUI(controls.pane.dataset, 'focused', String(selected));setUI(controls.hint, 'hidden', !selected);
-      setUI(controls.hint, 'textContent', remote?'ACTIVE CONTROL · WASD move · drag look · Space strike · E interact':active?'ACTIVE CONTROL · 1 / 2 / 3 switch hero · 0 DM · WASD move':'ACTIVE CONTROL · 1 / 2 / 3 switch hero · Start expedition to move');
+      setUI(controls.hint, 'textContent', active&&w.objective?[w.objective,w.interactionActorId===id?w.interactionHint:''].filter(Boolean).join(' · '):remote?'ACTIVE CONTROL · WASD move · drag look · Space strike · E interact':active?'ACTIVE CONTROL · 1 / 2 / 3 switch hero · 0 DM · WASD move':'ACTIVE CONTROL · 1 / 2 / 3 switch hero · Start expedition to move');
       setUIClass(controls.pane,'focused', selected); setUIClass(controls.pane,'dead', !living(a) && !a.escaped); setUIClass(controls.pane,'escaped', !!a.escaped);
       setUI(controls.stats, 'textContent', `${a.escaped ? 'ESCAPED · ' : !living(a) ? 'DOWN · ' : ''}HP ${Math.ceil(a.health ?? 0)}/${a.maxHealth ?? '?'} · MP ${Math.floor(a.mana ?? 0)}/${a.maxMana ?? '?'}${Number.isFinite(a.stamina) ? ' · STA ' + Math.floor(a.stamina) : ''} · G ${a.gold ?? 0}${hand(a)==='torch'?' · TORCH '+Math.ceil(a.torchFuel??120)+'s'+(a.torchLit===false?' (out)':''):''}`);
       setUI(controls.classSelect, 'value', a.classId); setUI(controls.classSelect, 'disabled', phase()!=='lobby' || starting || !!remote && typeof onClass !== 'function');

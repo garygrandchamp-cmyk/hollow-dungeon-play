@@ -2,6 +2,9 @@ export const LOCAL_TEST_MODES = Object.freeze(['manual','adventurer','dm']);
 const alive=a=>a&&a.alive!==false&&!a.fainted&&!a.escaped&&a.health>0;
 const distance=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z);
 const point=id=>{const [floor,index]=String(id).split(':').map(Number);return {floor,index};};
+// Movement arrival and route advancement must agree; a wider movement stop
+// radius leaves a permanent dead zone before the route cursor can advance.
+const ARRIVAL_RADIUS=.55;
 
 export function findBotPath(start,goal,neighbors,limit=1024){
   if(start===goal)return [start];
@@ -47,7 +50,7 @@ export function createLocalAutoplay(adapter){
     // doors and attacks still go through exactly the player's runtime rules.
     let destination=null;
     if(!follow&&route.length){
-      while(cursor<route.length-1&&route[cursor].floor===s.floor&&distance(leader.position,adapter.position(route[cursor].index))<.55)cursor++;
+      while(cursor<route.length-1&&route[cursor].floor===s.floor&&distance(leader.position,adapter.position(route[cursor].index))<ARRIVAL_RADIUS)cursor++;
       destination=route[cursor];
     }
     think+=dt;const decide=think>=.15;if(decide)think=0;
@@ -69,13 +72,15 @@ export function createLocalAutoplay(adapter){
         }
       }
       const target=adapter.position(goal.index);
-      if(bot.index===goal.index&&distance(bot.position,target)<.6){
+      if(!enemy&&bot.index===goal.index&&distance(bot.position,target)<ARRIVAL_RADIUS){
         if(s.complete&&bot.index===adapter.exit()&&ready){adapter.action(bot,'interact');cooldowns.set(bot.id,1);}
         continue;
       }
       const pathKey=s.floor+':'+bot.index+':'+goal.index,cached=paths.get(bot.id);let path;if(cached?.key===pathKey&&pathClock<cached.until)path=cached.path;else{path=findBotPath(bot.index,goal.index,adapter.neighbors);paths.set(bot.id,{key:pathKey,path,until:pathClock+.3});}
       if(!path){status='Bot route blocked — inspect dungeon or take control';continue;}
-      const next=path[1]??goal.index,aim=adapter.position(next);adapter.face(bot,aim);
+      // A visible foe can share a 4.8m cell while still being outside weapon
+      // reach. Its actual position remains the aim once no tile step is left.
+      const next=path[1]??goal.index,aim=enemy&&next===bot.index?enemy.position:adapter.position(next);adapter.face(bot,aim);
       if(next!==bot.index&&adapter.closedDoor(bot.index,next)){
         if(ready&&decide&&adapter.canOpenDoor?.(bot.index,next)!==false){adapter.action(bot,'interact');cooldowns.set(bot.id,1);}
         continue;

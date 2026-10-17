@@ -1,4 +1,4 @@
-import {pixelsForSpan,tagTextureDensity,applyPhysicalUVs} from './pixel-density.js?v=07037d67ba60753b38369cf663434f52919a8df7';
+import {pixelsForSpan,tagTextureDensity,applyPhysicalUVs} from './pixel-density.js?v=a41d8717c0b0759a0ee7f52d5e24a2c40358be33';
 // Volumetric low-poly furnishings with synchronous, repeating pixel materials.
 const textureCaches=new WeakMap();
 const DEFAULTS={tomb:1,sarcophagus:1,chest:1,crate:.95,rubble:.45,barrel:1.1,bookshelf:1.9,basin:.8,cabinet:1.7,drawers:1.05,'rat-cage':.9,boulder:1.3,shrine:1.2};

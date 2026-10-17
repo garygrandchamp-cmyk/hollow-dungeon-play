@@ -1,4 +1,4 @@
-import {searchFeedback,searchRollStyles,lootDetails,appendSearchComparison} from './search-feedback.js?v=07037d67ba60753b38369cf663434f52919a8df7';
+import {searchFeedback,searchRollStyles,lootDetails,appendSearchComparison} from './search-feedback.js?v=a41d8717c0b0759a0ee7f52d5e24a2c40358be33';
 // Presentation only. Host snapshots own outcomes, stamina and loot grants.
 export function createRemoteSearchPanel({sendAction,sound=()=>{},drawIcon=null,document:doc=globalThis.document,now=()=>globalThis.performance?.now?.()??Date.now(),setInterval:startInterval=globalThis.setInterval,clearInterval:stopInterval=globalThis.clearInterval,setTimeout:startTimeout=globalThis.setTimeout,clearTimeout:stopTimeout=globalThis.clearTimeout}={}) {
   if(typeof sendAction!=='function'||!doc)throw Error('Remote search requires sendAction and a document.');
