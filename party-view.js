@@ -1,6 +1,6 @@
-import {CLASSES} from './party-campaign.js?v=80eddf4efeb73b0f3ae528a5ccc41ada14f30f7a';
-import {createHeldInput} from './held-input.js?v=80eddf4efeb73b0f3ae528a5ccc41ada14f30f7a';
-import {MONSTER_KINDS} from './monster-sprites.js?v=80eddf4efeb73b0f3ae528a5ccc41ada14f30f7a';
+import {CLASSES} from './party-campaign.js?v=64ad63ccf9b715304e37145621288e4cb455ca14';
+import {createHeldInput} from './held-input.js?v=64ad63ccf9b715304e37145621288e4cb455ca14';
+import {MONSTER_KINDS} from './monster-sprites.js?v=64ad63ccf9b715304e37145621288e4cb455ca14';
 
 const HERO_IDS = ['hero-1', 'hero-2', 'hero-3'];
 const MOVEMENT = new Set(['w', 'a', 's', 'd', 'arrowup', 'arrowleft', 'arrowdown', 'arrowright']);
@@ -65,7 +65,7 @@ export function createPartyView(options = {}) {
   const hostControls = [];
   let placementRevision=0;let namedLockSelect=null,namedLockOptions='',toolStatus=null,tileStatus=null,placementStatus=null,selectedTile=null;
   const tileMarker=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({color:0xc8b778,transparent:true,opacity:.28,depthTest:false,depthWrite:false,side:THREE.DoubleSide}));tileMarker.name='dm-target-tile';tileMarker.rotation.x=-Math.PI/2;tileMarker.renderOrder=1000;tileMarker.userData.dmOnly=true;tileMarker.visible=false;scene.add(tileMarker);
-  let shell = null, toolbar = null, palette = null, launcher = null, startButton = null,newDungeonButton=null,workflowStatus=null, validationLabel = null, resourceLabel = null, result = null, resultKey = '', dismissedResultKey = '';
+  let shell = null, toolbar = null, palette = null, launcher = null, startButton = null,labButton=null,newDungeonButton=null,workflowStatus=null, validationLabel = null, resourceLabel = null, result = null, resultKey = '', dismissedResultKey = '';
   const world = () => {try {return options.getWorld?.() ?? {};} catch {return {paused: true};}};
   // An invalid non-null assignment waits without exposing a host viewport.
   const remoteId = () => {const id = world().remoteActorId; return id == null ? null : HERO_IDS.includes(id) ? id : 'unassigned';};
@@ -73,7 +73,7 @@ export function createPartyView(options = {}) {
   const cameraFar = () => {const visibility=world().fogDistance,far=Number.isFinite(visibility)?Math.max(40,visibility*1.6):40;return Number.isFinite(far)?far:40;};
   const loadoutOptionKeys=new WeakMap();
   function loadoutChoices(a,slot,w=world()) {const starter=CLASSES[a.classId]?.[slot==='weapon'?'defaultWeapon':'defaultOffhand']??slot,choices=[{id:'starter',label:'Starter - '+starter}],seen=new Set(['starter']),owned=w.loadoutChoices?.[a.id]?.[slot];for(const item of (Array.isArray(owned)?owned.slice(0,128):[])){if(!item||typeof item.id!=='string'||!item.id.trim()||item.id.length>128||/[\u0000-\u001f]/.test(item.id)||seen.has(item.id)||typeof item.label!=='string'||!item.label.trim()||item.label.length>160)continue;choices.push({id:item.id,label:item.label});seen.add(item.id);}return choices;}
-  function refreshLoadout(node,a,slot,w){const choices=loadoutChoices(a,slot,w),signature=JSON.stringify(choices);if(loadoutOptionKeys.get(node)!==signature){node.replaceChildren();for(const choice of choices){const option=make('option',choice.label);option.value=choice.id;node.appendChild(option);}loadoutOptionKeys.set(node,signature);}const selected=w.equippedIds?.[a.id]?.[slot]??'starter';node.value=choices.some(c=>c.id===selected)?selected:'starter';}
+  function refreshLoadout(node,a,slot,w){const choices=loadoutChoices(a,slot,w),signature=JSON.stringify(choices);if(loadoutOptionKeys.get(node)!==signature){node.replaceChildren();for(const choice of choices){const option=make('option',choice.label);option.value=choice.id;node.appendChild(option);}loadoutOptionKeys.set(node,signature);}const selected=w.equippedIds?.[a.id]?.[slot]??'starter';setUI(node,'value',choices.some(c=>c.id===selected)?selected:'starter');}
   const phase = () => campaign.state?.phase ?? campaign.phase ?? 'lobby';
   const actor = id => campaign.actors.find(a => a.id === id) ?? null;
   const living = a => a && a.alive !== false && !(Number.isFinite(a.health) && a.health <= 0) && !a.escaped && !a.fainted;
@@ -202,68 +202,76 @@ export function createPartyView(options = {}) {
     if (!enabled || remoteId() || phase() !== 'active' || busy() || available !== true || typeof onAction !== 'function') return;
     try {onAction(null, kind)?.catch?.(report);} catch (error) {report(error);}
   }
+  // textContent and cssText assignments mutate DOM even when the display is unchanged.
+  // Keep event-driven updates immediate while allowing tick/render to refresh safely.
+  const uiStyleText=new WeakMap();
+  function setUI(node,key,value){if(node[key]!==value)node[key]=value;}
+  function setStyleText(style,value){if(uiStyleText.get(style)!==value){style.cssText=value;uiStyleText.set(style,value);}}
+  function setUIAttribute(node,key,value){if(node.getAttribute?.(key)!==value)node.setAttribute(key,value);}
+  function setUIClass(node,key,value){if(node&&node.classList.contains?.(key)!==!!value)node.classList.toggle(key,!!value);}
   function updateUI() {
     if (!toolbar) return;
     const remote = syncMode(), w = world(), active = phase() === 'active', dm = w.dmResources;
-    for (const control of hostControls) control.hidden = !!remote;
-    if (title) title.textContent = remote ? 'HOLLOW · ' + remote : 'HOLLOW · DM + 3';
-    if (launcher) launcher.hidden = enabled || !!remote;
-    shell.style.gridTemplateColumns = remote||w.mobileLayout ? '1fr' : ''; shell.style.gridTemplateRows = remote||w.mobileLayout ? '1fr' : '';
-    dmPane.hidden = !!remote||!!w.mobileLayout&&focusedId!=='dm';dmPane.style.cssText=buildWorkspace()&&!w.mobileLayout?'position:absolute;left:360px;right:0;top:0;bottom:0':''; palette.hidden = !!remote || !dmOpen;
-    dmPane.classList.toggle('focused', !remote && focusedId === 'dm');dmPane.dataset.focused=String(!remote && focusedId==='dm');
-    dmLabel.textContent=focusedId==='dm'&&!remote?'0 · DM · ACTIVE CONTROL':'0 · DM · overhead / edit';dmLabel.setAttribute('aria-pressed',String(!remote&&focusedId==='dm'));
-    dmHint.textContent=dmOpen?'Choose a tool, then click a highlighted tile. Drag map to orbit. Esc cancels.':active?'Local controls: 1 / 2 / 3 select hero · 0 DM · or click a pane':'Local test: 1 / 2 / 3 select hero · Start expedition to move';
-    document?.body?.classList.toggle('dm-open', !remote && dmOpen && enabled);
-    startButton.disabled = !enabled || !!remote || active || starting || (phase()==='lobby'&&!validation.valid) || !!(w.busy || w.isGenerating || w.paused) || typeof onStart !== 'function';
-    startButton.textContent = starting ? 'Preparing…' : phase() === 'lobby' ? 'Start expedition' : 'Next expedition';
-    if(newDungeonButton)newDungeonButton.disabled=!!remote||active||starting||!!(w.busy||w.isGenerating)||typeof onNewDungeon!=='function';
-    if(workflowStatus)workflowStatus.textContent=(active?'EXPEDITION IN PROGRESS':'SETUP — build dungeon + choose loadouts')+(w.seed?' · Seed: '+w.seed:'');
-    validationLabel.textContent = validation.valid ? (validation.metrics?'Route ready · '+validation.metrics.metres+' m · '+validation.metrics.turns+' turns':'Route ready') : (validation.errors?.[0] ?? validation.reason ?? 'Route not ready');
-    resourceLabel.textContent = dm ? active?`DM stamina ${Math.floor(dm.stamina??0)} / ${dm.maxStamina??'?'}`:`Setup budget ${dm.remainingBudget??'?'} / ${dm.budget??'?'}` : 'DM resources pending';
+    if(labButton)setUI(labButton,'disabled',active||starting||!!remote||!!(w.busy||w.isGenerating));
+    for (const control of hostControls) setUI(control, 'hidden', !!remote);
+    if (title) setUI(title, 'textContent', remote ? 'HOLLOW · ' + remote : 'HOLLOW · DM + 3');
+    if (launcher) setUI(launcher, 'hidden', enabled || !!remote);
+    setUI(shell.style, 'gridTemplateColumns', remote||w.mobileLayout ? '1fr' : ''); setUI(shell.style, 'gridTemplateRows', remote||w.mobileLayout ? '1fr' : '');
+    setUI(dmPane, 'hidden', !!remote||!!w.mobileLayout&&focusedId!=='dm');setStyleText(dmPane.style, buildWorkspace()&&!w.mobileLayout?'position:absolute;left:360px;right:0;top:0;bottom:0':''); setUI(palette, 'hidden', !!remote || !dmOpen);
+    setUIClass(dmPane,'focused', !remote && focusedId === 'dm');setUI(dmPane.dataset, 'focused', String(!remote && focusedId==='dm'));
+    setUI(dmLabel, 'textContent', focusedId==='dm'&&!remote?'0 · DM · ACTIVE CONTROL':'0 · DM · overhead / edit');setUIAttribute(dmLabel,'aria-pressed',String(!remote&&focusedId==='dm'));
+    setUI(dmHint, 'textContent', dmOpen?'Choose a tool, then click a highlighted tile. Drag map to orbit. Esc cancels.':active?'Local controls: 1 / 2 / 3 select hero · 0 DM · or click a pane':'Local test: 1 / 2 / 3 select hero · Start expedition to move');
+    setUIClass(document?.body,'dm-open', !remote && dmOpen && enabled);
+    setUI(startButton, 'disabled', !enabled || !!remote || active || starting || (phase()==='lobby'&&!validation.valid) || !!(w.busy || w.isGenerating || w.paused) || typeof onStart !== 'function');
+    setUI(startButton, 'textContent', starting ? 'Preparing…' : phase() === 'lobby' ? 'Start expedition' : 'Next expedition');
+    if(newDungeonButton)setUI(newDungeonButton, 'disabled', !!remote||active||starting||!!(w.busy||w.isGenerating)||typeof onNewDungeon!=='function');
+    if(workflowStatus)setUI(workflowStatus, 'textContent', (active?'EXPEDITION IN PROGRESS':'SETUP — build dungeon + choose loadouts')+(w.seed?' · Seed: '+w.seed:''));
+    setUI(validationLabel, 'textContent', validation.valid ? (validation.metrics?'Route ready · '+validation.metrics.metres+' m · '+validation.metrics.turns+' turns':'Route ready') : (validation.errors?.[0] ?? validation.reason ?? 'Route not ready'));
+    setUI(resourceLabel, 'textContent', dm ? active?`DM stamina ${Math.floor(dm.stamina??0)} / ${dm.maxStamina??'?'}`:`Setup budget ${dm.remainingBudget??'?'} / ${dm.budget??'?'}` : 'DM resources pending');
     for (const [id, controls] of ui) {
       const a = actor(id); if (!a) continue;
-      controls.pane.hidden = buildWorkspace() || !!remote && id !== remote || !!w.mobileLayout&&id!==(remote??focusedId);
-      controls.row.hidden = !!remote && (id !== remote || active);
+      setUI(controls.pane, 'hidden', buildWorkspace() || !!remote && id !== remote || !!w.mobileLayout&&id!==(remote??focusedId));
+      setUI(controls.row, 'hidden', !!remote && (id !== remote || active));
       const rowParent = remote === id ? controls.pane : partySetup;
       if (controls.row.parentNode !== rowParent && controls.row.parent !== rowParent) rowParent.appendChild(controls.row);
-      controls.row.style.cssText = remote === id ? 'position:absolute;left:12px;top:76px;pointer-events:auto;max-width:calc(100% - 24px)' : '';
+      setStyleText(controls.row.style, remote === id ? 'position:absolute;left:12px;top:76px;pointer-events:auto;max-width:calc(100% - 24px)' : '');
       const owned=locallyOwned(a),selected=focusedId===id&&owned;
-      controls.label.textContent = `${id.slice(-1)} · ${CLASSES[a.classId]?.name ?? a.classId ?? 'Adventurer'}${!owned?' · REMOTE CONTROL':w.botIds?.includes(id)?' · BOT':selected?' · ACTIVE CONTROL':''}`;
-      controls.label.disabled=!owned;controls.label.setAttribute('aria-pressed',String(selected));controls.label.title=owned?(remote?'Your adventurer':`Click this pane or press ${id.slice(-1)} to control this adventurer`):'Controlled by a remote player';
-      controls.pane.dataset.focused=String(selected);controls.hint.hidden=!selected;
-      controls.hint.textContent=remote?'ACTIVE CONTROL · WASD move · drag look · Space strike · E interact':active?'ACTIVE CONTROL · 1 / 2 / 3 switch hero · 0 DM · WASD move':'ACTIVE CONTROL · 1 / 2 / 3 switch hero · Start expedition to move';
-      controls.pane.classList.toggle('focused', selected); controls.pane.classList.toggle('dead', !living(a) && !a.escaped); controls.pane.classList.toggle('escaped', !!a.escaped);
-      controls.stats.textContent = `${a.escaped ? 'ESCAPED · ' : !living(a) ? 'DOWN · ' : ''}HP ${Math.ceil(a.health ?? 0)}/${a.maxHealth ?? '?'} · MP ${Math.floor(a.mana ?? 0)}/${a.maxMana ?? '?'}${Number.isFinite(a.stamina) ? ' · STA ' + Math.floor(a.stamina) : ''} · G ${a.gold ?? 0}${hand(a)==='torch'?' · TORCH '+Math.ceil(a.torchFuel??120)+'s'+(a.torchLit===false?' (out)':''):''}`;
-      controls.classSelect.value = a.classId; controls.classSelect.disabled = active || starting || !!remote && typeof onClass !== 'function';
-      refreshLoadout(controls.weapon,a,'weapon',w); controls.weapon.disabled = active || starting || !!remote && typeof onLoadout !== 'function';
-      refreshLoadout(controls.offhand,a,'offhand',w); controls.offhand.disabled = active || starting || !!remote && typeof onLoadout !== 'function';
+      setUI(controls.label, 'textContent', `${id.slice(-1)} · ${CLASSES[a.classId]?.name ?? a.classId ?? 'Adventurer'}${!owned?' · REMOTE CONTROL':w.botIds?.includes(id)?' · BOT':selected?' · ACTIVE CONTROL':''}`);
+      setUI(controls.label, 'disabled', !owned);setUIAttribute(controls.label,'aria-pressed',String(selected));setUI(controls.label, 'title', owned?(remote?'Your adventurer':`Click this pane or press ${id.slice(-1)} to control this adventurer`):'Controlled by a remote player');
+      setUI(controls.pane.dataset, 'focused', String(selected));setUI(controls.hint, 'hidden', !selected);
+      setUI(controls.hint, 'textContent', remote?'ACTIVE CONTROL · WASD move · drag look · Space strike · E interact':active?'ACTIVE CONTROL · 1 / 2 / 3 switch hero · 0 DM · WASD move':'ACTIVE CONTROL · 1 / 2 / 3 switch hero · Start expedition to move');
+      setUIClass(controls.pane,'focused', selected); setUIClass(controls.pane,'dead', !living(a) && !a.escaped); setUIClass(controls.pane,'escaped', !!a.escaped);
+      setUI(controls.stats, 'textContent', `${a.escaped ? 'ESCAPED · ' : !living(a) ? 'DOWN · ' : ''}HP ${Math.ceil(a.health ?? 0)}/${a.maxHealth ?? '?'} · MP ${Math.floor(a.mana ?? 0)}/${a.maxMana ?? '?'}${Number.isFinite(a.stamina) ? ' · STA ' + Math.floor(a.stamina) : ''} · G ${a.gold ?? 0}${hand(a)==='torch'?' · TORCH '+Math.ceil(a.torchFuel??120)+'s'+(a.torchLit===false?' (out)':''):''}`);
+      setUI(controls.classSelect, 'value', a.classId); setUI(controls.classSelect, 'disabled', active || starting || !!remote && typeof onClass !== 'function');
+      refreshLoadout(controls.weapon,a,'weapon',w); setUI(controls.weapon, 'disabled', active || starting || !!remote && typeof onLoadout !== 'function');
+      refreshLoadout(controls.offhand,a,'offhand',w); setUI(controls.offhand, 'disabled', active || starting || !!remote && typeof onLoadout !== 'function');
     }
-    if(namedLockSelect){const locks=w.namedLocks??[],signature=JSON.stringify(locks.map(l=>[l.id,l.name,l.floor,l.doorKey]));if(signature!==namedLockOptions){namedLockOptions=signature;namedLockSelect.replaceChildren();const empty=make('option','Choose the exact named lock');empty.value='';namedLockSelect.appendChild(empty);for(const l of locks){const option=make('option',l.name+' - floor '+(l.floor+1)+' / '+l.doorKey);option.value=l.id;namedLockSelect.appendChild(option);}}namedLockSelect.value=w.selectedNamedLockId??'';namedLockSelect.disabled=!!remote||phase()!=='lobby'||starting;}
+    if(namedLockSelect){const locks=w.namedLocks??[],signature=JSON.stringify(locks.map(l=>[l.id,l.name,l.floor,l.doorKey]));if(signature!==namedLockOptions){namedLockOptions=signature;namedLockSelect.replaceChildren();const empty=make('option','Choose the exact named lock');setUI(empty, 'value', '');namedLockSelect.appendChild(empty);for(const l of locks){const option=make('option',l.name+' - floor '+(l.floor+1)+' / '+l.doorKey);setUI(option, 'value', l.id);namedLockSelect.appendChild(option);}}setUI(namedLockSelect, 'value', w.selectedNamedLockId??'');setUI(namedLockSelect, 'disabled', !!remote||phase()!=='lobby'||starting);}
     for (const button of palette.querySelectorAll?.('[data-placement]') ?? []) {
       const kind = button.dataset.placement, cost = w.placementCosts?.[kind], amount = typeof cost === 'number' ? cost : active ? cost?.stamina : cost?.budget;
 
-      button.textContent = toolLabel(kind) + (Number.isFinite(amount) ? ` · ${amount} ${active ? 'STA' : 'budget'}` : '');
-      button.hidden = !!remote;
-      button.disabled = starting || !!(w.busy || w.isGenerating) || typeof onPlace !== 'function' || ((kind.startsWith('door:')||kind.startsWith('key:'))&&phase()!=='lobby') || (kind==='key:named'&&!(w.namedLocks??[]).some(l=>l.id===w.selectedNamedLockId));
-      button.classList.toggle('active', tool === kind);button.setAttribute('aria-pressed',String(tool===kind));
+      setUI(button, 'textContent', toolLabel(kind) + (Number.isFinite(amount) ? ` · ${amount} ${active ? 'STA' : 'budget'}` : ''));
+      setUI(button, 'hidden', !!remote);
+      setUI(button, 'disabled', starting || !!(w.busy || w.isGenerating) || typeof onPlace !== 'function' || ((kind.startsWith('door:')||kind.startsWith('key:'))&&phase()!=='lobby') || (kind==='key:named'&&!(w.namedLocks??[]).some(l=>l.id===w.selectedNamedLockId)));
+      setUIClass(button,'active', tool === kind);setUIAttribute(button,'aria-pressed',String(tool===kind));
     }
-    if(toolStatus)toolStatus.textContent='Tool: '+toolLabel(tool)+(tool==='select'?' — click a tile to inspect':' — click map once to place; repeat to place more');
-    if(tileStatus&&selectedTile)tileStatus.textContent=tileDescription(selectedTile);
+    if(toolStatus)setUI(toolStatus, 'textContent', 'Tool: '+toolLabel(tool)+(tool==='select'?' — click a tile to inspect':' — click map once to place; repeat to place more'));
+    if(tileStatus&&selectedTile)setUI(tileStatus, 'textContent', tileDescription(selectedTile));
     for (const [kind, capability] of [['summonBoss', 'canSummonBoss'], ['possessBoss', 'canPossessBoss']]) {
       const button = toolbar.querySelector?.('[data-action="' + kind + '"]'); if (!button) continue;
-      button.hidden=!!remote||!active;const available = w[capability] === true; button.disabled = !active || busy() || !available || typeof onAction !== 'function';
-      button.textContent = (kind === 'summonBoss' ? 'Summon boss' : 'Possess boss');
+      setUI(button, 'hidden', !!remote||!active);const available = w[capability] === true; setUI(button, 'disabled', !active || busy() || !available || typeof onAction !== 'function');
+      setUI(button, 'textContent', (kind === 'summonBoss' ? 'Summon boss' : 'Possess boss'));
     }
     if (result) {
       const ending = ['partyVictory', 'dmVictory'].includes(phase());
       const key = JSON.stringify([remote, phase(), campaign.runNumber, campaign.actors.map(a => [a.alive, a.escaped, a.gold, a.inventory?.length])]);
-      result.hidden = !enabled || !ending || dismissedResultKey === key;
+      setUI(result, 'hidden', !enabled || !ending || dismissedResultKey === key);
       if (!ending) dismissedResultKey = '';
       if (ending && key !== resultKey) {
         resultKey = key; result.replaceChildren();
         result.appendChild(make('h2', phase() === 'partyVictory' ? 'PARTY VICTORY' : 'DM VICTORY'));
         for (const a of campaign.actors.filter(a => !remote || a.id === remote)) result.appendChild(make('p', `${a.id}: ${a.alive ? 'survived · ' + (a.gold ?? 0) + ' gold / ' + (a.inventory?.length ?? 0) + ' items carry forward' : 'dead · starts next run empty'}`));
-        const next = make('button', remote ? 'Close result' : 'Return to DM setup'); listen(next, 'click', () => {dismissedResultKey = key; result.hidden = true; focus(remoteId() ?? 'dm'); setDMOpen(true);}); result.appendChild(next);
+        const next = make('button', remote ? 'Close result' : 'Return to DM setup'); listen(next, 'click', () => {dismissedResultKey = key; setUI(result, 'hidden', true); focus(remoteId() ?? 'dm'); setDMOpen(true);}); result.appendChild(next);
       }
     }
   }
@@ -278,7 +286,7 @@ export function createPartyView(options = {}) {
     launcher = button('Party: DM + 3', () => setEnabled(true)); launcher.id = 'partyToggle'; launcher.style.cssText = 'position:fixed;left:310px;top:75px;z-index:40'; document.body.appendChild(launcher);
     toolbar = make('div'); toolbar.id = 'partyToolbar'; toolbar.hidden = true;
     title = make('b', 'HOLLOW · DM + 3'); toolbar.appendChild(title);
-    const soloButton = button('Dungeon Lab', () => {if (!remoteId()){setEnabled(false);onOpenLab?.();}}), toolsButton = button('DM tools', () => {focus('dm'); setDMOpen(!dmOpen);});
+    const soloButton = labButton=button('Dungeon Lab', () => {if (!remoteId()&&phase()!=='active'&&!starting&&!busy()){setEnabled(false);onOpenLab?.();}}), toolsButton = button('DM tools', () => {focus('dm'); setDMOpen(!dmOpen);});
     toolbar.appendChild(soloButton); toolbar.appendChild(toolsButton);hostControls.push(soloButton,toolsButton);
     newDungeonButton=button('New dungeon',async()=>{if(remoteId()||phase()==='active'||starting||busy()||typeof onNewDungeon!=='function')return;starting=true;clearInputs();focus('dm');setDMOpen(true);updateUI();try{await onNewDungeon();validate();}catch(error){report(error);}finally{starting=false;updateUI();}});newDungeonButton.dataset.action='newDungeon';toolbar.appendChild(newDungeonButton);hostControls.push(newDungeonButton);
     startButton = button('Start expedition', () => {void start();}); toolbar.appendChild(startButton);
@@ -405,6 +413,9 @@ export function createPartyView(options = {}) {
       }
       for (const padId of [...padOwners.keys()]) if (!connected.has(padId)) {release('pad:' + padId); padOwners.delete(padId); padButtons.delete(padId);}
     }
+    // World bodies/simulation still advance for every actor. Camera-local gear
+    // only needs animation for viewports that will actually render this frame.
+    const equipmentView=remote??(world().mobileLayout?focusedId:buildWorkspace()?'dm':null);
     for (const r of records.values()) {
       const a = r.actor, input = intents.get(a.id), botInput=world().autoplayInputs?.[a.id];if(botInput&&playable(a)){input.forward=clamp(botInput.forward??0,-1,1);input.side=clamp(botInput.side??0,-1,1);}const length = Math.hypot(input.forward, input.side); r.moving = false;
       if (length && playable(a)) {
@@ -415,8 +426,10 @@ export function createPartyView(options = {}) {
       r.sprite.position.set(a.position.x, a.position.y, a.position.z); r.sprite.rotation.y = a.yaw ?? 0;
       r.sprite.userData.animate?.({time: now / 1000, moving: r.moving, attacking: now < r.attackUntil||now<(a.lastAttack??-Infinity)+280, dead: a.alive === false, hurt: now < (a.hurtUntil ?? 0)});
       r.camera.position.set(a.position.x, a.position.y + 1.48, a.position.z); r.camera.rotation.set(a.pitch ?? 0, a.yaw ?? 0, 0);
-      r.equipment?.setTorchState?.({fuel:a.torchFuel??120,lit:a.torchLit!==false});
-      r.equipment?.animate?.({time: now, moving: r.moving, attacking: now < r.attackUntil||now<(a.lastAttack??-Infinity)+280, casting: now < r.castUntil || now < (a.castingUntil ?? 0)||now<(a.lastCast??-Infinity)+380, blocking: hand(a) === 'shield' && ([...guards.values()].includes(a.id)||!!a.guarding)});
+      if(living(a)&&(equipmentView===null||equipmentView===a.id)){
+        r.equipment?.setTorchState?.({fuel:a.torchFuel??120,lit:a.torchLit!==false});
+        r.equipment?.animate?.({time: now, moving: r.moving, attacking: now < r.attackUntil||now<(a.lastAttack??-Infinity)+280, casting: now < r.castUntil || now < (a.castingUntil ?? 0)||now<(a.lastCast??-Infinity)+380, blocking: hand(a) === 'shield' && ([...guards.values()].includes(a.id)||!!a.guarding)});
+      }
     }
     updateUI();
   }
@@ -449,7 +462,7 @@ export function createPartyView(options = {}) {
         if (selected?.equipment && living(selected.actor)) {selected.equipment.right.visible = true; if (hand(selected.actor) === 'magic') selected.equipment.leftMagic.visible = true; else if(hand(selected.actor)==='torch'){if(selected.equipment.leftTorch)selected.equipment.leftTorch.visible=true;}else selected.equipment.leftShield.visible = true;}
         camera.aspect = rect.width / rect.height; camera.clearViewOffset?.(); camera.updateProjectionMatrix();
         if (selected?.equipment) layoutEquipment?.(selected.equipment, camera.aspect, camera.fov, selected.actor);
-        renderer.setViewport(rect.glX, rect.glY, rect.glWidth, rect.glHeight); renderer.setScissor(rect.glX, rect.glY, rect.glWidth, rect.glHeight); renderer.clear(true, true, true); renderer.render(scene, camera);
+        renderer.setViewport(rect.glX, rect.glY, rect.glWidth, rect.glHeight); renderer.setScissor(rect.glX, rect.glY, rect.glWidth, rect.glHeight); renderer.clear(true, true, true);const restoreView=w.prepareView?.(camera,{overhead:rect.id==='dm'&&!w.dmBoss});try{renderer.render(scene,camera);}finally{restoreView?.();}
       }
     } finally {
       for(const [light,power]of lightPowers)light.intensity=power;

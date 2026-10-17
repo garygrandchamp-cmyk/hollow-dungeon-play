@@ -44,7 +44,7 @@ export function createMobileControls({document:doc=globalThis.document,window:wi
  listen(look,'pointermove',e=>{if(looking?.id!==e.pointerId)return;stop(e);if(active())onLook(e.clientX-looking.x,e.clientY-looking.y,looking.actor);looking.x=e.clientX;looking.y=e.clientY;});
  const releaseLook=e=>{if(looking?.id===e.pointerId){stop(e);looking=null;}};
  for(const event of ['pointerup','pointercancel','lostpointercapture'])listen(look,event,releaseLook);
- function reset(){if(guard)onAction('release',guard.actor);guard=null;attack=null;moving=null;looking=null;input={forward:0,side:0};repeat=0;knob.style.transform='';touches.clear();pinch=0;}
+ function reset(){if(guard)onAction('release',guard.actor);guard=null;attack=null;moving=null;looking=null;input={forward:0,side:0};repeat=0;if(knob.style.transform!=='')knob.style.transform='';touches.clear();pinch=0;}
  for(const event of ['blur','pagehide','orientationchange'])listen(win,event,reset);
  listen(doc,'visibilitychange',reset);
  // One finger keeps the existing DM drag/orbit interaction; two fingers zoom
@@ -54,13 +54,15 @@ export function createMobileControls({document:doc=globalThis.document,window:wi
  for(const event of ['pointerup','pointercancel','lostpointercapture'])listen(canvas,event,e=>{touches.delete(e.pointerId);if(touches.size<2)pinch=0;});
  let fold=null;if(drawer){fold=doc.createElement('button');fold.type='button';fold.id='mobileDrawerToggle';fold.textContent='Collapse tool list';fold.onclick=()=>{const collapsed=drawer.classList.toggle('mobile-collapsed');fold.textContent=collapsed?'Expand tool list':'Collapse tool list';};drawer.prepend(fold);}
  doc.body.appendChild(root);
+ let previousTab=null;
+ const hide=(node,value)=>{if(node.hidden!==value)node.hidden=value;};
  function tick(dt){
   if(destroyed)return;const s=state(),wasCompact=compact;compact=win.innerWidth<=900||win.innerWidth<=1366&&!!win.matchMedia?.('(pointer: coarse)').matches;if(wasCompact!==compact)reset();
-  doc.body.classList.toggle('mobile-game',compact);root.hidden=!compact||!s.available||s.busy;nav.hidden=!s.party||s.remote;quick.hidden=!!s.dm;
+  if(doc.body.classList.contains('mobile-game')!==compact)doc.body.classList.toggle('mobile-game',compact);hide(root,!compact||!s.available||s.busy);hide(nav,!s.party||s.remote);hide(quick,!!s.dm);
   if(lastActor!==s.actorId||s.busy||!s.available||!active()&&!s.dm)reset();lastActor=s.actorId;
-  for(const [id,b]of tabs)b.setAttribute('aria-pressed',String((s.dm?'dm':s.actorId)===id));
-  look.hidden=move.hidden=actions.hidden=!active();
-  if(fold)fold.hidden=!compact;
+  const selected=s.dm?'dm':s.actorId;if(previousTab!==selected){previousTab=selected;for(const [id,b]of tabs)b.setAttribute('aria-pressed',String(selected===id));}
+  const inactive=!active();hide(look,inactive);hide(move,inactive);hide(actions,inactive);
+  if(fold)hide(fold,!compact);
   if(attack!==null&&active()){repeat+=Math.max(0,Math.min(.1,dt||0));if(repeat>=.55){repeat=0;onAction('attack',s.actorId);}}
  }
  return {root,tick,reset,get compact(){return compact;},get input(){return {...input,actorId:state().actorId};},destroy(){if(destroyed)return;reset();destroyed=true;removers.forEach(fn=>fn());root.remove();fold?.remove();doc.body.classList.remove('mobile-game');}};

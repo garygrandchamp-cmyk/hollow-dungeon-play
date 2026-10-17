@@ -1,12 +1,28 @@
-import {EQUIPMENT_SPRITE_DATA} from './equipment-sprite-data.js?v=80eddf4efeb73b0f3ae528a5ccc41ada14f30f7a';
-import {createMagicLayer} from './equipment-magic.js?v=80eddf4efeb73b0f3ae528a5ccc41ada14f30f7a';
+import {EQUIPMENT_SPRITE_DATA} from './equipment-sprite-data.js?v=64ad63ccf9b715304e37145621288e4cb455ca14';
+import {createMagicLayer} from './equipment-magic.js?v=64ad63ccf9b715304e37145621288e4cb455ca14';
 // Optional while the replacement art is produced; a reload picks up the new pack.
-const heldArtModule=await import('./held-art-data.js?v=80eddf4efeb73b0f3ae528a5ccc41ada14f30f7a').catch(()=>null);
+const heldArtModule=await import('./held-art-data.js?v=64ad63ccf9b715304e37145621288e4cb455ca14').catch(()=>null);
 const defaultHeldArtDecoder=heldArtModule?.decodeHeldArt??null;
 const uvPoint=value=>{const x=Array.isArray(value)?value[0]:value?.x,y=Array.isArray(value)?value[1]:value?.y;return Number.isFinite(x)&&Number.isFinite(y)&&x>=0&&x<=1&&y>=0&&y<=1?{x,y}:null;};
 
 // Approved first-person mockup uses a denser HUD grid; world sprites stay104/1.7.
 export const HELD_PIXELS_PER_UNIT=180;
+// A linear projection reaches its maximum on the alpha silhouette's convex
+// hull. Cache those few boundary points instead of scanning every shield pixel
+// twice per animation frame (also for cameras that cannot see the shield).
+function alphaHull(image){
+ const points=[];
+ for(let x=0;x<image.width;x++){
+  let lo=Infinity,hi=-1;
+  for(let y=0;y<image.height;y++)if(image.data[(y*image.width+x)*4+3]>=13){lo=Math.min(lo,y);hi=y;}
+  if(hi<0)continue;
+  for(const xx of [x,x+1])for(const yy of [lo,hi+1])points.push([xx/image.width-.5,yy/image.height]);
+ }
+ points.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
+ const cross=(a,b,c)=>(b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]);
+ const chain=values=>{const out=[];for(const p of values){while(out.length>1&&cross(out.at(-2),out.at(-1),p)<=0)out.pop();out.push(p);}return out;};
+ const lower=chain(points),upper=chain([...points].reverse());return lower.slice(0,-1).concat(upper.slice(0,-1));
+}
 const TORCH_PHYSICAL_DENSITY=104/1.7;
 export function sampleHeldPixels(source,width,height,targetWidth,targetHeight,frames=1){const data=new Uint8Array(targetWidth*frames*targetHeight*4),frameWidth=width/frames;for(let y=0;y<targetHeight;y++)for(let frame=0;frame<frames;frame++)for(let x=0;x<targetWidth;x++){const sx=frame*frameWidth+Math.min(frameWidth-1,Math.floor((x+.5)*frameWidth/targetWidth)),sy=Math.min(height-1,Math.floor((y+.5)*height/targetHeight)),from=(sy*width+sx)*4,to=(y*targetWidth*frames+frame*targetWidth+x)*4;data.set(source.subarray(from,from+4),to);}return data;}
 function densityMap(THREE,map,width,height,frames,density){const image=map.image,frameWidth=Math.max(1,Math.ceil(width*density)),frameHeight=Math.max(1,Math.ceil(height*density)),data=sampleHeldPixels(image.data,image.width,image.height,frameWidth,frameHeight,frames);map.source=new THREE.Source({data,width:frameWidth*frames,height:frameHeight});map.userData.pixelDensity={target:density,frameWidth,frameHeight,frames,sourceWidth:image.width,sourceHeight:image.height};map.needsUpdate=true;}
@@ -82,7 +98,8 @@ export function createEquipmentSprites(THREE,{modularRightHand=false,pixelDensit
   (p.lastPosition??=new THREE.Vector3()).copy(s.position);(p.lastScale??=new THREE.Vector3()).copy(s.scale);p.lastRotation=s.isSprite?s.material.rotation:s.rotation.z;
  }
  const flexImage=leftMagic.material.map.image,flexBase=leftMagic.userData.replacementArt&&leftMagic.userData.frameCount===1?new Uint8Array(flexImage.data):null;let lastFlex=-1;function flexFingers(time,casting){if(!flexBase)return;const step=!casting&&Math.sin(time*.001*1.6)>.35?1:0;leftMagic.userData.proceduralFingerFlex=step;if(step===lastFlex)return;lastFlex=step;flexImage.data.set(flexBase);if(step){const edge=Math.floor(flexImage.height*.30);for(let y=0;y<edge;y++)for(let x=Math.floor(flexImage.width*.4);x<flexImage.width;x++){const shift=Math.round(1-y/edge),sourceY=y-shift,to=((flexImage.height-1-y)*flexImage.width+x)*4;if(sourceY<0)flexImage.data.fill(0,to,to+4);else{const from=((flexImage.height-1-sourceY)*flexImage.width+x)*4;flexImage.data.set(flexBase.subarray(from,from+4),to);}}}leftMagic.material.map.needsUpdate=true;}
- function shieldPresentation(block,sway,bob){const p=poses[1],position=p.lastPosition&&leftShield.position.equals(p.lastPosition)?p.basePosition:leftShield.position,scale=p.lastScale&&leftShield.scale.equals(p.lastScale)?p.baseScale:leftShield.scale;let camera=leftShield.parent;while(camera&&!camera.isPerspectiveCamera)camera=camera.parent;const fov=layoutView?.fov??camera?.fov??72,aspect=layoutView?.aspect??camera?.aspect??16/9,z=position.z+block*.018,halfH=Math.tan(fov*Math.PI/360)*Math.abs(z),halfW=halfH*aspect,rotation=(p.lastRotation===null?leftShield.material.rotation:p.baseRotation)-block*.13,sin=Math.sin(rotation),cos=Math.cos(rotation),image=leftShield.material.map.image;let top=-Infinity;for(let y=0;y<image.height;y++)for(let x=0;x<image.width;x++){if(image.data[(y*image.width+x)*4+3]<13)continue;const px=((x+(sin>=0?1:0))/image.width-.5)*scale.x,py=(y+(cos>=0?1:0))/image.height*scale.y;top=Math.max(top,px*sin+py*cos);}if(!Number.isFinite(top))top=scale.y;const visible=.28+block*.17,goalY=(visible*2-1)*halfH-top,goalX=(-.68+block*.40)*halfW;leftShield.userData.visibleFractionTarget=visible;pose(1,goalX-position.x-sway,goalY-position.y+bob,block*.018,-block*.13,1,1);}
+ const shieldHull=alphaHull(leftShield.material.map.image);
+ function shieldPresentation(block,sway,bob){const p=poses[1],position=p.lastPosition&&leftShield.position.equals(p.lastPosition)?p.basePosition:leftShield.position,scale=p.lastScale&&leftShield.scale.equals(p.lastScale)?p.baseScale:leftShield.scale;let camera=leftShield.parent;while(camera&&!camera.isPerspectiveCamera)camera=camera.parent;const fov=layoutView?.fov??camera?.fov??72,aspect=layoutView?.aspect??camera?.aspect??16/9,z=position.z+block*.018,halfH=Math.tan(fov*Math.PI/360)*Math.abs(z),halfW=halfH*aspect,rotation=(p.lastRotation===null?leftShield.material.rotation:p.baseRotation)-block*.13,sin=Math.sin(rotation),cos=Math.cos(rotation),image=leftShield.material.map.image;let top=-Infinity;for(const [x,y]of shieldHull)top=Math.max(top,x*scale.x*sin+y*scale.y*cos);if(!Number.isFinite(top))top=scale.y;const visible=.28+block*.17,goalY=(visible*2-1)*halfH-top,goalX=(-.68+block*.40)*halfW;leftShield.userData.visibleFractionTarget=visible;pose(1,goalX-position.x-sway,goalY-position.y+bob,block*.018,-block*.13,1,1);}
  function layout(aspect=16/9,fov=72){if(disposed)return false;aspect=Number.isFinite(aspect)&&aspect>0?aspect:16/9;fov=Number.isFinite(fov)?Math.max(35,Math.min(110,fov)):72;layoutView={aspect,fov};const halfH=Math.tan(fov*Math.PI/360)*.64,halfW=halfH*aspect,zoom=Math.tan(fov*Math.PI/360)/Math.tan(72*Math.PI/360)*Math.min(1,Math.max(.58,aspect/1.1)),x=Math.max(.16,Math.min(.44,halfW*.52)),bottom=-halfH-.14;for(let i=0;i<poses.length;i++){const p=poses[i],delta=p.lastPosition?p.lastPosition.clone().sub(p.basePosition):new THREE.Vector3(),scaleRatio=p.lastScale?new THREE.Vector3(p.lastScale.x/(p.baseScale.x||1),p.lastScale.y/(p.baseScale.y||1),p.lastScale.z/(p.baseScale.z||1)):new THREE.Vector3(1,1,1),scale=layoutScales[i].clone().multiply(new THREE.Vector3(zoom,zoom,1)),target=i===0?new THREE.Vector3(.64*halfW-.078125*zoom,-.68*halfH-.171875*zoom,-.64):new THREE.Vector3(-x,bottom,-.64);p.baseScale.copy(scale);p.sprite.scale.copy(scale).multiply(scaleRatio);(p.lastScale??=new THREE.Vector3()).copy(p.sprite.scale);p.basePosition.copy(target);p.sprite.position.copy(target).add(delta);(p.lastPosition??=new THREE.Vector3()).copy(p.sprite.position);}shieldPresentation(blockAmount,lastSway,lastBob);return true;}
  function animate({time=0,moving=false,attacking=false,casting=false,blocking=false,torchFuel,torchLit}={}){
   if(disposed)return;

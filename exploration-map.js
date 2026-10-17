@@ -220,7 +220,7 @@ export function createExplorationMap({getState, storage, radius = 4, tileSize = 
   function tick() {
     if (destroyed) return null;
     const state = read(), map = state?.firstPerson && !state.paused ? model.update(state) : null;
-    element.hidden = !map || !state?.firstPerson;
+    element.hidden = !map || !state?.firstPerson || state.display===false;
     if (element.hidden) {setExpanded(false); return map;}
     const yaw = Number.isFinite(state.yaw) ? state.yaw : 0;
     paint(canvas, map, yaw); label.textContent = 'FLOOR ' + String(state.floor);
