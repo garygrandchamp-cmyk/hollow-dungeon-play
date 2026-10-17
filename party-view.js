@@ -1,6 +1,6 @@
-import {CLASSES} from './party-campaign.js?v=ed20d22aed165d3d0cb8addb592c83972073fd78';
-import {createHeldInput} from './held-input.js?v=ed20d22aed165d3d0cb8addb592c83972073fd78';
-import {MONSTER_KINDS} from './monster-sprites.js?v=ed20d22aed165d3d0cb8addb592c83972073fd78';
+import {CLASSES} from './party-campaign.js?v=f42ee60821f34db97d6fccc451cf9a7f80911c50';
+import {createHeldInput} from './held-input.js?v=f42ee60821f34db97d6fccc451cf9a7f80911c50';
+import {MONSTER_KINDS} from './monster-sprites.js?v=f42ee60821f34db97d6fccc451cf9a7f80911c50';
 
 const HERO_IDS = ['hero-1', 'hero-2', 'hero-3'];
 const MOVEMENT = new Set(['w', 'a', 's', 'd', 'arrowup', 'arrowleft', 'arrowdown', 'arrowright']);
@@ -123,7 +123,7 @@ export function createPartyView(options = {}) {
     const bounds = canvas.getBoundingClientRect(), size = new THREE.Vector2();
     if (renderer.getSize) renderer.getSize(size); else size.set(bounds.width, bounds.height);
     const remote = syncMode(), rectangles = computePartyViewports(bounds, {width: size.x, height: size.y});
-    if(world().mobileLayout){const id=remote??focusedId;if(!['dm',...HERO_IDS].includes(id))return [];return [{id,index:['dm',...HERO_IDS].indexOf(id),left:bounds.left,top:bounds.top,right:bounds.left+bounds.width,bottom:bounds.top+bounds.height,width:bounds.width,height:bounds.height,glX:0,glY:0,glWidth:Math.floor(size.x),glHeight:Math.floor(size.y)}];}
+    if(world().mobileLayout||world().singleView&&!buildWorkspace()){const id=remote??focusedId;if(!['dm',...HERO_IDS].includes(id))return [];return [{id,index:['dm',...HERO_IDS].indexOf(id),left:bounds.left,top:bounds.top,right:bounds.left+bounds.width,bottom:bounds.top+bounds.height,width:bounds.width,height:bounds.height,glX:0,glY:0,glWidth:Math.floor(size.x),glHeight:Math.floor(size.y)}];}
     if (!remote&&buildWorkspace()){const inset=Math.min(bounds.width*.55,Math.max(0,(palette?.getBoundingClientRect?.().right??350)-bounds.left+10)),glX=Math.ceil(inset*size.x/bounds.width);return [{id:'dm',index:0,left:bounds.left+inset,top:bounds.top,right:bounds.left+bounds.width,bottom:bounds.top+bounds.height,width:bounds.width-inset,height:bounds.height,glX,glY:0,glWidth:Math.floor(size.x)-glX,glHeight:Math.floor(size.y)}];}
     if (!remote) return rectangles;
     if (!HERO_IDS.includes(remote) || !rectangles.length) return [];
@@ -227,8 +227,8 @@ export function createPartyView(options = {}) {
     for (const control of hostControls) setUI(control, 'hidden', !!remote);
     if (title) setUI(title, 'textContent', remote ? 'HOLLOW · ' + remote : 'HOLLOW · DM + 3');
     if (launcher) setUI(launcher, 'hidden', enabled || !!remote);
-    setUI(shell.style, 'gridTemplateColumns', remote||w.mobileLayout ? '1fr' : ''); setUI(shell.style, 'gridTemplateRows', remote||w.mobileLayout ? '1fr' : '');
-    setUI(dmPane, 'hidden', !!remote||!!w.mobileLayout&&focusedId!=='dm');setStyleText(dmPane.style, buildWorkspace()&&!w.mobileLayout?'position:absolute;left:360px;right:0;top:0;bottom:0':''); setUI(palette, 'hidden', !!remote || !dmOpen);
+    setUI(shell.style, 'gridTemplateColumns', remote||w.mobileLayout||w.singleView ? '1fr' : ''); setUI(shell.style, 'gridTemplateRows', remote||w.mobileLayout||w.singleView ? '1fr' : '');
+    setUI(dmPane, 'hidden', !!remote||!!(w.mobileLayout||w.singleView)&&focusedId!=='dm');setStyleText(dmPane.style, buildWorkspace()&&!w.mobileLayout?'position:absolute;left:360px;right:0;top:0;bottom:0':''); setUI(palette, 'hidden', !!remote || !dmOpen);
     setUIClass(dmPane,'focused', !remote && focusedId === 'dm');setUI(dmPane.dataset, 'focused', String(!remote && focusedId==='dm'));
     setUI(dmLabel, 'textContent', focusedId==='dm'&&!remote?'0 · DM · ACTIVE CONTROL':'0 · DM · overhead / edit');setUIAttribute(dmLabel,'aria-pressed',String(!remote&&focusedId==='dm'));
     setUI(dmHint, 'textContent', dmOpen?'Choose a tool, then click a highlighted tile. Drag map to orbit. Esc cancels.':active?'Local controls: 1 / 2 / 3 select hero · 0 DM · or click a pane':'Local test: 1 / 2 / 3 select hero · Start expedition to move');
@@ -243,7 +243,7 @@ export function createPartyView(options = {}) {
     setUI(resourceLabel,'textContent',dm?active?`DM stamina ${Math.floor(dm.stamina??0)} / ${dm.maxStamina??'?'}`:`Build points: ${dm.remainingBudget??'?'} / ${dm.budget??'?'} left`:'DM resources pending');
     for (const [id, controls] of ui) {
       const a = actor(id); if (!a) continue;
-      setUI(controls.pane, 'hidden', buildWorkspace() || !!remote && id !== remote || !!w.mobileLayout&&id!==(remote??focusedId));
+      setUI(controls.pane, 'hidden', buildWorkspace() || !!remote && id !== remote || !!(w.mobileLayout||w.singleView)&&id!==(remote??focusedId));
       setUI(controls.row, 'hidden', !!remote && (id !== remote || active));
       const rowParent = remote === id ? controls.pane : partySetup;
       if (controls.row.parentNode !== rowParent && controls.row.parent !== rowParent) rowParent.appendChild(controls.row);
@@ -441,7 +441,7 @@ export function createPartyView(options = {}) {
     }
     // World bodies/simulation still advance for every actor. Camera-local gear
     // only needs animation for viewports that will actually render this frame.
-    const equipmentView=remote??(world().mobileLayout?focusedId:buildWorkspace()?'dm':null);
+    const equipmentView=remote??((world().mobileLayout||world().singleView)?focusedId:buildWorkspace()?'dm':null);
     for (const r of records.values()) {
       const a = r.actor, input = intents.get(a.id), botInput=world().autoplayInputs?.[a.id];if(botInput&&playable(a)){input.forward=clamp(botInput.forward??0,-1,1);input.side=clamp(botInput.side??0,-1,1);}const length = Math.hypot(input.forward, input.side); r.moving = false;
       if (length && playable(a)) {
@@ -463,7 +463,7 @@ export function createPartyView(options = {}) {
   function render() {
     if (!enabled || destroyed) return false;
     attachActors(); updateUI();
-    const rectangles = getViewports();renderViewCount=rectangles.length; if (rectangles.length !== (remoteId()||buildWorkspace()||world().mobileLayout ? 1 : 4)) return false;
+    const rectangles = getViewports();renderViewCount=rectangles.length; if (rectangles.length !== (remoteId()||buildWorkspace()||world().mobileLayout||world().singleView ? 1 : 4)) return false;
     const savedViewport = renderer.getViewport?.(new THREE.Vector4()), savedScissor = renderer.getScissor?.(new THREE.Vector4()), savedScissorTest = renderer.getScissorTest?.() ?? false, savedAutoClear = renderer.autoClear;
     const oldAspect = dmCamera.aspect, oldView = dmCamera.view ? {...dmCamera.view} : null, oldFog = scene.fog?.density;
     const w = world(), hidden = (w.hideDuringParty ?? []).filter(Boolean);const dmLights=(w.dmLights??[]).filter(l=>Number.isFinite(l?.intensity)),lightPowers=new Map(dmLights.map(l=>[l,l.intensity]));
