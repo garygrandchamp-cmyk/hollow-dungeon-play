@@ -1,11 +1,11 @@
-import {impactKind,stainWeapon,attachEnemyStain,makeImpactSprite} from './combat-blood.js?v=d14ae9e96020f46d16650159fcf6f9538e196d06';
-import {random,DIRS} from './wfc.js?v=d14ae9e96020f46d16650159fcf6f9538e196d06';
-import {makeCreature,MONSTER_CATALOG} from './monster-sprites.js?v=d14ae9e96020f46d16650159fcf6f9538e196d06';
-import {makeDungeonProp as makePropSprite} from './dungeon-props.js?v=d14ae9e96020f46d16650159fcf6f9538e196d06';
-import {createTorchFuel} from './torch-fuel.js?v=d14ae9e96020f46d16650159fcf6f9538e196d06';
-import {ENEMY_BEHAVIORS,tickEnemyBehavior,serializeEnemyIntent,parseEnemyIntent,interruptEnemyIntent} from './enemy-behavior.js?v=d14ae9e96020f46d16650159fcf6f9538e196d06';
-import {createEnemyNavigation} from './enemy-navigation.js?v=d14ae9e96020f46d16650159fcf6f9538e196d06';
-import {makeEnemyTelegraph} from './enemy-telegraph.js?v=d14ae9e96020f46d16650159fcf6f9538e196d06';
+import {impactKind,stainWeapon,attachEnemyStain,makeImpactSprite} from './combat-blood.js?v=d254ffd0166a8bf116fdee214c40cf5e7905e9ad';
+import {random,DIRS} from './wfc.js?v=d254ffd0166a8bf116fdee214c40cf5e7905e9ad';
+import {makeCreature,MONSTER_CATALOG} from './monster-sprites.js?v=d254ffd0166a8bf116fdee214c40cf5e7905e9ad';
+import {makeDungeonProp as makePropSprite} from './dungeon-props.js?v=d254ffd0166a8bf116fdee214c40cf5e7905e9ad';
+import {createTorchFuel} from './torch-fuel.js?v=d254ffd0166a8bf116fdee214c40cf5e7905e9ad';
+import {ENEMY_BEHAVIORS,tickEnemyBehavior,serializeEnemyIntent,parseEnemyIntent,interruptEnemyIntent} from './enemy-behavior.js?v=d254ffd0166a8bf116fdee214c40cf5e7905e9ad';
+import {createEnemyNavigation} from './enemy-navigation.js?v=d254ffd0166a8bf116fdee214c40cf5e7905e9ad';
+import {makeEnemyTelegraph} from './enemy-telegraph.js?v=d254ffd0166a8bf116fdee214c40cf5e7905e9ad';
 const encounterWeights={skeleton:20,goblin:18,rat:14,bat:10,crawler:9,spider:8,slime:8,drowned:6,'skeletal-mage':4,wraith:3};
 export const MONSTER_WEIGHTS=Object.freeze(Object.fromEntries(Object.keys(MONSTER_CATALOG).map(kind=>[kind,encounterWeights[kind]??5])));
 export function chooseMonsterType(roll){const entries=Object.entries(MONSTER_WEIGHTS),total=entries.reduce((sum,[,weight])=>sum+weight,0);let value=(Number.isFinite(roll)?Math.max(0,Math.min(1-Number.EPSILON,roll)):0)*total;for(const [kind,weight]of entries){value-=weight;if(value<0)return kind;}return entries.at(-1)[0];}
@@ -155,7 +155,7 @@ export function createGame({THREE,world,box,mat,coord,state,canCross,notify,resp
    const consumed=tickEnemyBehavior(e,{dt,position:e.position,target,visible,canStrike,
     move:(dx,dz)=>{const moved=enemyNavigation.move(e,dx,dz,profile.radius);g.position.copy(e.position);return moved;},
     strike:(amount,id)=>damage(amount,MONSTER_CATALOG[e.type].name+(e.type==='drowned'?' lands its heavy sweep!':e.type==='crawler'?' catches you in its lunge!':' bites!'),true,s.partyMode?id:null),
-    telegraph:p=>{e.target=null;e.attackUntil=now+p.windup*1000;g.userData.setAnimation?.('attack',now*.001,true);sfx(e.type+'-alert',sound);}
+    telegraph:p=>{e.target=null;e.attackUntil=now+p.windup*1000;g.userData.setAnimation?.('attack',now*.001,true);sfx(e.type+'-windup',sound);}
    });
    if(consumed){e.target=null;if(e.intent&&e.intent.phase!=='recover')e.attackUntil=now+e.intent.remaining*1000;g.position.copy(e.position);continue;}
   }

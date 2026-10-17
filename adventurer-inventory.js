@@ -1,6 +1,6 @@
-import {random} from './wfc.js?v=d14ae9e96020f46d16650159fcf6f9538e196d06';
-import {CLASSES} from './party-campaign.js?v=d14ae9e96020f46d16650159fcf6f9538e196d06';
-import {WEAPON_CATALOG} from './weapon-forge.js?v=d14ae9e96020f46d16650159fcf6f9538e196d06';
+import {random} from './wfc.js?v=d254ffd0166a8bf116fdee214c40cf5e7905e9ad';
+import {CLASSES} from './party-campaign.js?v=d254ffd0166a8bf116fdee214c40cf5e7905e9ad';
+import {WEAPON_CATALOG} from './weapon-forge.js?v=d254ffd0166a8bf116fdee214c40cf5e7905e9ad';
 
 export const INVENTORY_STORAGE_KEY = 'hollow:adventurer-inventory:v1';
 export const GEAR_SLOTS = Object.freeze(['helm', 'chest', 'arms', 'legs', 'weapon', 'offhand']);
@@ -234,7 +234,7 @@ export function createInventory(options = {}) {
       element.replaceChildren();
       const actor = api.actor, actorId = actor?.id, head = make('div'); head.className = 'inventory-head';
       head.appendChild(make('h2', (actor?.name ?? actor?.classId ?? 'Adventurer') + ' — Inventory'));
-      const dismiss = make('button', 'Close [I]'); dismiss.type = 'button'; dismiss.addEventListener('click', close); head.appendChild(dismiss); element.appendChild(head);
+      const dismiss = make('button', 'Close [I]'); dismiss.type = 'button'; dismiss.setAttribute('aria-label','Close inventory'); dismiss.addEventListener('click', close); head.appendChild(dismiss); element.appendChild(head);
       if (!actor) {element.appendChild(make('p', 'Select an adventurer.')); return;}
       const total = api.stats(), summary = make('div'); summary.className = 'inventory-stats';
       for (const key of STAT_KEYS) {

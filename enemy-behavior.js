@@ -20,6 +20,8 @@ export function parseEnemyIntent(value,type){
 }
 export function interruptEnemyIntent(enemy){const p=ENEMY_BEHAVIORS[enemy.type],intent=enemy.intent;if(!p||!intent)return;intent.phase='recover';intent.remaining=Math.max(.55,p.recovery*.5);intent.hit=true;}
 const gap=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z);
+// Shared by movement and its floor warning; the captured aim never follows a dodge.
+export const enemyLungeTravel=intent=>Math.max(0,Math.min(2.35,gap(intent.origin,intent.aim)-.38));
 function aimDirection(intent){const x=intent.aim.x-intent.origin.x,z=intent.aim.z-intent.origin.z,length=Math.hypot(x,z);return length>.001?{x:x/length,z:z/length}:{x:0,z:-1};}
 function inSwing(intent,position,target,profile){
  if(Math.abs(target.y-position.y)>.45||gap(position,target)>profile.reach)return false;
@@ -52,7 +54,7 @@ export function tickEnemyBehavior(enemy,{dt,position,target,visible,canStrike,mo
   if(intent.phase==='lunge'){
    // Aim is captured once. A sidestep never bends the crawler's path after you.
    const traveled=(position.x-intent.origin.x)*direction.x+(position.z-intent.origin.z)*direction.z;
-   const available=Math.max(0,Math.min(2.35,gap(intent.origin,intent.aim)-.38)-traveled),distance=Math.min(available,profile.lungeSpeed*dt);
+   const available=Math.max(0,enemyLungeTravel(intent)-traveled),distance=Math.min(available,profile.lungeSpeed*dt);
    if(distance>0)move(direction.x*distance,direction.z*distance);
    if(!intent.hit&&target&&visible&&(typeof canStrike==='function'?canStrike():canStrike)&&inSwing(intent,position,target.position,profile)){intent.hit=true;strike(profile.damage,intent.targetId);}
    if(intent.remaining===0){intent.phase='recover';intent.remaining=profile.recovery;}return true;

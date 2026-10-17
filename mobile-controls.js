@@ -5,6 +5,9 @@ export function touchVector(dx,dy,radius=48){
  return {forward:-dy/scale,side:dx/scale};
 }
 
+// Optional focused-actor presentation from getState: offhand ('shield'/'magic'/
+// 'torch'), torchFuel, torchLit and interactionHint. Input remains independently
+// gated; hints/labels never run actions or inspect a hidden actor's solo HUD.
 export function createMobileControls({document:doc=globalThis.document,window:win=globalThis,canvas,drawer,getState,onAction=()=>{},onLook=()=>{},onFocus=()=>{},onZoom=()=>{},onCancelGesture=()=>{}}){
  const root=doc.createElement('div');root.id='mobileControls';root.hidden=true;
  const make=(tag,text,parent=root)=>{const el=doc.createElement(tag);if(text)el.textContent=text;parent.appendChild(el);return el;};
@@ -26,7 +29,7 @@ export function createMobileControls({document:doc=globalThis.document,window:wi
  const actions=make('div');actions.className='mobile-actions';const buttons=new Map();
  for(const [kind,label]of [['attack','Strike'],['guard','Off hand'],['interact','Use'],['swap','Swap'],['search','Search traps']]){
   const b=make('button',label,actions);b.type='button';b.dataset.touchAction=kind;buttons.set(kind,b);
-  listen(b,'pointerdown',e=>{if(!active())return;stop(e);b.setPointerCapture?.(e.pointerId);const id=state().actorId;
+  listen(b,'pointerdown',e=>{if(!active()||b.disabled)return;stop(e);b.setPointerCapture?.(e.pointerId);const id=state().actorId;
    if(kind==='guard'){if(guard)return;guard={pointer:e.pointerId,actor:id};}
    if(kind==='attack'){attack=e.pointerId;repeat=0;}
    onAction(kind,id);
@@ -34,6 +37,18 @@ export function createMobileControls({document:doc=globalThis.document,window:wi
   const release=e=>{stop(e);if(attack===e.pointerId)attack=null;if(guard?.pointer===e.pointerId){onAction('release',guard.actor);guard=null;}};
   for(const event of ['pointerup','pointercancel','lostpointercapture'])listen(b,event,release);
   listen(b,'contextmenu',stop);
+ }
+ const interaction=make('p');interaction.className='mobile-interaction-hint';interaction.hidden=true;interaction.setAttribute('role','status');interaction.setAttribute('aria-live','polite');
+ const label=(node,text,description)=>{if(node.textContent!==text)node.textContent=text;if(node.getAttribute?.('aria-label')!==description)node.setAttribute('aria-label',description);};
+ function presentation(s,inactive){
+  const offhand=s.offhand??s.leftHand,button=buttons.get('guard'),spent=offhand==='torch'&&Number.isFinite(s.torchFuel)&&s.torchFuel<=0;
+  const [text,description]=offhand==='shield'?['Hold guard','Hold to guard with shield; release to lower it']:offhand==='magic'?['Cast magic','Tap to cast magic']:offhand==='torch'?spent?['Torch spent','Torch fuel exhausted']:s.torchLit===false?['Light torch','Tap to light torch']:['Extinguish','Tap to extinguish torch']:['Off hand','Use equipped off hand'];
+  label(button,text,description);if(button.disabled!==spent)button.disabled=spent;
+  // Presentation is supplied for the currently focused actor, not inferred from
+  // a hidden solo HUD. Never query gameplay state through the input getter.
+  const raw=typeof s.interactionHint==='string'?s.interactionHint.replace(/\s+/g,' ').trim().slice(0,180):'';
+  const hint=raw.replace(/^(E|Space|F)\s*[·:-]\s*/i,(_,key)=>({e:'Use · ',space:'',f:'Search traps · '}[key.toLowerCase()])).slice(0,180);
+  if(interaction.textContent!==hint)interaction.textContent=hint;hide(interaction,inactive||!hint);
  }
  function updateMove(e){const bounds=move.getBoundingClientRect(),radius=Math.max(24,Math.min(bounds.width,bounds.height)*.4);input=touchVector(e.clientX-bounds.left-bounds.width/2,e.clientY-bounds.top-bounds.height/2,radius);knob.style.transform=`translate(${input.side*radius*.65}px,${-input.forward*radius*.65}px)`;}
  listen(move,'pointerdown',e=>{if(!active()||moving!==null)return;stop(e);moving=e.pointerId;move.setPointerCapture?.(moving);updateMove(e);});
@@ -62,6 +77,7 @@ export function createMobileControls({document:doc=globalThis.document,window:wi
   if(lastActor!==s.actorId||s.busy||!s.available||!active()&&!s.dm)reset();lastActor=s.actorId;
   const selected=s.dm?'dm':s.actorId;if(previousTab!==selected){previousTab=selected;for(const [id,b]of tabs)b.setAttribute('aria-pressed',String(selected===id));}
   const inactive=!active();hide(look,inactive);hide(move,inactive);hide(actions,inactive);
+  presentation(s,inactive);
   if(fold)hide(fold,!compact);
   if(attack!==null&&active()){repeat+=Math.max(0,Math.min(.1,dt||0));if(repeat>=.55){repeat=0;onAction('attack',s.actorId);}}
  }

@@ -1,4 +1,4 @@
-import {createDungeonSampleBank} from './audio-samples.js?v=d14ae9e96020f46d16650159fcf6f9538e196d06';
+import {createDungeonSampleBank} from './audio-samples.js?v=d254ffd0166a8bf116fdee214c40cf5e7905e9ad';
 // Local CC0 recordings with procedural fallback. Audio starts on a gesture.
 export function createDungeonAudio(){
  let samples=null,context=null,master=null,ambience=null,music=null,enabled=false,volume=.35,lastStep=0,nextDrip=0,nextNote=0,noteIndex=0,noise=null,eventBus=null;
@@ -33,20 +33,30 @@ export function createDungeonAudio(){
   }
  }
  const creatureTimes=new Map();let creatureTokens=8,creatureTokenAt=0;
- // game.js sends `${type}-step/-idle/-alert` with distance/pan/occluded.
+ // game.js sends `${type}-step/-idle/-alert/-windup` with distance/pan/occluded.
  // Its per-enemy timers are supplemented by a shared mix budget for swarms.
  function allowCreature(name,distance){
-  const match=/^(skeleton|goblin|wraith|spider|slime|rat|bat|crawler|skeletal-mage|drowned)-(step|idle|alert)$/.exec(name);
+  const match=/^(skeleton|goblin|wraith|spider|slime|rat|bat|crawler|skeletal-mage|drowned)-(step|idle|alert|windup)$/.exec(name);
   if(!match)return true;
-  const at=context.currentTime,cooldown={step:.28,idle:1.8,alert:1.25}[match[2]];
+  const at=context.currentTime,cooldown={step:.28,idle:1.8,alert:1.25,windup:.25}[match[2]];
   const previous=creatureTimes.get(name),within=previous&&at-previous.at<cooldown;
   // A quiet faraway creature must not conceal a much nearer same-kind threat.
   // Allow one closer replacement per cooldown, charged to the same swarm budget.
   const closer=within&&!previous.replaced&&distance<=previous.distance*.5&&previous.distance-distance>=4;
   if(within&&!closer)return false;
   creatureTokens=Math.min(8,creatureTokens+Math.max(0,at-creatureTokenAt)*8);creatureTokenAt=at;
-  if(creatureTokens<1)return false;
+  // Keep two slots of the existing eight-event cap for committed attacks.
+  if(creatureTokens<(match[2]==='windup'?1:3))return false;
   creatureTokens--;creatureTimes.set(name,{at:closer?previous.at:at,distance,replaced:!!closer});return true;
+ }
+ function playWindup(name){
+  // Telegraphs have their own identity/cooldown rather than reusing awareness.
+  // Short, quiet preparations fit inside each attack's existing warning window.
+  if(name==='rat-windup'){tone(175,.11,.017,'triangle',0,112);hiss(.045,.012,1250,0,'bandpass');tone(215,.07,.011,'triangle',.12,150);}
+  else if(name==='crawler-windup'){hiss(.36,.024,850,0,'bandpass');tone(185,.18,.016,'triangle',0,110);tone(245,.12,.012,'triangle',.2,170);}
+  else if(name==='drowned-windup'){tone(62,.5,.027,'triangle',0,82);hiss(.48,.023,380);tone(128,.18,.013,'triangle',.32,96);}
+  else return false;
+  return true;
  }
  function playCreature(name){
   const match=/^(wraith|spider|slime|rat|bat|crawler|skeletal-mage|drowned)-(step|idle|alert)$/.exec(name);if(!match)return false;
@@ -100,7 +110,7 @@ export function createDungeonAudio(){
   // Apply the same distance/wall colour to recorded and synthesized creatures.
   // Nearby unobstructed effects stay crisp; distant details recede behind combat.
   if(distance>8||occluded){spatialFilter=context.createBiquadFilter();spatialFilter.type='lowpass';spatialFilter.frequency.value=occluded?900:5000-(Math.min(30,distance)-8)/22*3200;gain.connect(spatialFilter);output=spatialFilter;}
-  if(context.createStereoPanner){panner=context.createStereoPanner();panner.pan.value=pan;output.connect(panner);panner.connect(master);}else output.connect(master);eventBus=gain;if(!samples?.play(name,gain,{occluded})&&!playDice(name)&&!playCreature(name))switch(name){case 'ui-click':tone(330,.045,.025,'triangle',0,440);break;case 'ui-place':tone(180,.1,.035,'triangle',0,90);hiss(.05,.025,900);break;case 'ui-rotate':tone(220,.08,.025,'sine',0,330);break;case 'ui-delete':hiss(.09,.025,700);tone(110,.1,.025,'triangle',0,60);break;case 'ui-denied':tone(92,.16,.03,'square',0,74);break;case 'step':hiss(.11,.045,700);tone(84,.08,.024,'triangle',0,52);break;case 'swing':hiss(.22,.11,1800,0,'bandpass');break;case 'bow':tone(150,.12,.04,'triangle',0,60);hiss(.18,.045,1900,0,'bandpass');break;case 'hit':hiss(.16,.12,650);tone(108,.13,.075,'triangle',0,40);break;case 'block':for(const f of [490,738,1140])tone(f,.27,.03,'triangle',0,f*.94);break;case 'cast':hiss(.3,.065,2200);tone(240,.32,.07,'sine',0,1040);tone(1040,.25,.035,'sine',.12,420);break;case 'chest':for(let i=0;i<4;i++)tone([660,880,990,1320][i],.28,.045,'sine',i*.07);break;case 'door':hiss(.5,.075,280);tone(90,.48,.025,'sawtooth',0,55);break;case 'heal':for(let i=0;i<3;i++)tone([261,311,392][i],1,.035,'sine',i*.09,undefined,music);break;case 'death':tone(90,1.5,.08,'triangle',0,25);hiss(.8,.1,180);break;case 'drip':tone(1150,.11,.025,'sine',0,420,ambience);tone(630,.15,.012,'sine',.22,280,ambience);break;case 'skeleton-step':hiss(.095,.065,1600,0,'bandpass');tone(270,.12,.025,'triangle',0,180);break;case 'goblin-step':hiss(.13,.06,530);tone(65,.08,.03,'triangle',0,42);break;case 'skeleton-alert':for(let i=0;i<3;i++)tone(170-i*24,.25,.055,'sawtooth',i*.09,90);hiss(.5,.045,2100,0,'bandpass');break;case 'goblin-alert':tone(145,.65,.065,'sawtooth',0,52);tone(210,.3,.025,'triangle',.1,85);hiss(.45,.04,520);break;case 'skeleton-idle':hiss(.35,.045,1900,0,'bandpass');tone(380,.25,.022,'triangle',.1,170);break;case 'goblin-idle':tone(59,.6,.04,'sawtooth',0,75);hiss(.5,.035,240);break;case 'monster':tone(66,.65,.035,'sawtooth',0,42);hiss(.4,.025,300);break;}eventBus=null;setTimeout(()=>{gain.disconnect();spatialFilter?.disconnect();panner?.disconnect();},8500);}
+  if(context.createStereoPanner){panner=context.createStereoPanner();panner.pan.value=pan;output.connect(panner);panner.connect(master);}else output.connect(master);eventBus=gain;if(!samples?.play(name,gain,{occluded})&&!playDice(name)&&!playWindup(name)&&!playCreature(name))switch(name){case 'ui-click':tone(330,.045,.025,'triangle',0,440);break;case 'ui-place':tone(180,.1,.035,'triangle',0,90);hiss(.05,.025,900);break;case 'ui-rotate':tone(220,.08,.025,'sine',0,330);break;case 'ui-delete':hiss(.09,.025,700);tone(110,.1,.025,'triangle',0,60);break;case 'ui-denied':tone(92,.16,.03,'square',0,74);break;case 'step':hiss(.11,.045,700);tone(84,.08,.024,'triangle',0,52);break;case 'swing':hiss(.22,.11,1800,0,'bandpass');break;case 'bow':tone(150,.12,.04,'triangle',0,60);hiss(.18,.045,1900,0,'bandpass');break;case 'hit':hiss(.16,.12,650);tone(108,.13,.075,'triangle',0,40);break;case 'block':for(const f of [490,738,1140])tone(f,.27,.03,'triangle',0,f*.94);break;case 'cast':hiss(.3,.065,2200);tone(240,.32,.07,'sine',0,1040);tone(1040,.25,.035,'sine',.12,420);break;case 'chest':for(let i=0;i<4;i++)tone([660,880,990,1320][i],.28,.045,'sine',i*.07);break;case 'door':hiss(.5,.075,280);tone(90,.48,.025,'sawtooth',0,55);break;case 'heal':for(let i=0;i<3;i++)tone([261,311,392][i],1,.035,'sine',i*.09,undefined,music);break;case 'death':tone(90,1.5,.08,'triangle',0,25);hiss(.8,.1,180);break;case 'drip':tone(1150,.11,.025,'sine',0,420,ambience);tone(630,.15,.012,'sine',.22,280,ambience);break;case 'skeleton-step':hiss(.095,.065,1600,0,'bandpass');tone(270,.12,.025,'triangle',0,180);break;case 'goblin-step':hiss(.13,.06,530);tone(65,.08,.03,'triangle',0,42);break;case 'skeleton-alert':for(let i=0;i<3;i++)tone(170-i*24,.25,.055,'sawtooth',i*.09,90);hiss(.5,.045,2100,0,'bandpass');break;case 'goblin-alert':tone(145,.65,.065,'sawtooth',0,52);tone(210,.3,.025,'triangle',.1,85);hiss(.45,.04,520);break;case 'skeleton-idle':hiss(.35,.045,1900,0,'bandpass');tone(380,.25,.022,'triangle',.1,170);break;case 'goblin-idle':tone(59,.6,.04,'sawtooth',0,75);hiss(.5,.035,240);break;case 'monster':tone(66,.65,.035,'sawtooth',0,42);hiss(.4,.025,300);break;}eventBus=null;setTimeout(()=>{gain.disconnect();spatialFilter?.disconnect();panner?.disconnect();},8500);}
  function step(now){if(now-lastStep>340){lastStep=now;play('step');}}
  function tick(dt,now){if(!enabled||!context)return;music.gain.setTargetAtTime(document.getElementById('dreadMusic').checked?.45:0,context.currentTime,.5);if(now>nextDrip){nextDrip=now+1800+Math.random()*6500;play('drip');}if(now>nextNote){nextNote=now+5500+Math.random()*3500;const f=[65.4,61.7,77.8,58.3,69.3,65.4][noteIndex++%6];tone(f,7,.028,'sine',0,f*.998,music);tone(f*1.5,5,.012,'triangle',.8,f*1.499,music);}}
  button.onclick=quick.onclick=()=>enabled?mute():unlock();document.getElementById('soundVolume').oninput=e=>{volume=+e.target.value/100;if(enabled&&master)master.gain.setTargetAtTime(volume,context.currentTime,.05);};

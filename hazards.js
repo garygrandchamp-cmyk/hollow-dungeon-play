@@ -1,7 +1,7 @@
-import {roomContainsTile} from './room-footprint.js?v=d14ae9e96020f46d16650159fcf6f9538e196d06';
-import {random} from './wfc.js?v=d14ae9e96020f46d16650159fcf6f9538e196d06';
-import {makeDungeonProp as makePropSprite} from './dungeon-props.js?v=d14ae9e96020f46d16650159fcf6f9538e196d06';
-import {batchStaticGroup} from './mesh-batch.js?v=d14ae9e96020f46d16650159fcf6f9538e196d06';
+import {roomContainsTile} from './room-footprint.js?v=d254ffd0166a8bf116fdee214c40cf5e7905e9ad';
+import {random} from './wfc.js?v=d254ffd0166a8bf116fdee214c40cf5e7905e9ad';
+import {makeDungeonProp as makePropSprite} from './dungeon-props.js?v=d254ffd0166a8bf116fdee214c40cf5e7905e9ad';
+import {batchStaticGroup} from './mesh-batch.js?v=d254ffd0166a8bf116fdee214c40cf5e7905e9ad';
 
 export const HAZARD_KINDS=Object.freeze(['pit','spikes','crate','rubble','swinging-axe','rolling-ball','rat-cage']);
 const TRAPS=new Set(HAZARD_KINDS.filter(k=>!['crate','rubble'].includes(k)));
@@ -98,9 +98,9 @@ export function createHazards({THREE,world,box,mat,coord,state,hurt,reward,respa
  function tick(dt,now){
   if(state().paused)return;clock+=Math.max(0,Math.min(.1,Number.isFinite(dt)?dt:0))*1000;
   for(const v of visuals){
-   const {item,g}=v,phase=(now*.001+item.phase)%4,trapPhase=(clock*.001+item.phase)%4;
+   const {item,g}=v,trapPhase=(clock*.001+item.phase)%4;
    if(item.kind==='spikes'){
-    const raised=phase>2.8&&!item.cleared;v.spikes.visible=true;v.spikes.userData.animate({time:now,active:raised});v.glow.visible=phase>1.8&&!item.cleared;v.glow.material.opacity=.25+Math.sin(now*.02)*.18;
+    const raised=trapPhase>2.8&&!item.cleared;v.spikes.visible=true;v.spikes.userData.animate({time:clock,active:raised});v.glow.visible=trapPhase>1.8&&!item.cleared;v.glow.material.opacity=.25+Math.sin(clock*.02)*.18;
     if(raised)strike(v,12,'Spikes! Disarm the copper plate with E.',.64);
    }
    if(item.kind==='swinging-axe'){

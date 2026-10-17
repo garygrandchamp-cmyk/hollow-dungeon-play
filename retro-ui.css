@@ -335,3 +335,8 @@ body.party-active #inventoryQuick {display:none;}
 #dmPalette .dm-placement-guide details{font-size:11px}
 
 .dm-ingress-panel{padding:10px 0;border-block:1px solid #776748}.dm-ingress-panel h3{font:13px monospace;color:#d6c18f;margin:5px 0}.dm-ingress-panel select,.dm-ingress-panel button{width:100%;min-width:0;margin:4px 0}.dm-ingress-panel p{font-size:11px;line-height:1.5}
+
+/* Touch context sits above the action cluster and never consumes look input. */
+body.mobile-game .mobile-interaction-hint{position:absolute;left:8px;right:8px;bottom:calc(248px + env(safe-area-inset-bottom));margin:0 auto;width:fit-content;max-width:calc(100% - 16px);max-height:calc(2.8em + 16px);overflow:hidden;overflow-wrap:anywhere;padding:5px 8px;border:3px double #807357;background:#11151ee8;color:#dfcea9;font:11px/1.4 "Lucida Console",monospace;text-align:center;pointer-events:none}
+body.mobile-game .adventurer-inventory .inventory-head{position:sticky;top:0;z-index:2;background:#151923}
+@media(orientation:landscape) and (max-height:540px){body.mobile-game .mobile-interaction-hint{bottom:calc(122px + env(safe-area-inset-bottom))}}
