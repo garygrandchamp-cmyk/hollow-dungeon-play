@@ -1,4 +1,4 @@
-import {createPeerSession, MAX_CODE_LENGTH} from './peer-session.js?v=ef25eb6cbf04bd83f92d4ff2ec9e98923082dbeb';
+import {createPeerSession, MAX_CODE_LENGTH} from './peer-session.js?v=f0cb778312a3fd1be533dc2077710664190052d0';
 
 // Callbacks start gameplay only after the player explicitly chooses a play button.
 // sessionFactory(peerOptions) may inject the application's message/authority hooks.
@@ -57,7 +57,11 @@ export function createStartScreen({onLocal = () => {}, onHost = () => {}, onJoin
   function networkNote() { node('small', 'Manual connection: exchange codes privately. Codes include network addresses. STUN can help discover a route; some networks require a TURN relay and will not connect with this setup.'); }
   function main(keepSession = false) {
     if (keepSession !== true) closeSession(); heading('The party awaits', 'Choose your role: explore as an adventurer or command the dungeon as its master.');
-    node('p','Choose loadouts → validate the dungeon → start the expedition. Survivors carry found loot into the next run.').className='hs-flow';
+    const guide=node('details');guide.className='hs-flow';guide.id='hs-first-run';
+    node('summary','First run: prepare → explore → escape',guide);
+    node('p','Setup: choose loadouts. The DM builds within budget and validates the dungeon before Start expedition.',guide);
+    node('p','Live: collect six relics across two floors, then escape. Walking is free; actions cost stamina. At zero stamina, you faint and are out of the expedition.',guide);
+    node('p','Next run: survivors keep found loot. Death or fainting loses carried equipment; class starters remain.',guide);
     const menu = node('div'); menu.className = 'hs-main';
     const choice=(id,label,description,action,parent=menu)=>{
       const row=node('div',undefined,parent);row.className='hs-choice';
@@ -68,9 +72,9 @@ export function createStartScreen({onLocal = () => {}, onHost = () => {}, onJoin
     node('h3','Play on this device',menu);
     choice('adventurer','Solo adventurer','You explore. An AI dungeon master opposes you; two AI companions follow.',() => { closeSession(); return invoke(onLocal,{mode:'adventurer'}); }).className='hs-primary';
     choice('dm','Solo dungeon master','You build and direct encounters against three bot adventurers.',() => { closeSession(); return invoke(onLocal,{mode:'dm'}); });
-    choice('local','Local party · shared screen','Human-controlled DM and three adventurers share this device. Switch between roles.',() => { closeSession(); return invoke(onLocal); });
+    choice('local','Local party · shared screen','Human-controlled DM and three adventurers share this device. Switch roles manually; no bots.',() => { closeSession(); return invoke(onLocal); });
     node('h3','Play online',menu);
-    choice('host','Host online · dungeon master','Invite up to three remote adventurers by exchanging connection codes.',host);
+    choice('host','Host online · dungeon master','Invite up to three remote adventurers by manually exchanging connection codes.',host);
     choice('join','Join online · adventurer','Use an invite code from your dungeon master. No public matchmaking.',join);
     button('Options', () => invoke(onOptions), menu);
     if(typeof onLab==='function'){
@@ -112,7 +116,7 @@ export function createStartScreen({onLocal = () => {}, onHost = () => {}, onJoin
     event.stopPropagation();
     if (event.key === 'Escape') { event.preventDefault(); if (page !== 'The party awaits') main(); return; }
     if (event.key !== 'Tab') return;
-    const items = [...card.querySelectorAll('button:not(:disabled),textarea:not(:disabled),[tabindex="0"]')].filter(el => !el.hidden);
+    const items = [...card.querySelectorAll('button:not(:disabled),textarea:not(:disabled),summary,[tabindex="0"]')].filter(el => !el.hidden);
     const first = items[0], last = items.at(-1);
     if (event.shiftKey && doc.activeElement === first) { event.preventDefault(); last?.focus(); }
     else if (!event.shiftKey && doc.activeElement === last) { event.preventDefault(); first?.focus(); }

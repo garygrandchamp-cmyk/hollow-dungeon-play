@@ -1,6 +1,6 @@
 // Pure entrance planning and host-owned reinforcement queue. Static-host safe:
 // no THREE, DOM, clocks, storage, network, asset imports, or implicit spawning.
-import {roomContainsTile} from './room-footprint.js?v=ef25eb6cbf04bd83f92d4ff2ec9e98923082dbeb';
+import {roomContainsTile} from './room-footprint.js?v=f0cb778312a3fd1be533dc2077710664190052d0';
 export const ENEMY_INGRESS_KINDS=Object.freeze(['hatch','grate','ceiling']);
 export const ENEMY_INGRESS_MONSTERS=Object.freeze(['skeleton','goblin','wraith','spider','slime','rat','bat','crawler','skeletal-mage','drowned','boss']);
 export const ENEMY_INGRESS_WARNING_SECONDS=Object.freeze({hatch:1.8,grate:1.8,ceiling:2});
@@ -188,7 +188,7 @@ export function createEnemyIngress({state,spawn,canAfford,spend,notify=()=>{},so
   ticking=true;
   try{for(const [id,r]of [...pending]){
    const known=entrances?.find(e=>e.id===id);if(!known||!sameEntrance(r.entrance,known)){pending.delete(id);changed=true;continue;}
-   if(r.phase==='blocked'){r.blockedFor=Math.min(ENEMY_INGRESS_LIMITS.blockedSeconds,r.blockedFor+dt);changed=changed||dt>0;if(r.blockedFor>=ENEMY_INGRESS_LIMITS.blockedSeconds-1e-8){pending.delete(id);changed=true;safe(notify,'Reinforcement canceled: the entrance stayed blocked for six seconds. No additional stamina was charged.');continue;}}
+   if(r.phase==='blocked'){r.blockedFor=Math.min(ENEMY_INGRESS_LIMITS.blockedSeconds,r.blockedFor+dt);changed=changed||dt>0;if(r.blockedFor>=ENEMY_INGRESS_LIMITS.blockedSeconds-1e-8){pending.delete(id);changed=true;safe(notify,'Reinforcement canceled: the entrance stayed blocked for six seconds. Paid stamina is not refunded.');continue;}}
    const before=r.remaining;r.remaining=Math.max(0,r.remaining-dt);if(r.remaining<1e-8)r.remaining=0;changed=changed||before!==r.remaining;
    if(r.remaining>0)continue;
    r.retry=Math.max(0,r.retry-dt);if(r.retry>0)continue;
