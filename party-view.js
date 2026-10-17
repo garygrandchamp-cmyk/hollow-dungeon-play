@@ -1,7 +1,7 @@
-import {createDMEntranceOverlay} from './dm-entrance-overlay.js?v=30121f299882b406d928fe246006652b70636e05';
-import {CLASSES} from './party-campaign.js?v=30121f299882b406d928fe246006652b70636e05';
-import {createHeldInput} from './held-input.js?v=30121f299882b406d928fe246006652b70636e05';
-import {MONSTER_KINDS} from './monster-sprites.js?v=30121f299882b406d928fe246006652b70636e05';
+import {createDMEntranceOverlay} from './dm-entrance-overlay.js?v=1908281481c3818581fa62f1b68e946e615fba61';
+import {CLASSES} from './party-campaign.js?v=1908281481c3818581fa62f1b68e946e615fba61';
+import {createHeldInput} from './held-input.js?v=1908281481c3818581fa62f1b68e946e615fba61';
+import {MONSTER_KINDS} from './monster-sprites.js?v=1908281481c3818581fa62f1b68e946e615fba61';
 
 const HERO_IDS = ['hero-1', 'hero-2', 'hero-3'];
 const MOVEMENT = new Set(['w', 'a', 's', 'd', 'arrowup', 'arrowleft', 'arrowdown', 'arrowright']);
@@ -293,7 +293,7 @@ export function createPartyView(options = {}) {
       if (ending && key !== resultKey) {
         resultKey = key; result.replaceChildren();
         result.appendChild(make('h2', phase() === 'partyVictory' ? 'PARTY VICTORY' : 'DM VICTORY'));
-        for (const a of campaign.actors.filter(a => !remote || a.id === remote)) result.appendChild(make('p', `${a.id}: ${a.alive ? 'survived · ' + (a.gold ?? 0) + ' gold / ' + (a.inventory?.length ?? 0) + ' items carry forward' : 'dead · starts next run empty'}`));
+        for (const a of campaign.actors.filter(a => !remote || a.id === remote)) result.appendChild(make('p', `${a.id}: ${a.alive ? 'survived · ' + (a.gold ?? 0) + ' gold / ' + (w.inventoryCounts?.[a.id] ?? a.inventory?.length ?? 0) + ' items carry forward' : 'dead · starts next run empty'}`));
         const next = make('button', remote ? 'Close result' : 'Return to DM setup'); listen(next, 'click', () => {dismissedResultKey = key; setUI(result, 'hidden', true); focus(remoteId() ?? 'dm'); setDMOpen(true);}); result.appendChild(next);
       }
     }

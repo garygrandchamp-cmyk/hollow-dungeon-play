@@ -1,4 +1,4 @@
-import {roomContainsTile} from './room-footprint.js?v=30121f299882b406d928fe246006652b70636e05';
+import {roomContainsTile} from './room-footprint.js?v=1908281481c3818581fa62f1b68e946e615fba61';
 /** Readability metrics for a validated required-objective route, not a validity gate. */
 export function routeMetrics(path,{size,levels=[],moduleSize=4.8}={}){
  let steps=0,turns=0,transitions=0,lastDirection=null;const rooms=new Set(),cells=new Set();

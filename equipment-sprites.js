@@ -1,7 +1,7 @@
-import {EQUIPMENT_SPRITE_DATA} from './equipment-sprite-data.js?v=30121f299882b406d928fe246006652b70636e05';
-import {createMagicLayer} from './equipment-magic.js?v=30121f299882b406d928fe246006652b70636e05';
+import {EQUIPMENT_SPRITE_DATA} from './equipment-sprite-data.js?v=1908281481c3818581fa62f1b68e946e615fba61';
+import {createMagicLayer} from './equipment-magic.js?v=1908281481c3818581fa62f1b68e946e615fba61';
 // Optional while the replacement art is produced; a reload picks up the new pack.
-const heldArtModule=await import('./held-art-data.js?v=30121f299882b406d928fe246006652b70636e05').catch(()=>null);
+const heldArtModule=await import('./held-art-data.js?v=1908281481c3818581fa62f1b68e946e615fba61').catch(()=>null);
 const defaultHeldArtDecoder=heldArtModule?.decodeHeldArt??null;
 const uvPoint=value=>{const x=Array.isArray(value)?value[0]:value?.x,y=Array.isArray(value)?value[1]:value?.y;return Number.isFinite(x)&&Number.isFinite(y)&&x>=0&&x<=1&&y>=0&&y<=1?{x,y}:null;};
 
