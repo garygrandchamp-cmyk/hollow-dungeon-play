@@ -1,6 +1,6 @@
-import {CLASSES} from './party-campaign.js?v=f07b267ba3b378ae9cbde026bbf48f44495e778f';
-import {createHeldInput} from './held-input.js?v=f07b267ba3b378ae9cbde026bbf48f44495e778f';
-import {MONSTER_KINDS} from './monster-sprites.js?v=f07b267ba3b378ae9cbde026bbf48f44495e778f';
+import {CLASSES} from './party-campaign.js?v=ed20d22aed165d3d0cb8addb592c83972073fd78';
+import {createHeldInput} from './held-input.js?v=ed20d22aed165d3d0cb8addb592c83972073fd78';
+import {MONSTER_KINDS} from './monster-sprites.js?v=ed20d22aed165d3d0cb8addb592c83972073fd78';
 
 const HERO_IDS = ['hero-1', 'hero-2', 'hero-3'];
 const MOVEMENT = new Set(['w', 'a', 's', 'd', 'arrowup', 'arrowleft', 'arrowdown', 'arrowright']);
@@ -47,7 +47,7 @@ export function hitPartyViewport(rectangles, x, y) {
  */
 export function createPartyView(options = {}) {
   const {THREE, renderer, scene, dmCamera, roof, campaign, makePlayerSprite, createEquipmentSprites,
-    layoutEquipment, moveActor = () => {}, onAction, onStart, onNewDungeon,onOpenLab,onFloor, onPlace, onValidate, onInventory, onLoadout, onClass, onNamedLock,
+    layoutEquipment, moveActor = () => {}, onAction, onStart, onNewDungeon,onOpenLab,onFloor,onIngress, onPlace, onValidate, onInventory, onLoadout, onClass, onNamedLock,
     notify = () => {}} = options;
   if (!THREE || !renderer?.domElement || !scene?.add || !dmCamera || !Array.isArray(campaign?.actors) || campaign.actors.length !== 3) throw new TypeError('Party view requires THREE, renderer, scene, DM camera and three campaign actors.');
   if (campaign.actors.some((a, i) => a.id !== HERO_IDS[i])) throw new TypeError('Party actors must use stable hero-1 through hero-3 ids.');
@@ -65,7 +65,7 @@ export function createPartyView(options = {}) {
   const hostControls = [];
   let placementRevision=0;let namedLockSelect=null,namedLockOptions='',toolStatus=null,tileStatus=null,placementStatus=null,selectedTile=null;
   const tileMarker=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({color:0xc8b778,transparent:true,opacity:.28,depthTest:false,depthWrite:false,side:THREE.DoubleSide}));tileMarker.name='dm-target-tile';tileMarker.rotation.x=-Math.PI/2;tileMarker.renderOrder=1000;tileMarker.userData.dmOnly=true;tileMarker.visible=false;scene.add(tileMarker);
-  let shell = null, toolbar = null, palette = null, launcher = null, startButton = null,labButton=null,newDungeonButton=null,workflowStatus=null,workflowNext=null,cancelPlacement=null,floorSelect=null, validationLabel = null, resourceLabel = null, result = null, resultKey = '', dismissedResultKey = '';
+  let shell = null, toolbar = null, palette = null, launcher = null, startButton = null,labButton=null,newDungeonButton=null,workflowStatus=null,workflowNext=null,cancelPlacement=null,floorSelect=null,ingressPanel=null,ingressSelect=null,ingressSend=null,ingressStatus=null,ingressOptions='', validationLabel = null, resourceLabel = null, result = null, resultKey = '', dismissedResultKey = '';
   const world = () => {try {return options.getWorld?.() ?? {};} catch {return {paused: true};}};
   // An invalid non-null assignment waits without exposing a host viewport.
   const remoteId = () => {const id = world().remoteActorId; return id == null ? null : HERO_IDS.includes(id) ? id : 'unassigned';};
@@ -212,6 +212,16 @@ export function createPartyView(options = {}) {
   function updateUI() {
     if (!toolbar) return;
     const remote = syncMode(), w = world(), active = phase() === 'active', dm = w.dmResources;
+    if(ingressPanel){
+      setUI(ingressPanel,'hidden',!active||!!remote);
+      const entries=w.ingressEntrances??[],signature=JSON.stringify(entries.map(p=>[p.id,p.label]));
+      if(signature!==ingressOptions){ingressOptions=signature;ingressSelect.replaceChildren();const blank=make('option','Choose a hatch, grate or ceiling opening');blank.value='';ingressSelect.appendChild(blank);for(const p of entries){const option=make('option',p.label??p.id);option.value=p.id;ingressSelect.appendChild(option);}}
+      setUI(ingressSelect,'value',w.selectedEntranceId??'');
+      const pending=(w.ingressPending??[]).find(p=>p.entranceId===w.selectedEntranceId),chosen=entries.find(p=>p.id===w.selectedEntranceId),monster=tool.startsWith('monster:'),cost=w.placementCosts?.[tool],price=typeof cost==='number'?cost:cost?.stamina;
+      setUI(ingressSend,'disabled',!monster||!chosen||!!pending||busy()||Number.isFinite(price)&&Number.isFinite(dm?.stamina)&&price>dm.stamina);
+      setUI(ingressSend,'textContent',monster?'Send '+toolLabel(tool)+(Number.isFinite(price)?' · '+price+' STA':''):'Choose a monster first');
+      setUI(ingressStatus,'textContent',pending?pending.phase==='blocked'?'Exit blocked — arrival is waiting.':'Arrival warning · '+pending.remaining.toFixed(1)+' s':chosen?'Arrival: '+chosen.label+' · warning before emergence.':'Live monsters use marked entrances. Setup placement is unrestricted.');
+    }
     if(floorSelect){setUI(floorSelect,'value',String(w.floor??0));setUI(floorSelect,'disabled',active||!!remote||starting||!!(w.busy||w.isGenerating)||typeof onFloor!=='function');}
     if(labButton)setUI(labButton,'disabled',active||starting||!!remote||!!(w.busy||w.isGenerating));
     for (const control of hostControls) setUI(control, 'hidden', !!remote);
@@ -259,8 +269,8 @@ export function createPartyView(options = {}) {
       setUI(button, 'disabled', unaffordable || starting || !!(w.busy || w.isGenerating) || typeof onPlace !== 'function' || ((kind.startsWith('door:')||kind.startsWith('key:'))&&phase()!=='lobby') || (kind==='key:named'&&!(w.namedLocks??[]).some(l=>l.id===w.selectedNamedLockId)));
       setUIClass(button,'active', tool === kind);setUIAttribute(button,'aria-pressed',String(tool===kind));
     }
-    if(cancelPlacement)setUI(cancelPlacement,'hidden',tool==='select');
-    if(toolStatus)setUI(toolStatus, 'textContent', 'Tool: '+toolLabel(tool)+(tool==='select'?' — click a tile to inspect':' — click map once to place; repeat to place more'));
+    if(cancelPlacement)setUI(cancelPlacement,'hidden',tool==='select');if(placementStatus)setUI(placementStatus,'hidden',placementStatus.textContent==='Ready to inspect.');
+    if(toolStatus)setUI(toolStatus, 'textContent', 'Selected: '+toolLabel(tool)+(tool==='select'?'':' · tap map to place'));
     if(tileStatus&&selectedTile)setUI(tileStatus, 'textContent', tileDescription(selectedTile));
     for (const [kind, capability] of [['summonBoss', 'canSummonBoss'], ['possessBoss', 'canPossessBoss']]) {
       const button = toolbar.querySelector?.('[data-action="' + kind + '"]'); if (!button) continue;
@@ -301,7 +311,7 @@ export function createPartyView(options = {}) {
     shell = make('div'); shell.id = 'partyShell'; shell.hidden = true; shell.style.gap = '0';
     dmPane = make('section'); dmPane.className = 'party-pane'; dmLabel = button('0 · DM · overhead / edit', () => focus('dm')); dmLabel.className = 'party-label'; dmPane.appendChild(dmLabel);dmHint=make('span');dmHint.className='party-hud';dmPane.appendChild(dmHint);shell.appendChild(dmPane);
     palette = make('section'); palette.id = 'dmPalette'; palette.hidden = true; palette.appendChild(make('h2', 'Dungeon master'));
-    const guide=make('div');guide.className='dm-placement-guide';workflowStatus=make('p');workflowStatus.id='dmWorkflowStatus';guide.appendChild(workflowStatus);const floorLabel=make('label','Edit floor ');floorSelect=select([['0','Floor I · Entry halls'],['1','Floor II · Lower archive']],value=>{if(phase()!=='lobby'||remoteId()||busy()||typeof onFloor!=='function')return;tool='select';drag=null;selectedTile=null;tileMarker.visible=false;placementRevision++;setUI(tileStatus,'textContent','Floor '+(Number(value)+1)+' selected. Tap a tile to inspect.');onFloor(Number(value));updateUI();});floorSelect.setAttribute('aria-label','Dungeon floor to edit');floorLabel.appendChild(floorSelect);guide.appendChild(floorLabel);workflowNext=make('p');workflowNext.id='dmNextStep';guide.appendChild(workflowNext);guide.appendChild(make('b','Choose a tool → tap a highlighted tile'));const placementHelp=make('details');placementHelp.appendChild(make('summary','Placement & resources explained'));placementHelp.appendChild(make('p','Tap once to place. Drag to orbit; pinch or scroll to zoom. Gold marks the target tile; red means unsupported floor. Esc returns to Inspect. Setup budget is spent before the run; live stamina pays for changes during play. Keys must be reachable before their locks.'));guide.appendChild(placementHelp);toolStatus=make('p');toolStatus.id='dmToolStatus';guide.appendChild(toolStatus);cancelPlacement=button('Cancel placement',()=>{tool='select';drag=null;placementRevision++;tileMarker.visible=false;setUI(placementStatus,'textContent','Placement canceled. Tap a tile to inspect.');updateUI();});cancelPlacement.hidden=true;guide.appendChild(cancelPlacement);tileStatus=make('p','No tile selected. Point at the DM map to preview a tile.');tileStatus.id='dmTileStatus';guide.appendChild(tileStatus);placementStatus=make('p','Ready to inspect.');placementStatus.id='dmPlacementStatus';placementStatus.setAttribute('role','status');guide.appendChild(placementStatus);palette.appendChild(guide);
+    const guide=make('div');guide.className='dm-placement-guide';workflowStatus=make('p');workflowStatus.id='dmWorkflowStatus';guide.appendChild(workflowStatus);const floorLabel=make('label','Edit floor ');floorSelect=select([['0','Floor I · Entry halls'],['1','Floor II · Lower archive']],value=>{if(phase()!=='lobby'||remoteId()||busy()||typeof onFloor!=='function')return;tool='select';drag=null;selectedTile=null;tileMarker.visible=false;placementRevision++;setUI(tileStatus,'textContent','Floor '+(Number(value)+1)+' selected. Tap a tile to inspect.');onFloor(Number(value));updateUI();});floorSelect.setAttribute('aria-label','Dungeon floor to edit');floorLabel.appendChild(floorSelect);guide.appendChild(floorLabel);workflowNext=make('p');workflowNext.id='dmNextStep';guide.appendChild(workflowNext);guide.appendChild(make('b','Choose a tool → tap a highlighted tile'));const placementHelp=make('details');placementHelp.appendChild(make('summary','Placement & resources explained'));placementHelp.appendChild(make('p','Tap once to place. Drag to orbit; pinch or scroll to zoom. Gold marks the target tile; red means unsupported floor. Esc returns to Inspect. Setup budget is spent before the run; live stamina pays for changes during play. Keys must be reachable before their locks.'));guide.appendChild(placementHelp);toolStatus=make('p');toolStatus.id='dmToolStatus';guide.appendChild(toolStatus);cancelPlacement=button('Cancel placement',()=>{tool='select';drag=null;placementRevision++;tileMarker.visible=false;setUI(placementStatus,'textContent','Placement canceled. Tap a tile to inspect.');updateUI();});cancelPlacement.hidden=true;guide.appendChild(cancelPlacement);tileStatus=make('p','No tile selected. Tap the map to inspect.');tileStatus.id='dmTileStatus';guide.appendChild(tileStatus);placementStatus=make('p','Ready to inspect.');placementStatus.id='dmPlacementStatus';placementStatus.setAttribute('role','status');guide.appendChild(placementStatus);palette.appendChild(guide);
     partySetup=make('details');partySetup.className='dm-setup-group';partySetup.appendChild(make('summary','Adventurers & loadouts'));palette.appendChild(partySetup);
     for (const a of campaign.actors) {
       const pane = make('section'); pane.className = 'party-pane'; pane.dataset.actor = a.id;
@@ -314,11 +324,15 @@ export function createPartyView(options = {}) {
       const offhand = select([], id => loadout(a, 'offhand', id)); offhand.setAttribute('aria-label', a.id + ' offhand'); row.appendChild(offhand);
       row.appendChild(button('Inventory', () => openInventory(a))); partySetup.appendChild(row); ui.set(a.id, {pane, row, label, stats, hint, setup,classSelect, weapon, offhand});
     }
+    ingressPanel=make('section');ingressPanel.className='dm-ingress-panel';ingressPanel.hidden=true;ingressPanel.appendChild(make('h3','Live reinforcements'));ingressPanel.appendChild(make('p','Choose a monster, choose an entrance, then Send. Or click its marked tile on the map.'));
+    ingressSelect=select([['','Choose an entrance']],id=>{if(!remoteId()&&phase()==='active'){onIngress?.(id);updateUI();}});ingressSelect.setAttribute('aria-label','Reinforcement entrance');ingressPanel.appendChild(ingressSelect);
+    ingressSend=button('Choose a monster first',()=>{const w=world(),point=w.ingressEntrances?.find(p=>p.id===w.selectedEntranceId);if(remoteId()||phase()!=='active'||busy()||!point||!tool.startsWith('monster:'))return;const position=point.position??point;try{const ok=onPlace?.(tool,new THREE.Vector3(position.x,position.y??0,position.z),{entranceId:point.id,phase:'active'});setUI(placementStatus,'textContent',ok?'Reinforcements queued at '+(point.label??point.kind)+'.':'Could not deploy. Check the entrance and DM stamina.');updateUI();}catch(error){report(error);}});ingressPanel.appendChild(ingressSend);ingressStatus=make('p');ingressStatus.setAttribute('role','status');ingressPanel.appendChild(ingressStatus);palette.appendChild(ingressPanel);
     const groups=[['Inspect & remove',['select','erase']],['Monsters',TOOLS.filter(k=>k.startsWith('monster:'))],['Traps & obstacles',TOOLS.filter(k=>k.startsWith('trap:'))],['Locks & keys',TOOLS.filter(k=>k.startsWith('door:')||k.startsWith('key:'))]];
     for(const [label,kinds]of groups){const section=make('details');section.open=label==='Monsters'||label==='Inspect & remove';section.className='dm-tool-group';section.appendChild(make('summary',label));
       if(label==='Locks & keys'){section.appendChild(make('p','Click an existing door to lock it. Choose a named lock below, then place its matching key before that door. Show completion path checks the sequence.'));namedLockSelect=select([['','Choose the exact named lock']],id=>{if(remoteId()||phase()!=='lobby')return;onNamedLock?.(id);updateUI();});namedLockSelect.id='dmNamedLock';namedLockSelect.setAttribute('aria-label','Named lock for matching key');section.appendChild(namedLockSelect);}
       const grid=make('div');grid.className='dm-tool-grid';for(const kind of kinds){const b=button(toolLabel(kind),()=>{if(remoteId())return;focus('dm');tool=kind;placementRevision++;if(placementStatus)placementStatus.textContent=kind==='select'?'Click a tile to inspect its contents.':'Selected '+toolLabel(kind)+'. Click a tile in the DM map.';updateUI();});b.dataset.placement=kind;grid.appendChild(b);}section.appendChild(grid);palette.appendChild(section);
     }
+    palette.appendChild(placementHelp);
     palette.appendChild(make('p', 'Local test: press 1 / 2 / 3 or click a hero pane/label to control that adventurer; 0 returns to DM. Start expedition before moving. WASD move · drag look · Space strike · E interact · Q offhand · R swap · F search. Gamepads: left stick move, right stick look, A interact, X/RT strike, Y search, RB swap, LT guard, LB inventory.'));
     const aside = null; // Dedicated DM drawer; world-generation controls stay separate.
     if (aside) {palette.style.cssText = 'position:static;width:auto;max-height:none;padding:0;border:0;box-shadow:none;overflow:visible'; aside.insertBefore(palette, aside.firstChild);}
@@ -346,11 +360,16 @@ export function createPartyView(options = {}) {
   listen(document, 'visibilitychange', () => {if (document.hidden) clearInputs();});
   listen(document, 'pointerlockchange', clearInputs);
   listen(window, 'focus', clearInputs);
+  function frameDMView(camera,rect){
+    camera.aspect=rect.width/rect.height;camera.clearViewOffset?.();
+    if(world().mobileLayout&&dmOpen){const top=Math.min(160,rect.height*.25),sheet=palette?.getBoundingClientRect?.(),bottom=Math.max(top+64,Math.min(rect.height,(sheet?.top??rect.top+rect.height*.52)-rect.top)),offset=rect.height/2-(top+bottom)/2;camera.setViewOffset?.(rect.width,rect.height,0,offset,rect.width,rect.height);}
+    camera.updateProjectionMatrix();
+  }
   function raycast(clientX, clientY) {
     const rect = getViewportRect('dm'); if (!rect) return null;
     const aspect = dmCamera.aspect, oldView = dmCamera.view ? {...dmCamera.view} : null;
     try {
-      dmCamera.aspect = rect.width / rect.height; dmCamera.clearViewOffset?.(); dmCamera.updateProjectionMatrix(); scene.updateMatrixWorld(true); dmCamera.updateMatrixWorld(true);
+      frameDMView(dmCamera,rect); scene.updateMatrixWorld(true); dmCamera.updateMatrixWorld(true);
       const ray = new THREE.Raycaster(); ray.setFromCamera(new THREE.Vector2((clientX - rect.left) / rect.width * 2 - 1, -(clientY - rect.top) / rect.height * 2 + 1), dmCamera);
       const w = world(), target = w.isObject3D ? w : w.world ?? w.group ?? w.root;
       const hits = target ? ray.intersectObject(target, true).filter(hit => {
@@ -440,15 +459,17 @@ export function createPartyView(options = {}) {
     }
     updateUI();
   }
+  let visibilityCache=null,renderViewCount=0;
   function render() {
     if (!enabled || destroyed) return false;
     attachActors(); updateUI();
-    const rectangles = getViewports(); if (rectangles.length !== (remoteId()||buildWorkspace()||world().mobileLayout ? 1 : 4)) return false;
+    const rectangles = getViewports();renderViewCount=rectangles.length; if (rectangles.length !== (remoteId()||buildWorkspace()||world().mobileLayout ? 1 : 4)) return false;
     const savedViewport = renderer.getViewport?.(new THREE.Vector4()), savedScissor = renderer.getScissor?.(new THREE.Vector4()), savedScissorTest = renderer.getScissorTest?.() ?? false, savedAutoClear = renderer.autoClear;
     const oldAspect = dmCamera.aspect, oldView = dmCamera.view ? {...dmCamera.view} : null, oldFog = scene.fog?.density;
-    const w = world(), hidden = (w.hideDuringParty ?? []).filter(Boolean), dmOnly = [];const dmLights=(w.dmLights??[]).filter(l=>Number.isFinite(l?.intensity)),lightPowers=new Map(dmLights.map(l=>[l,l.intensity]));
-    scene.traverse(o => {if (o.userData?.dmOnly) dmOnly.push(o);});
-    const atmosphere=[];scene.traverse(o=>{if(o.userData?.atmosphere)atmosphere.push(o);});
+    const w = world(), hidden = (w.hideDuringParty ?? []).filter(Boolean);const dmLights=(w.dmLights??[]).filter(l=>Number.isFinite(l?.intensity)),lightPowers=new Map(dmLights.map(l=>[l,l.intensity]));
+    const revision=w.world?.userData?.visibilityRevision??0;
+    if(!visibilityCache||visibilityCache.world!==w.world||visibilityCache.children!==scene.children.length||visibilityCache.worldChildren!==w.world?.children.length||visibilityCache.revision!==revision){const dmOnly=[],atmosphere=[];scene.traverse(o=>{if(o.userData?.dmOnly)dmOnly.push(o);if(o.userData?.atmosphere)atmosphere.push(o);});visibilityCache={world:w.world,children:scene.children.length,worldChildren:w.world?.children.length,revision,dmOnly,atmosphere};}
+    const {dmOnly,atmosphere}=visibilityCache;
     const tracked = [...atmosphere,...hidden,...(w.dmBoss?.mesh?[w.dmBoss.mesh]:[]), ...dmOnly, ...(roof ? [roof] : [])];
     for (const r of records.values()) tracked.push(r.sprite, r.light, ...equipmentNodes(r.equipment));
     const visibility = new Map(tracked.map(o => [o, o.visible]));
@@ -467,7 +488,7 @@ export function createPartyView(options = {}) {
           for (const node of equipmentNodes(r.equipment)) node.visible = false;
         }
         if (selected?.equipment && living(selected.actor)) {selected.equipment.right.visible = true; if (hand(selected.actor) === 'magic') selected.equipment.leftMagic.visible = true; else if(hand(selected.actor)==='torch'){if(selected.equipment.leftTorch)selected.equipment.leftTorch.visible=true;}else selected.equipment.leftShield.visible = true;}
-        camera.aspect = rect.width / rect.height; camera.clearViewOffset?.(); camera.updateProjectionMatrix();
+        if(rect.id==='dm'&&!w.dmBoss)frameDMView(camera,rect);else{camera.aspect=rect.width/rect.height;camera.clearViewOffset?.();camera.updateProjectionMatrix();}
         if (selected?.equipment) layoutEquipment?.(selected.equipment, camera.aspect, camera.fov, selected.actor);
         renderer.setViewport(rect.glX, rect.glY, rect.glWidth, rect.glHeight); renderer.setScissor(rect.glX, rect.glY, rect.glWidth, rect.glHeight); renderer.clear(true, true, true);const restoreView=w.prepareView?.(camera,{overhead:rect.id==='dm'&&!w.dmBoss});try{renderer.render(scene,camera);}finally{restoreView?.();}
       }
@@ -488,8 +509,8 @@ export function createPartyView(options = {}) {
     for (const node of [launcher, toolbar, shell, palette, result]) node?.remove();
     if (originalTabIndex === null) canvas.removeAttribute?.('tabindex'); else canvas.setAttribute?.('tabindex', originalTabIndex);
   }
-  return {setEnabled, focus, attachActors, getViewportRect, tick, render, start, validate, clearInputs, act:(id,kind)=>emit(actor(id),kind), destroy, dispose: destroy,
+  return {setEnabled, focus, openDMTools(){if(remoteId())return false;focus('dm');setDMOpen(true);updateUI();return true;},attachActors, getViewportRect, tick, render, start, validate, clearInputs, act:(id,kind)=>emit(actor(id),kind), destroy, dispose: destroy,
     get enabled() {return enabled;}, set enabled(value) {setEnabled(value);}, get focusedActor() {syncMode(); return actor(focusedId);}, get focusedId() {syncMode(); return focusedId;},
-    get actorRoot() {return root;}, get toolbar() {return toolbar;}, get palette() {return palette;}, get shell() {return shell;},
+    get renderedViews(){return renderViewCount;},get actorRoot() {return root;}, get toolbar() {return toolbar;}, get palette() {return palette;}, get shell() {return shell;},
     getCamera(id) {if (remoteId() && id !== remoteId()) return null; return records.get(id)?.camera ?? (id === 'dm' ? dmCamera : null);}, get validation() {return validation;}};
 }

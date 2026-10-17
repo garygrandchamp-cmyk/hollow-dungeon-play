@@ -18,12 +18,12 @@ export function findBotPath(start,goal,neighbors,limit=1024){
 // health, stamina, loot, keys, resources, positions or run outcomes.
 export function createLocalAutoplay(adapter){
   let mode='manual',paused=false,humanId='hero-1',route=[],cursor=0,signature='',prepared='',think=0,dmTime=0;
-  let inputs={},botIds=[],status='Manual party';const cooldowns=new Map(),steering=new Map();
+  let inputs={},botIds=[],status='Manual party';const cooldowns=new Map(),steering=new Map(),paths=new Map();let pathClock=0;
   function setMode(value){if(!LOCAL_TEST_MODES.includes(value))throw RangeError('Unknown local test mode');mode=value;paused=false;route=[];cursor=0;signature='';prepared='';inputs={};cooldowns.clear();dmTime=0;}
-  function resetRoute(path=[]){route=path.map(point);cursor=0;inputs={};cooldowns.clear();steering.clear();dmTime=0;think=0;}
+  function resetRoute(path=[]){route=path.map(point);cursor=0;inputs={};cooldowns.clear();steering.clear();paths.clear();pathClock=0;dmTime=0;think=0;}
   function tick(dt){
     const s=adapter.state();dt=Number.isFinite(dt)?Math.min(.1,Math.max(0,dt)):0;
-    inputs={};botIds=[];
+    inputs={};botIds=[];pathClock+=dt;
     if(mode==='manual'||!s.enabled||s.networked){status=s.networked?'Bots disabled during network play':'Manual party';return snapshot();}
     if(s.focusedId&&s.focusedId!=='dm')humanId=s.focusedId;
     const controlled=mode==='adventurer'?humanId:s.focusedId==='dm'?null:s.focusedId;
@@ -73,7 +73,7 @@ export function createLocalAutoplay(adapter){
         if(s.complete&&bot.index===adapter.exit()&&ready){adapter.action(bot,'interact');cooldowns.set(bot.id,1);}
         continue;
       }
-      const path=findBotPath(bot.index,goal.index,adapter.neighbors);
+      const pathKey=s.floor+':'+bot.index+':'+goal.index,cached=paths.get(bot.id);let path;if(cached?.key===pathKey&&pathClock<cached.until)path=cached.path;else{path=findBotPath(bot.index,goal.index,adapter.neighbors);paths.set(bot.id,{key:pathKey,path,until:pathClock+.3});}
       if(!path){status='Bot route blocked — inspect dungeon or take control';continue;}
       const next=path[1]??goal.index,aim=adapter.position(next);adapter.face(bot,aim);
       if(next!==bot.index&&adapter.closedDoor(bot.index,next)){

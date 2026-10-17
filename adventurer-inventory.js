@@ -1,6 +1,6 @@
-import {random} from './wfc.js?v=f07b267ba3b378ae9cbde026bbf48f44495e778f';
-import {CLASSES} from './party-campaign.js?v=f07b267ba3b378ae9cbde026bbf48f44495e778f';
-import {WEAPON_CATALOG} from './weapon-forge.js?v=f07b267ba3b378ae9cbde026bbf48f44495e778f';
+import {random} from './wfc.js?v=ed20d22aed165d3d0cb8addb592c83972073fd78';
+import {CLASSES} from './party-campaign.js?v=ed20d22aed165d3d0cb8addb592c83972073fd78';
+import {WEAPON_CATALOG} from './weapon-forge.js?v=ed20d22aed165d3d0cb8addb592c83972073fd78';
 
 export const INVENTORY_STORAGE_KEY = 'hollow:adventurer-inventory:v1';
 export const GEAR_SLOTS = Object.freeze(['helm', 'chest', 'arms', 'legs', 'weapon', 'offhand']);

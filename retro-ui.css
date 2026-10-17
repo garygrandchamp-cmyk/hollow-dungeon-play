@@ -333,3 +333,5 @@ body.party-active #inventoryQuick {display:none;}
 .party-loadout-shortcut{position:absolute;top:48px;left:10px;pointer-events:auto;z-index:3}
 #dmNextStep{color:#e6d6aa}
 #dmPalette .dm-placement-guide details{font-size:11px}
+
+.dm-ingress-panel{padding:10px 0;border-block:1px solid #776748}.dm-ingress-panel h3{font:13px monospace;color:#d6c18f;margin:5px 0}.dm-ingress-panel select,.dm-ingress-panel button{width:100%;min-width:0;margin:4px 0}.dm-ingress-panel p{font-size:11px;line-height:1.5}

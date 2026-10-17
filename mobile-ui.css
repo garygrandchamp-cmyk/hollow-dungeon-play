@@ -109,3 +109,5 @@ body.mobile-game.first-person #partyToggle{display:none}
 }
 
 body.mobile-game .party-loadout-shortcut{top:calc(180px + env(safe-area-inset-top));left:8px;min-height:44px;font-size:11px}
+
+body.mobile-game #dmPalette .dm-placement-guide>label{display:flex;align-items:center;gap:8px;font-size:11px}body.mobile-game #dmPalette .dm-placement-guide>label select{min-width:0;flex:1}
