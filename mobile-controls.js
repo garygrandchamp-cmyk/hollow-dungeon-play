@@ -65,5 +65,5 @@ export function createMobileControls({document:doc=globalThis.document,window:wi
   if(fold)hide(fold,!compact);
   if(attack!==null&&active()){repeat+=Math.max(0,Math.min(.1,dt||0));if(repeat>=.55){repeat=0;onAction('attack',s.actorId);}}
  }
- return {root,tick,reset,get compact(){return compact;},get input(){return {...input,actorId:state().actorId};},destroy(){if(destroyed)return;reset();destroyed=true;removers.forEach(fn=>fn());root.remove();fold?.remove();doc.body.classList.remove('mobile-game');}};
+ return {root,tick,reset,get compact(){return compact;},get input(){return {...input,actorId:lastActor};},destroy(){if(destroyed)return;reset();destroyed=true;removers.forEach(fn=>fn());root.remove();fold?.remove();doc.body.classList.remove('mobile-game');}};
 }

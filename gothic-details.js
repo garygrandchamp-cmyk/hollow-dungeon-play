@@ -1,4 +1,4 @@
-import { batchStaticGroup } from './mesh-batch.js?v=05c9c484d8c647e1ae1ba04d4edb6e7962a3c4cb';
+import { batchStaticGroup } from './mesh-batch.js?v=ef25eb6cbf04bd83f92d4ff2ec9e98923082dbeb';
 
 const finite = (n, fallback) => Number.isFinite(n) ? n : fallback;
 function tools(THREE, group, box) {

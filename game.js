@@ -1,11 +1,11 @@
-import {impactKind,stainWeapon,attachEnemyStain,makeImpactSprite} from './combat-blood.js?v=05c9c484d8c647e1ae1ba04d4edb6e7962a3c4cb';
-import {random,DIRS} from './wfc.js?v=05c9c484d8c647e1ae1ba04d4edb6e7962a3c4cb';
-import {makeCreature,MONSTER_CATALOG} from './monster-sprites.js?v=05c9c484d8c647e1ae1ba04d4edb6e7962a3c4cb';
-import {makeDungeonProp as makePropSprite} from './dungeon-props.js?v=05c9c484d8c647e1ae1ba04d4edb6e7962a3c4cb';
-import {createTorchFuel} from './torch-fuel.js?v=05c9c484d8c647e1ae1ba04d4edb6e7962a3c4cb';
-import {ENEMY_BEHAVIORS,tickEnemyBehavior,serializeEnemyIntent,parseEnemyIntent,interruptEnemyIntent} from './enemy-behavior.js?v=05c9c484d8c647e1ae1ba04d4edb6e7962a3c4cb';
-import {createEnemyNavigation} from './enemy-navigation.js?v=05c9c484d8c647e1ae1ba04d4edb6e7962a3c4cb';
-import {makeEnemyTelegraph} from './enemy-telegraph.js?v=05c9c484d8c647e1ae1ba04d4edb6e7962a3c4cb';
+import {impactKind,stainWeapon,attachEnemyStain,makeImpactSprite} from './combat-blood.js?v=ef25eb6cbf04bd83f92d4ff2ec9e98923082dbeb';
+import {random,DIRS} from './wfc.js?v=ef25eb6cbf04bd83f92d4ff2ec9e98923082dbeb';
+import {makeCreature,MONSTER_CATALOG} from './monster-sprites.js?v=ef25eb6cbf04bd83f92d4ff2ec9e98923082dbeb';
+import {makeDungeonProp as makePropSprite} from './dungeon-props.js?v=ef25eb6cbf04bd83f92d4ff2ec9e98923082dbeb';
+import {createTorchFuel} from './torch-fuel.js?v=ef25eb6cbf04bd83f92d4ff2ec9e98923082dbeb';
+import {ENEMY_BEHAVIORS,tickEnemyBehavior,serializeEnemyIntent,parseEnemyIntent,interruptEnemyIntent} from './enemy-behavior.js?v=ef25eb6cbf04bd83f92d4ff2ec9e98923082dbeb';
+import {createEnemyNavigation} from './enemy-navigation.js?v=ef25eb6cbf04bd83f92d4ff2ec9e98923082dbeb';
+import {makeEnemyTelegraph} from './enemy-telegraph.js?v=ef25eb6cbf04bd83f92d4ff2ec9e98923082dbeb';
 const encounterWeights={skeleton:20,goblin:18,rat:14,bat:10,crawler:9,spider:8,slime:8,drowned:6,'skeletal-mage':4,wraith:3};
 export const MONSTER_WEIGHTS=Object.freeze(Object.fromEntries(Object.keys(MONSTER_CATALOG).map(kind=>[kind,encounterWeights[kind]??5])));
 export function chooseMonsterType(roll){const entries=Object.entries(MONSTER_WEIGHTS),total=entries.reduce((sum,[,weight])=>sum+weight,0);let value=(Number.isFinite(roll)?Math.max(0,Math.min(1-Number.EPSILON,roll)):0)*total;for(const [kind,weight]of entries){value-=weight;if(value<0)return kind;}return entries.at(-1)[0];}
