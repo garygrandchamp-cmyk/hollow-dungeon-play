@@ -1,7 +1,7 @@
-import {buildWallVines} from './vines.js?v=f4bcc730badf79307b1957673289498c327a4214';
-import {buildWallGeometry} from './wall-mesh.js?v=f4bcc730badf79307b1957673289498c327a4214';
-import {wallRecipe} from './wall-model.js?v=f4bcc730badf79307b1957673289498c327a4214';
-import {buildModuleFloor} from './canal-module.js?v=f4bcc730badf79307b1957673289498c327a4214';
+import {buildWallVines} from './vines.js?v=d4e934c03d90dda7229472246676281450a3dcd7';
+import {buildWallGeometry} from './wall-mesh.js?v=d4e934c03d90dda7229472246676281450a3dcd7';
+import {wallRecipe} from './wall-model.js?v=d4e934c03d90dda7229472246676281450a3dcd7';
+import {buildModuleFloor} from './canal-module.js?v=d4e934c03d90dda7229472246676281450a3dcd7';
 
 export const TILE_CATALOG_KEY='hollow:tile-lab:catalog:v1';
 const MAX_RECIPES=32;

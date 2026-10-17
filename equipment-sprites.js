@@ -1,7 +1,8 @@
-import {EQUIPMENT_SPRITE_DATA} from './equipment-sprite-data.js?v=f4bcc730badf79307b1957673289498c327a4214';
-import {createMagicLayer} from './equipment-magic.js?v=f4bcc730badf79307b1957673289498c327a4214';
+import {impactPose} from './combat-impact.js?v=d4e934c03d90dda7229472246676281450a3dcd7';
+import {EQUIPMENT_SPRITE_DATA} from './equipment-sprite-data.js?v=d4e934c03d90dda7229472246676281450a3dcd7';
+import {createMagicLayer} from './equipment-magic.js?v=d4e934c03d90dda7229472246676281450a3dcd7';
 // Optional while the replacement art is produced; a reload picks up the new pack.
-const heldArtModule=await import('./held-art-data.js?v=f4bcc730badf79307b1957673289498c327a4214').catch(()=>null);
+const heldArtModule=await import('./held-art-data.js?v=d4e934c03d90dda7229472246676281450a3dcd7').catch(()=>null);
 const defaultHeldArtDecoder=heldArtModule?.decodeHeldArt??null;
 const uvPoint=value=>{const x=Array.isArray(value)?value[0]:value?.x,y=Array.isArray(value)?value[1]:value?.y;return Number.isFinite(x)&&Number.isFinite(y)&&x>=0&&x<=1&&y>=0&&y<=1?{x,y}:null;};
 
@@ -101,16 +102,16 @@ export function createEquipmentSprites(THREE,{modularRightHand=false,pixelDensit
  const shieldHull=alphaHull(leftShield.material.map.image);
  function shieldPresentation(block,sway,bob){const p=poses[1],position=p.lastPosition&&leftShield.position.equals(p.lastPosition)?p.basePosition:leftShield.position,scale=p.lastScale&&leftShield.scale.equals(p.lastScale)?p.baseScale:leftShield.scale;let camera=leftShield.parent;while(camera&&!camera.isPerspectiveCamera)camera=camera.parent;const fov=layoutView?.fov??camera?.fov??72,aspect=layoutView?.aspect??camera?.aspect??16/9,z=position.z+block*.018,halfH=Math.tan(fov*Math.PI/360)*Math.abs(z),halfW=halfH*aspect,rotation=(p.lastRotation===null?leftShield.material.rotation:p.baseRotation)-block*.13,sin=Math.sin(rotation),cos=Math.cos(rotation),image=leftShield.material.map.image;let top=-Infinity;for(const [x,y]of shieldHull)top=Math.max(top,x*scale.x*sin+y*scale.y*cos);if(!Number.isFinite(top))top=scale.y;const visible=.28+block*.17,goalY=(visible*2-1)*halfH-top,goalX=(-.68+block*.40)*halfW;leftShield.userData.visibleFractionTarget=visible;pose(1,goalX-position.x-sway,goalY-position.y+bob,block*.018,-block*.13,1,1);}
  function layout(aspect=16/9,fov=72){if(disposed)return false;aspect=Number.isFinite(aspect)&&aspect>0?aspect:16/9;fov=Number.isFinite(fov)?Math.max(35,Math.min(110,fov)):72;layoutView={aspect,fov};const halfH=Math.tan(fov*Math.PI/360)*.64,halfW=halfH*aspect,zoom=Math.tan(fov*Math.PI/360)/Math.tan(72*Math.PI/360)*Math.min(1,Math.max(.58,aspect/1.1)),x=Math.max(.16,Math.min(.44,halfW*.52)),bottom=-halfH-.14;for(let i=0;i<poses.length;i++){const p=poses[i],delta=p.lastPosition?p.lastPosition.clone().sub(p.basePosition):new THREE.Vector3(),scaleRatio=p.lastScale?new THREE.Vector3(p.lastScale.x/(p.baseScale.x||1),p.lastScale.y/(p.baseScale.y||1),p.lastScale.z/(p.baseScale.z||1)):new THREE.Vector3(1,1,1),scale=layoutScales[i].clone().multiply(new THREE.Vector3(zoom,zoom,1)),target=i===0?new THREE.Vector3(.64*halfW-.078125*zoom,-.68*halfH-.171875*zoom,-.64):new THREE.Vector3(-x,bottom,-.64);p.baseScale.copy(scale);p.sprite.scale.copy(scale).multiply(scaleRatio);(p.lastScale??=new THREE.Vector3()).copy(p.sprite.scale);p.basePosition.copy(target);p.sprite.position.copy(target).add(delta);(p.lastPosition??=new THREE.Vector3()).copy(p.sprite.position);}shieldPresentation(blockAmount,lastSway,lastBob);return true;}
- function animate({time=0,moving=false,attacking=false,casting=false,blocking=false,torchFuel,torchLit}={}){
+ function animate({time=0,moving=false,attacking=false,casting=false,blocking=false,torchFuel,torchLit,impact=null}={}){
   if(disposed)return;
   const now=Number.isFinite(time)?time:(lastTime??0),t=now/1000,dt=lastTime===null?1/60:Math.max(0,Math.min(.05,(now-lastTime)/1000));
   if(lastTime!==null&&now<lastTime){attackStart=castStart=-Infinity;wasAttacking=wasCasting=false;}
   if(attacking&&!wasAttacking)attackStart=t;if(casting&&!wasCasting)castStart=t;
   wasAttacking=!!attacking;wasCasting=!!casting;lastTime=now;
-  const phase=(t-attackStart)/.28,strike=phase>=0&&phase<=1?Math.sin(phase*Math.PI):0,sway=moving?Math.sin(t*7.5)*.012:0,bob=(moving?Math.abs(Math.cos(t*7.5))*.012:Math.sin(t*2)*.003);
+  const contact=impactPose(impact,now),phase=(contact.time/1000-attackStart)/.28,strike=phase>=0&&phase<=1?Math.sin(phase*Math.PI):0,sway=moving?Math.sin(t*7.5)*.012:0,bob=(moving?Math.abs(Math.cos(t*7.5))*.012:Math.sin(t*2)*.003);
   const castAge=t-castStart,cast=casting?.65+.35*Math.sin(t*15):castAge>=0&&castAge<.38?Math.sin(castAge/.38*Math.PI)*.6:0;
   blockAmount+=((blocking?1:0)-blockAmount)*(1-Math.exp(-dt*18));lastSway=sway;lastBob=bob;
-  pose(0,sway-strike*.19,bob+strike*.12,strike*.025,strike*.9,1+strike*.035,1-strike*.025);
+  pose(0,sway-strike*.19-contact.kick*.012,bob+strike*.12-contact.kick*.018,strike*.025+contact.kick*.012,strike*.9-contact.kick*.035,1+strike*.035,1-strike*.025);
   shieldPresentation(blockAmount,sway,bob);
   pose(2,-sway,bob+cast*.012,cast*.006,Math.sin(t*4)*.008);pose(3,-sway*.8,bob,0,Math.sin(t*2)*.012);if(torchFuel!==undefined||torchLit!==undefined)torch.setState({fuel:torchFuel,lit:torchLit});torch.animate(now);
   const fingers=leftMagic.userData.frameCount??1,rawFingerFrame=casting?Math.min(1,fingers-1):Math.floor(t*1.6),fingerFrame=((rawFingerFrame%fingers)+fingers)%fingers;leftMagic.material.map.offset.x=fingerFrame/fingers;leftMagic.userData.fingerFrame=fingerFrame;flexFingers(now,casting);magicLayer.animate({time:now,casting});syncMagicDensity();

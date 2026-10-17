@@ -1,8 +1,8 @@
-import {combatTiming} from './combat-timing.js?v=f4bcc730badf79307b1957673289498c327a4214';
-import {createDMEntranceOverlay} from './dm-entrance-overlay.js?v=f4bcc730badf79307b1957673289498c327a4214';
-import {CLASSES} from './party-campaign.js?v=f4bcc730badf79307b1957673289498c327a4214';
-import {createHeldInput} from './held-input.js?v=f4bcc730badf79307b1957673289498c327a4214';
-import {MONSTER_KINDS} from './monster-sprites.js?v=f4bcc730badf79307b1957673289498c327a4214';
+import {combatTiming} from './combat-timing.js?v=d4e934c03d90dda7229472246676281450a3dcd7';
+import {createDMEntranceOverlay} from './dm-entrance-overlay.js?v=d4e934c03d90dda7229472246676281450a3dcd7';
+import {CLASSES} from './party-campaign.js?v=d4e934c03d90dda7229472246676281450a3dcd7';
+import {createHeldInput} from './held-input.js?v=d4e934c03d90dda7229472246676281450a3dcd7';
+import {MONSTER_KINDS} from './monster-sprites.js?v=d4e934c03d90dda7229472246676281450a3dcd7';
 
 const HERO_IDS = ['hero-1', 'hero-2', 'hero-3'];
 const MOVEMENT = new Set(['w', 'a', 's', 'd', 'arrowup', 'arrowleft', 'arrowdown', 'arrowright']);
@@ -147,7 +147,7 @@ export function createPartyView(options = {}) {
       if (!r) {
         const camera = new THREE.PerspectiveCamera(inputSettings().fov, 1, .1, cameraFar()); camera.rotation.order = 'YXZ'; root.add(camera);
         const light = new THREE.PointLight(0xc6c3ba, 1.1, 8, 2); light.position.set(.1, -.2, -.2); light.visible = false; camera.add(light);
-        r = {actor: a, camera, light, sprite: null, equipment: null, visualKey: '', moving: false, attackUntil: 0, castUntil: 0,previousHealth:a.health,previousMaxHealth:a.maxHealth,feedbackRun:campaign.runNumber,feedbackPhase:phase(),hurtUntil:0,damageUntil:0,damageText:''}; records.set(a.id, r);
+        r = {actor: a, camera, light, sprite: null, equipment: null, visualKey: '', moving: false, attackUntil: 0, castUntil: 0,previousHealth:a.health,previousMaxHealth:a.maxHealth,feedbackRun:campaign.runNumber,feedbackPhase:phase(),hurtUntil:0,damageUntil:0,damageText:'',counterUntil:0,impactSerial:0}; records.set(a.id, r);
       }
       r.actor = a;const fov=inputSettings().fov,far=cameraFar();if(r.camera.fov!==fov||r.camera.far!==far){r.camera.fov=fov;r.camera.far=far;r.camera.updateProjectionMatrix();}
       const visualKey = JSON.stringify([a.classId, a.equipment?.weapon, a.equipment?.offhand]);
@@ -266,7 +266,7 @@ export function createPartyView(options = {}) {
       setUI(controls.hint, 'textContent', active&&w.objective?[w.objective,w.interactionActorId===id?w.interactionHint:''].filter(Boolean).join(' · '):remote?'ACTIVE CONTROL · WASD move · drag look · Space strike · E interact':active?'ACTIVE CONTROL · 1 / 2 / 3 switch hero · 0 DM · WASD move':'ACTIVE CONTROL · 1 / 2 / 3 switch hero · Start expedition to move');
       setUIClass(controls.pane,'focused', selected); setUIClass(controls.pane,'dead', !living(a) && !a.escaped); setUIClass(controls.pane,'escaped', !!a.escaped);
       setUI(controls.stats, 'textContent', `${a.escaped ? 'ESCAPED · ' : !living(a) ? 'DOWN · ' : ''}HP ${Math.ceil(a.health ?? 0)}/${a.maxHealth ?? '?'} · MP ${Math.floor(a.mana ?? 0)}/${a.maxMana ?? '?'}${Number.isFinite(a.stamina) ? ' · STA ' + Math.floor(a.stamina) : ''} · G ${a.gold ?? 0}${hand(a)==='torch'?' · TORCH '+Math.ceil(a.torchFuel??120)+'s'+(a.torchLit===false?' (out)':''):''}`);
-      const feedback=records.get(a.id),damaged=active&&now<(feedback?.damageUntil??0)&&!w.paused;setUI(controls.damage,'hidden',!damaged);setUI(controls.damage,'textContent',damaged?feedback.damageText:'');setUIClass(controls.pane,'damage-hit',damaged);
+      const feedback=records.get(a.id),damaged=active&&now<(feedback?.damageUntil??0)&&!w.paused;const counter=active&&now<(feedback?.counterUntil??0)&&!w.paused;setUI(controls.damage,'hidden',!damaged&&!counter);setUI(controls.damage,'textContent',damaged?feedback.damageText:counter?'COUNTER':'');setUIClass(controls.damage,'counter',!damaged&&counter);setUIClass(controls.pane,'damage-hit',damaged);
       setUI(controls.classSelect, 'value', a.classId); setUI(controls.classSelect, 'disabled', phase()!=='lobby' || starting || !!remote && typeof onClass !== 'function');
       refreshLoadout(controls.weapon,a,'weapon',w); setUI(controls.weapon, 'disabled', phase()!=='lobby' || starting || !!remote && typeof onLoadout !== 'function');
       refreshLoadout(controls.offhand,a,'offhand',w); setUI(controls.offhand, 'disabled', phase()!=='lobby' || starting || !!remote && typeof onLoadout !== 'function');
@@ -467,20 +467,21 @@ export function createPartyView(options = {}) {
         const before = [a.position.x, a.position.y, a.position.z];
         try {const moved = moveActor(a, input); r.moving = moved === true || before.some((value, i) => value !== a.position[['x', 'y', 'z'][i]]);} catch (error) {report(error);}
       }
+      if(r.feedbackRun!==campaign.runNumber){r.impactSerial=0;r.impactEvent=undefined;}const receivedImpact=options.getMeleeImpact?.(a.id);if(receivedImpact&&receivedImpact.serial!==r.impactSerial){r.impactSerial=receivedImpact.serial;r.impactEvent=receivedImpact;if(now>=receivedImpact.at&&now-receivedImpact.at<200){if(receivedImpact.counter)r.counterUntil=now+500;if(a.id===focusedId&&locallyOwned(a))options.onMeleeImpact?.(a,receivedImpact);}}if(!receivedImpact)r.impactEvent=undefined;const impact=r.impactEvent;
       const hp=a.health,maxHp=a.maxHealth,sameRun=r.feedbackRun===campaign.runNumber,active=phase()==='active';
       const capClamp=Number.isFinite(maxHp)&&maxHp<r.previousMaxHealth&&hp===maxHp&&r.previousHealth>maxHp;
       if(active&&r.feedbackPhase==='active'&&sameRun&&Number.isFinite(hp)&&Number.isFinite(r.previousHealth)&&hp<r.previousHealth&&!capClamp){
         const amount=Math.ceil(r.previousHealth-hp);r.hurtUntil=now+220;r.damageUntil=now+550;r.damageText='−'+amount+' HP';
         if(a.id===focusedId&&locallyOwned(a)&&!world().paused)options.onDamageFeedback?.(a,{amount});
       }
-      if(!active||!sameRun){r.hurtUntil=0;r.damageUntil=0;}
+      if(!active||!sameRun){r.hurtUntil=0;r.damageUntil=0;r.counterUntil=0;}
       r.previousHealth=hp;r.previousMaxHealth=maxHp;r.feedbackRun=campaign.runNumber;r.feedbackPhase=phase();
       r.sprite.position.set(a.position.x, a.position.y, a.position.z); r.sprite.rotation.y = a.yaw ?? 0;
       r.sprite.userData.animate?.({time: now / 1000, moving: r.moving, attacking: now < r.attackUntil||now<(a.lastAttack??-Infinity)+280, dead: a.alive === false, hurt: now < r.hurtUntil||now < (a.hurtUntil ?? 0)});
       r.camera.position.set(a.position.x, a.position.y + 1.48, a.position.z); r.camera.rotation.set(a.pitch ?? 0, a.yaw ?? 0, 0);
       if(living(a)&&(equipmentView===null||equipmentView===a.id)){
         r.equipment?.setTorchState?.({fuel:a.torchFuel??120,lit:a.torchLit!==false});
-        r.equipment?.animate?.({time: now, moving: r.moving, attacking: now < r.attackUntil||now<(a.lastAttack??-Infinity)+280, casting: now < r.castUntil || now < (a.castingUntil ?? 0)||now<(a.lastCast??-Infinity)+380, blocking: hand(a) === 'shield' && ([...guards.values()].includes(a.id)||!!a.guarding)});
+        r.equipment?.animate?.({impact,time: now, moving: r.moving, attacking: now < r.attackUntil||now<(a.lastAttack??-Infinity)+280, casting: now < r.castUntil || now < (a.castingUntil ?? 0)||now<(a.lastCast??-Infinity)+380, blocking: hand(a) === 'shield' && ([...guards.values()].includes(a.id)||!!a.guarding)});
       }
     }
     updateUI();

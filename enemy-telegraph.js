@@ -1,4 +1,4 @@
-import {enemyLungeTravel} from './enemy-behavior.js?v=f4bcc730badf79307b1957673289498c327a4214';
+import {enemyLungeTravel} from './enemy-behavior.js?v=d4e934c03d90dda7229472246676281450a3dcd7';
 // Restrained floor outlines. Sweeps keep their arc; a charge gets straight rails.
 export function makeEnemyTelegraph(THREE,profile){
  const geometry=profile.lunge?new THREE.BufferGeometry():new THREE.RingGeometry(Math.max(.1,profile.reach-.055),profile.reach,12,1,Math.PI/2-profile.arc/2,profile.arc);
@@ -17,5 +17,5 @@ export function makeEnemyTelegraph(THREE,profile){
  const material=new THREE.MeshBasicMaterial({color:profile.lunge?0x9c8063:0xa58d65,transparent:true,opacity:.6,depthTest:true,depthWrite:false,side:THREE.DoubleSide,fog:true,toneMapped:false});
  const mesh=new THREE.Mesh(geometry,material);mesh.name='enemy-committed-attack-warning';mesh.userData.ownGeometry=true;mesh.userData.dynamic=true;mesh.renderOrder=2;
  let disposed=false,geometryDisposed=false;geometry.addEventListener('dispose',()=>geometryDisposed=true);mesh.userData.disposeMaterials=()=>{if(disposed)return;disposed=true;material.dispose();};
- return {mesh,update(enemy){const intent=enemy.intent;mesh.visible=enemy.hp>0&&!!intent&&intent.phase!=='recover';if(!intent)return;if(profile.lunge)lane(enemyLungeTravel(intent)+profile.reach);mesh.position.set(intent.origin.x,intent.origin.y+.035,intent.origin.z);mesh.rotation.y=Math.atan2(-(intent.aim.x-intent.origin.x),-(intent.aim.z-intent.origin.z));material.opacity=intent.phase==='windup'?.35+.3*(1-intent.remaining/profile.windup):.3;},dispose(){mesh.removeFromParent();mesh.userData.disposeMaterials();if(!geometryDisposed)geometry.dispose();}};
+ return {mesh,update(enemy){const intent=enemy.intent;mesh.visible=enemy.hp>0&&!!intent&&intent.phase!=='recover';if(!intent)return;if(profile.lunge)lane(enemyLungeTravel(intent)+profile.reach);mesh.position.set(intent.origin.x,intent.origin.y+.035,intent.origin.z);mesh.rotation.y=Math.atan2(-(intent.aim.x-intent.origin.x),-(intent.aim.z-intent.origin.z));const imminent=!!profile.punish&&intent.phase==='windup'&&intent.remaining<=.25;material.color.setHex(imminent?0xbba080:profile.lunge?0x9c8063:0xa58d65);material.opacity=intent.phase==='windup'?.35+(profile.punish?.45:.3)*(1-intent.remaining/profile.windup):.3;},dispose(){mesh.removeFromParent();mesh.userData.disposeMaterials();if(!geometryDisposed)geometry.dispose();}};
 }

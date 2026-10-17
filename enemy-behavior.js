@@ -4,8 +4,8 @@ export const ENEMY_BEHAVIORS=Object.freeze({
  skeleton:Object.freeze({name:'measured strike',trigger:1.4,reach:1.55,windup:.75,recovery:1.65,damage:8,arc:Math.PI*.58,radius:.28}),
  goblin:Object.freeze({name:'quick stab',trigger:1.35,reach:1.5,windup:.45,recovery:.95,damage:8,arc:Math.PI*.48,radius:.25}),
  rat:Object.freeze({name:'skirmisher',trigger:1.05,reach:1.12,windup:.45,recovery:1.65,damage:5,arc:Math.PI*.7,retreat:.65,retreatSpeed:2.4,radius:.18}),
- drowned:Object.freeze({name:'heavy sweep',trigger:2.15,reach:2.2,windup:1.1,recovery:2.35,damage:16,arc:Math.PI*.58,radius:.34}),
- crawler:Object.freeze({name:'committed lunge',trigger:3,reach:.94,windup:.8,lunge:.45,lungeSpeed:5.2,recovery:1.9,damage:8,arc:Math.PI*.34,radius:.26}),
+ drowned:Object.freeze({name:'heavy sweep',trigger:2.15,reach:2.2,windup:1.1,recovery:2.35,damage:16,punish:1.5,arc:Math.PI*.58,radius:.34}),
+ crawler:Object.freeze({name:'committed lunge',trigger:3,reach:.94,windup:.8,lunge:.45,lungeSpeed:5.2,recovery:1.9,damage:8,punish:1.5,arc:Math.PI*.34,radius:.26}),
 });
 const finite=(n,max=1e6)=>typeof n==='number'&&Number.isFinite(n)&&Math.abs(n)<=max;
 const vector=p=>p&&finite(p.x)&&finite(p.y)&&finite(p.z);
@@ -67,3 +67,5 @@ export function tickEnemyBehavior(enemy,{dt,position,target,visible,canStrike,mo
  enemy.intent={phase:'windup',remaining:profile.windup,origin:point(position),aim:point(target.position),targetId:target.id,hit:false};
  telegraph(profile);return true;
 }
+
+export function enemyPunishMultiplier(enemy,source='melee'){return source==='melee'&&!enemy.boss&&!enemy.controlled&&enemy.intent?.phase==='recover'&&enemy.intent.hit===false?(ENEMY_BEHAVIORS[enemy.type]?.punish??1):1;}

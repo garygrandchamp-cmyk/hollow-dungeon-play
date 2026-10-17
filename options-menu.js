@@ -11,6 +11,7 @@ export function createOptionsMenu({notify=()=>{},audioControl=null,diagnosticsCo
   'WASD move · mouse / drag look · Space strike · E use doors, stairs and nearby containers.',
   'Q off hand · R swap shield / magic / torch · F search this tile for traps · I bag · M map · Esc menu.',
   'Face the attacker while guarding: shields cover a forward arc, leaving your sides and back exposed. Release guard to attack; missed swings still need recovery. Combat uses no stamina; spells use mana.',
+  'Dodge the drowned sweep or crawler lunge, then close in during recovery: the Counter prompt marks a melee opening. Goblins can flank while another enemy keeps you busy.',
   'Touch: left stick moves; drag the right side to look. Use the labeled action buttons and Bag / Map / Menu shortcuts.',
   'Local roles: 0 selects DM; 1 / 2 / 3 select a hero. On phones, use the DM / Hero tabs.',
   'DM setup: choose a tool, then tap a tile. Live monsters: choose a monster and numbered entrance, then Send. Drag to orbit; pinch or scroll to zoom.'

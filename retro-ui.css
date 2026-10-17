@@ -352,3 +352,5 @@ body:not(.mobile-game) .party-pane[data-focused="true"] .party-control-hint:not(
 .party-damage-feedback{position:absolute;left:50%;top:55%;transform:translateX(-50%);padding:3px 6px;background:#17100ed9;border:1px solid #71483d;color:#d4a08b;font:12px "Lucida Console",monospace;pointer-events:none;text-shadow:1px 1px #090707}
 .party-damage-feedback[hidden]{display:none}
 .party-pane.damage-hit{box-shadow:inset 0 0 0 3px #754438}
+
+.party-damage-feedback.counter{color:#c9b786;border-color:#776744;background:#15130ed9}
