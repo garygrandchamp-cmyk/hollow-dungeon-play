@@ -2,7 +2,7 @@
 export function summarizeFrames(samples){
  if(!samples.length)return null;
  const times=samples.map(s=>s.ms).sort((a,b)=>a-b),sum=samples.reduce((n,s)=>n+s.ms,0),average=key=>samples.reduce((n,s)=>n+(s[key]??0),0)/samples.length,last=samples.at(-1);
- return {fps:sum>0?1000*samples.length/sum:0,averageMs:sum/samples.length,p95Ms:times[Math.max(0,Math.ceil(times.length*.95)-1)],worstMs:times.at(-1),calls:average('calls'),triangles:average('triangles'),views:last.views,width:last.width,height:last.height,profile:last.profile,build:last.build,samples:samples.length};
+ return {fps:sum>0?1000*samples.length/sum:0,averageMs:sum/samples.length,p95Ms:times[Math.max(0,Math.ceil(times.length*.95)-1)],worstMs:times.at(-1),workMs:average('workMs'),drawMs:average('drawMs'),gameMs:average('gameMs'),calls:average('calls'),triangles:average('triangles'),views:last.views,width:last.width,height:last.height,profile:last.profile,build:last.build,samples:samples.length};
 }
 export function createPerformanceDiagnostics({document:doc=globalThis.document,clock=()=>performance.now()}={}){
  const control=doc.createElement('button');control.type='button';control.textContent='Show diagnostics';
@@ -19,6 +19,8 @@ export function createPerformanceDiagnostics({document:doc=globalThis.document,c
  function paint(now){report=summarizeFrames(samples);if(!report)return;const r=report;output.textContent=`${r.fps.toFixed(1)} FPS · ${r.samples} frames
 Frame avg ${r.averageMs.toFixed(1)} ms
 p95 ${r.p95Ms.toFixed(1)} · worst ${r.worstMs.toFixed(1)} ms
+Work ${r.workMs.toFixed(1)} ms · draw ${r.drawMs.toFixed(1)}
+Game ${r.gameMs.toFixed(1)} · other ${Math.max(0,r.workMs-r.drawMs-r.gameMs).toFixed(1)} ms
 Draw calls ${Math.round(r.calls)} avg
 Triangles ${Math.round(r.triangles).toLocaleString()} avg
 Buffer ${r.width} × ${r.height}

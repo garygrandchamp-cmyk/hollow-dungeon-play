@@ -1,6 +1,6 @@
-import {createEquipmentSprites,HELD_PIXELS_PER_UNIT,sampleHeldPixels} from './equipment-sprites.js?v=f42ee60821f34db97d6fccc451cf9a7f80911c50';
-import {generateWeapon,makeWeaponSprite,CLASS_WEAPON_DEFAULTS} from './weapon-forge.js?v=f42ee60821f34db97d6fccc451cf9a7f80911c50';
-import {hydrateWeaponArt} from './loot-art.js?v=f42ee60821f34db97d6fccc451cf9a7f80911c50';
+import {createEquipmentSprites,HELD_PIXELS_PER_UNIT,sampleHeldPixels} from './equipment-sprites.js?v=05c9c484d8c647e1ae1ba04d4edb6e7962a3c4cb';
+import {generateWeapon,makeWeaponSprite,CLASS_WEAPON_DEFAULTS} from './weapon-forge.js?v=05c9c484d8c647e1ae1ba04d4edb6e7962a3c4cb';
+import {hydrateWeaponArt} from './loot-art.js?v=05c9c484d8c647e1ae1ba04d4edb6e7962a3c4cb';
 const kinds={wand:'staff',dagger:'sword'};
 function matchHeldDensity(THREE,root,recipe,height){let mesh;root.traverse(o=>{if(o.isMesh)mesh??=o;});if(!mesh?.material?.map)return;const map=mesh.material.map,source=map.image.data,sourceWidth=recipe.width,sourceHeight=recipe.height,width=Math.max(1,Math.ceil(height*recipe.width/recipe.height*HELD_PIXELS_PER_UNIT)),rows=Math.max(1,Math.ceil(height*HELD_PIXELS_PER_UNIT));map.source=new THREE.Source({data:sampleHeldPixels(source,sourceWidth,sourceHeight,width,rows),width,height:rows});map.userData.pixelDensity={target:HELD_PIXELS_PER_UNIT,frameWidth:width,frameHeight:rows,frames:1,sourceWidth,sourceHeight};map.needsUpdate=true;let displayedVersion=map.version;function update(){if(map.version===displayedVersion)return;map.image.data.set(sampleHeldPixels(source,sourceWidth,sourceHeight,width,rows));map.needsUpdate=true;displayedVersion=map.version;}for(const method of ['setStain','setArtPixels']){const original=root.userData[method];if(typeof original==='function')root.userData[method]=(...args)=>{const result=original(...args);update();return result;};}}
 /** The gauntlet stays a separate cutout; forged blades/hafts are replaceable. */
