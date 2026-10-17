@@ -1,4 +1,4 @@
-import { decodeEnemyAtlas } from './enemy-atlas-data.js?v=f0cb778312a3fd1be533dc2077710664190052d0';
+import { decodeEnemyAtlas } from './enemy-atlas-data.js?v=d14ae9e96020f46d16650159fcf6f9538e196d06';
 
 export const ENEMY_SPRITE_CLIPS = Object.freeze({
   idle: { row: 0, frames: 4, fps: 4, loop: true },
