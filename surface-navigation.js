@@ -1,4 +1,4 @@
-import {moduleFloorContains} from './canal-module.js?v=f414c9209e497cfc5d04552110a70457733840b0';
+import {moduleFloorContains} from './canal-module.js?v=80eddf4efeb73b0f3ae528a5ccc41ada14f30f7a';
 
 // Water sockets describe the channel, not the dry banks on either side of it.
 export function canTraverseSurfaceEdge({grid,tiles,size,from,to,x,z,radius=.18,tileSize=4.8,edge=null,open=new Set()}){

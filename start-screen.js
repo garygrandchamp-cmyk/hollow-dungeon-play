@@ -1,4 +1,4 @@
-import {createPeerSession, MAX_CODE_LENGTH} from './peer-session.js?v=f414c9209e497cfc5d04552110a70457733840b0';
+import {createPeerSession, MAX_CODE_LENGTH} from './peer-session.js?v=80eddf4efeb73b0f3ae528a5ccc41ada14f30f7a';
 
 // Callbacks start gameplay only after the player explicitly chooses a play button.
 // sessionFactory(peerOptions) may inject the application's message/authority hooks.

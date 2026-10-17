@@ -1,4 +1,4 @@
-import {stainWeaponPixels} from './combat-blood.js?v=f414c9209e497cfc5d04552110a70457733840b0';
+import {stainWeaponPixels} from './combat-blood.js?v=80eddf4efeb73b0f3ae528a5ccc41ada14f30f7a';
 // Native pixel-art parts composer. No Canvas, DOM, assets, or network requests.
 const TAU = Math.PI * 2;
 const FAMILIES = {
