@@ -18,8 +18,8 @@ export function createMobileControls({document:doc=globalThis.document,window:wi
  const tabs=new Map();for(const [id,label]of [['dm','DM'],['hero-1','Hero 1'],['hero-2','Hero 2'],['hero-3','Hero 3']]){
   const button=make('button',label,nav);button.type='button';button.onclick=()=>{reset();onFocus(id);};tabs.set(id,button);
  }
- const quick=make('div');quick.className='mobile-quick';
- for(const [kind,label]of [['menu','Menu'],['inventory','Bag'],['map','Map']]){const b=make('button',label,quick);b.type='button';b.onclick=()=>{reset();onAction(kind,state().actorId);};}
+ const quick=make('div');quick.className='mobile-quick';const quickButtons=new Map();
+ for(const [kind,label]of [['menu','Menu'],['inventory','Bag'],['map','Map']]){const b=make('button',label,quick);quickButtons.set(kind,b);b.type='button';b.onclick=()=>{reset();onAction(kind,state().actorId);};}
  const look=make('div');look.className='mobile-look';look.setAttribute('aria-label','Drag here to look around');
  const move=make('div');move.className='mobile-stick';move.setAttribute('role','group');move.setAttribute('aria-label','Movement joystick');
  const knob=make('span','MOVE',move);knob.className='mobile-stick-knob';
@@ -58,7 +58,7 @@ export function createMobileControls({document:doc=globalThis.document,window:wi
  const hide=(node,value)=>{if(node.hidden!==value)node.hidden=value;};
  function tick(dt){
   if(destroyed)return;const s=state(),wasCompact=compact;compact=win.innerWidth<=900||win.innerWidth<=1366&&!!win.matchMedia?.('(pointer: coarse)').matches;if(wasCompact!==compact)reset();
-  if(doc.body.classList.contains('mobile-game')!==compact)doc.body.classList.toggle('mobile-game',compact);hide(root,!compact||!s.available||s.busy);hide(nav,!s.party||s.remote);hide(quick,!!s.dm);
+  if(doc.body.classList.contains('mobile-game')!==compact)doc.body.classList.toggle('mobile-game',compact);hide(root,!compact||!s.available||s.busy);hide(nav,!s.party||s.remote);hide(quick,false);for(const [kind,b]of quickButtons)hide(b,!!s.dm&&kind!=='menu');
   if(lastActor!==s.actorId||s.busy||!s.available||!active()&&!s.dm)reset();lastActor=s.actorId;
   const selected=s.dm?'dm':s.actorId;if(previousTab!==selected){previousTab=selected;for(const [id,b]of tabs)b.setAttribute('aria-pressed',String(selected===id));}
   const inactive=!active();hide(look,inactive);hide(move,inactive);hide(actions,inactive);

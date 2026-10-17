@@ -328,3 +328,8 @@ body.party-active #inventoryQuick {display:none;}
 .tileset-lab-link{display:block;padding:10px;margin:8px 0;border:3px double #6a757a;background:#171c22;color:#c4d3d2;font:11px monospace;text-decoration:none}
 
 .local-bot-controls{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font:11px monospace}.local-bot-controls small{color:#b8af93;max-width:340px}.local-bot-controls[hidden]{display:none}
+
+#partyToolbar [data-action="startExpedition"]{border-color:#c9b77c;background:#343a30;color:#eee1bb}
+.party-loadout-shortcut{position:absolute;top:48px;left:10px;pointer-events:auto;z-index:3}
+#dmNextStep{color:#e6d6aa}
+#dmPalette .dm-placement-guide details{font-size:11px}

@@ -1,6 +1,6 @@
-import {CLASSES} from './party-campaign.js?v=64ad63ccf9b715304e37145621288e4cb455ca14';
-import {createHeldInput} from './held-input.js?v=64ad63ccf9b715304e37145621288e4cb455ca14';
-import {MONSTER_KINDS} from './monster-sprites.js?v=64ad63ccf9b715304e37145621288e4cb455ca14';
+import {CLASSES} from './party-campaign.js?v=f07b267ba3b378ae9cbde026bbf48f44495e778f';
+import {createHeldInput} from './held-input.js?v=f07b267ba3b378ae9cbde026bbf48f44495e778f';
+import {MONSTER_KINDS} from './monster-sprites.js?v=f07b267ba3b378ae9cbde026bbf48f44495e778f';
 
 const HERO_IDS = ['hero-1', 'hero-2', 'hero-3'];
 const MOVEMENT = new Set(['w', 'a', 's', 'd', 'arrowup', 'arrowleft', 'arrowdown', 'arrowright']);
@@ -47,7 +47,7 @@ export function hitPartyViewport(rectangles, x, y) {
  */
 export function createPartyView(options = {}) {
   const {THREE, renderer, scene, dmCamera, roof, campaign, makePlayerSprite, createEquipmentSprites,
-    layoutEquipment, moveActor = () => {}, onAction, onStart, onNewDungeon,onOpenLab, onPlace, onValidate, onInventory, onLoadout, onClass, onNamedLock,
+    layoutEquipment, moveActor = () => {}, onAction, onStart, onNewDungeon,onOpenLab,onFloor, onPlace, onValidate, onInventory, onLoadout, onClass, onNamedLock,
     notify = () => {}} = options;
   if (!THREE || !renderer?.domElement || !scene?.add || !dmCamera || !Array.isArray(campaign?.actors) || campaign.actors.length !== 3) throw new TypeError('Party view requires THREE, renderer, scene, DM camera and three campaign actors.');
   if (campaign.actors.some((a, i) => a.id !== HERO_IDS[i])) throw new TypeError('Party actors must use stable hero-1 through hero-3 ids.');
@@ -65,7 +65,7 @@ export function createPartyView(options = {}) {
   const hostControls = [];
   let placementRevision=0;let namedLockSelect=null,namedLockOptions='',toolStatus=null,tileStatus=null,placementStatus=null,selectedTile=null;
   const tileMarker=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({color:0xc8b778,transparent:true,opacity:.28,depthTest:false,depthWrite:false,side:THREE.DoubleSide}));tileMarker.name='dm-target-tile';tileMarker.rotation.x=-Math.PI/2;tileMarker.renderOrder=1000;tileMarker.userData.dmOnly=true;tileMarker.visible=false;scene.add(tileMarker);
-  let shell = null, toolbar = null, palette = null, launcher = null, startButton = null,labButton=null,newDungeonButton=null,workflowStatus=null, validationLabel = null, resourceLabel = null, result = null, resultKey = '', dismissedResultKey = '';
+  let shell = null, toolbar = null, palette = null, launcher = null, startButton = null,labButton=null,newDungeonButton=null,workflowStatus=null,workflowNext=null,cancelPlacement=null,floorSelect=null, validationLabel = null, resourceLabel = null, result = null, resultKey = '', dismissedResultKey = '';
   const world = () => {try {return options.getWorld?.() ?? {};} catch {return {paused: true};}};
   // An invalid non-null assignment waits without exposing a host viewport.
   const remoteId = () => {const id = world().remoteActorId; return id == null ? null : HERO_IDS.includes(id) ? id : 'unassigned';};
@@ -212,6 +212,7 @@ export function createPartyView(options = {}) {
   function updateUI() {
     if (!toolbar) return;
     const remote = syncMode(), w = world(), active = phase() === 'active', dm = w.dmResources;
+    if(floorSelect){setUI(floorSelect,'value',String(w.floor??0));setUI(floorSelect,'disabled',active||!!remote||starting||!!(w.busy||w.isGenerating)||typeof onFloor!=='function');}
     if(labButton)setUI(labButton,'disabled',active||starting||!!remote||!!(w.busy||w.isGenerating));
     for (const control of hostControls) setUI(control, 'hidden', !!remote);
     if (title) setUI(title, 'textContent', remote ? 'HOLLOW · ' + remote : 'HOLLOW · DM + 3');
@@ -223,11 +224,13 @@ export function createPartyView(options = {}) {
     setUI(dmHint, 'textContent', dmOpen?'Choose a tool, then click a highlighted tile. Drag map to orbit. Esc cancels.':active?'Local controls: 1 / 2 / 3 select hero · 0 DM · or click a pane':'Local test: 1 / 2 / 3 select hero · Start expedition to move');
     setUIClass(document?.body,'dm-open', !remote && dmOpen && enabled);
     setUI(startButton, 'disabled', !enabled || !!remote || active || starting || (phase()==='lobby'&&!validation.valid) || !!(w.busy || w.isGenerating || w.paused) || typeof onStart !== 'function');
-    setUI(startButton, 'textContent', starting ? 'Preparing…' : phase() === 'lobby' ? 'Start expedition' : 'Next expedition');
+    setUI(startButton, 'textContent', starting ? 'Preparing…' : active ? 'Expedition running' : phase() === 'lobby' ? 'Start expedition' : 'Next expedition');
     if(newDungeonButton)setUI(newDungeonButton, 'disabled', !!remote||active||starting||!!(w.busy||w.isGenerating)||typeof onNewDungeon!=='function');
-    if(workflowStatus)setUI(workflowStatus, 'textContent', (active?'EXPEDITION IN PROGRESS':'SETUP — build dungeon + choose loadouts')+(w.seed?' · Seed: '+w.seed:''));
+    if(workflowStatus)setUI(workflowStatus,'textContent',(active?'LIVE · spend stamina':'PREPARATION · spend setup budget')+' · Floor '+((w.floor??0)+1));
+    if(workflowNext)setUI(workflowNext,'textContent',active?'Hunt the party. Live placements cost stamina. Layout editing is locked.':!validation.valid?'Next: fix the route — '+(validation.reason??validation.errors?.[0]??'Check the completion path.'):'Next: choose loadouts, place encounters, then Start expedition.');
+    setUI(startButton,'title',active?'The expedition is already running.':!validation.valid?'Cannot start: '+(validation.reason??validation.errors?.[0]??'Check the completion path.'):'Begin once everyone has chosen class and gear.');
     setUI(validationLabel, 'textContent', validation.valid ? (validation.metrics?'Route ready · '+validation.metrics.metres+' m · '+validation.metrics.turns+' turns':'Route ready') : (validation.errors?.[0] ?? validation.reason ?? 'Route not ready'));
-    setUI(resourceLabel, 'textContent', dm ? active?`DM stamina ${Math.floor(dm.stamina??0)} / ${dm.maxStamina??'?'}`:`Setup budget ${dm.remainingBudget??'?'} / ${dm.budget??'?'}` : 'DM resources pending');
+    setUI(resourceLabel,'textContent',dm?active?`DM stamina ${Math.floor(dm.stamina??0)} / ${dm.maxStamina??'?'}`:`Build points: ${dm.remainingBudget??'?'} / ${dm.budget??'?'} left`:'DM resources pending');
     for (const [id, controls] of ui) {
       const a = actor(id); if (!a) continue;
       setUI(controls.pane, 'hidden', buildWorkspace() || !!remote && id !== remote || !!w.mobileLayout&&id!==(remote??focusedId));
@@ -235,7 +238,7 @@ export function createPartyView(options = {}) {
       const rowParent = remote === id ? controls.pane : partySetup;
       if (controls.row.parentNode !== rowParent && controls.row.parent !== rowParent) rowParent.appendChild(controls.row);
       setStyleText(controls.row.style, remote === id ? 'position:absolute;left:12px;top:76px;pointer-events:auto;max-width:calc(100% - 24px)' : '');
-      const owned=locallyOwned(a),selected=focusedId===id&&owned;
+      const owned=locallyOwned(a),selected=focusedId===id&&owned;setUI(controls.setup,'hidden',active||!!remote||!selected);
       setUI(controls.label, 'textContent', `${id.slice(-1)} · ${CLASSES[a.classId]?.name ?? a.classId ?? 'Adventurer'}${!owned?' · REMOTE CONTROL':w.botIds?.includes(id)?' · BOT':selected?' · ACTIVE CONTROL':''}`);
       setUI(controls.label, 'disabled', !owned);setUIAttribute(controls.label,'aria-pressed',String(selected));setUI(controls.label, 'title', owned?(remote?'Your adventurer':`Click this pane or press ${id.slice(-1)} to control this adventurer`):'Controlled by a remote player');
       setUI(controls.pane.dataset, 'focused', String(selected));setUI(controls.hint, 'hidden', !selected);
@@ -252,9 +255,11 @@ export function createPartyView(options = {}) {
 
       setUI(button, 'textContent', toolLabel(kind) + (Number.isFinite(amount) ? ` · ${amount} ${active ? 'STA' : 'budget'}` : ''));
       setUI(button, 'hidden', !!remote);
-      setUI(button, 'disabled', starting || !!(w.busy || w.isGenerating) || typeof onPlace !== 'function' || ((kind.startsWith('door:')||kind.startsWith('key:'))&&phase()!=='lobby') || (kind==='key:named'&&!(w.namedLocks??[]).some(l=>l.id===w.selectedNamedLockId)));
+      const available=active?dm?.stamina:dm?.remainingBudget,unaffordable=Number.isFinite(amount)&&Number.isFinite(available)&&amount>available;setUI(button,'title',unaffordable?'Need '+amount+' '+(active?'stamina':'budget')+'; '+Math.floor(available)+' remaining.':'Choose this tool, then click a highlighted map tile.');
+      setUI(button, 'disabled', unaffordable || starting || !!(w.busy || w.isGenerating) || typeof onPlace !== 'function' || ((kind.startsWith('door:')||kind.startsWith('key:'))&&phase()!=='lobby') || (kind==='key:named'&&!(w.namedLocks??[]).some(l=>l.id===w.selectedNamedLockId)));
       setUIClass(button,'active', tool === kind);setUIAttribute(button,'aria-pressed',String(tool===kind));
     }
+    if(cancelPlacement)setUI(cancelPlacement,'hidden',tool==='select');
     if(toolStatus)setUI(toolStatus, 'textContent', 'Tool: '+toolLabel(tool)+(tool==='select'?' — click a tile to inspect':' — click map once to place; repeat to place more'));
     if(tileStatus&&selectedTile)setUI(tileStatus, 'textContent', tileDescription(selectedTile));
     for (const [kind, capability] of [['summonBoss', 'canSummonBoss'], ['possessBoss', 'canPossessBoss']]) {
@@ -287,26 +292,27 @@ export function createPartyView(options = {}) {
     toolbar = make('div'); toolbar.id = 'partyToolbar'; toolbar.hidden = true;
     title = make('b', 'HOLLOW · DM + 3'); toolbar.appendChild(title);
     const soloButton = labButton=button('Dungeon Lab', () => {if (!remoteId()&&phase()!=='active'&&!starting&&!busy()){setEnabled(false);onOpenLab?.();}}), toolsButton = button('DM tools', () => {focus('dm'); setDMOpen(!dmOpen);});
-    toolbar.appendChild(soloButton); toolbar.appendChild(toolsButton);hostControls.push(soloButton,toolsButton);
+    toolbar.appendChild(toolsButton);hostControls.push(soloButton,toolsButton);
     newDungeonButton=button('New dungeon',async()=>{if(remoteId()||phase()==='active'||starting||busy()||typeof onNewDungeon!=='function')return;starting=true;clearInputs();focus('dm');setDMOpen(true);updateUI();try{await onNewDungeon();validate();}catch(error){report(error);}finally{starting=false;updateUI();}});newDungeonButton.dataset.action='newDungeon';toolbar.appendChild(newDungeonButton);hostControls.push(newDungeonButton);
-    startButton = button('Start expedition', () => {void start();}); toolbar.appendChild(startButton);
-    const pathButton = button('Show completion path', () => validate(true)); toolbar.appendChild(pathButton); hostControls.push(startButton, pathButton);
+    startButton = button('Start expedition', () => {void start();}); toolbar.insertBefore(startButton,toolbar.children[0]);startButton.dataset.action='startExpedition';
+    const pathButton = button('Show completion path', () => validate(true)); toolbar.insertBefore(pathButton,newDungeonButton); hostControls.push(startButton, pathButton);
     for (const kind of ['summonBoss', 'possessBoss']) {const b = button(kind, () => bossAction(kind)); b.dataset.action = kind; toolbar.appendChild(b); hostControls.push(b);}
-    validationLabel = make('span'); toolbar.appendChild(validationLabel); resourceLabel = make('span'); toolbar.appendChild(resourceLabel); hostControls.push(validationLabel, resourceLabel); document.body.appendChild(toolbar);
+    validationLabel = make('span'); toolbar.appendChild(validationLabel); resourceLabel = make('span'); toolbar.appendChild(resourceLabel); hostControls.push(validationLabel, resourceLabel);toolbar.appendChild(soloButton);soloButton.title='Advanced dungeon generation and geometry editor. Available between expeditions.';newDungeonButton.title='Replace both floors with a fresh seed and reset setup placements.';document.body.appendChild(toolbar);
     shell = make('div'); shell.id = 'partyShell'; shell.hidden = true; shell.style.gap = '0';
     dmPane = make('section'); dmPane.className = 'party-pane'; dmLabel = button('0 · DM · overhead / edit', () => focus('dm')); dmLabel.className = 'party-label'; dmPane.appendChild(dmLabel);dmHint=make('span');dmHint.className='party-hud';dmPane.appendChild(dmHint);shell.appendChild(dmPane);
     palette = make('section'); palette.id = 'dmPalette'; palette.hidden = true; palette.appendChild(make('h2', 'Dungeon master'));
-    const guide=make('div');guide.className='dm-placement-guide';workflowStatus=make('p');workflowStatus.id='dmWorkflowStatus';guide.appendChild(workflowStatus);guide.appendChild(make('b','1. Choose a tool  →  2. Click a tile'));guide.appendChild(make('p','Placement is a single click, not a drag. Drag the map to orbit. Gold shows the target tile; red means unsupported floor. Esc returns to Inspect.'));toolStatus=make('p');toolStatus.id='dmToolStatus';guide.appendChild(toolStatus);tileStatus=make('p','No tile selected. Point at the DM map to preview a tile.');tileStatus.id='dmTileStatus';guide.appendChild(tileStatus);placementStatus=make('p','Ready to inspect.');placementStatus.id='dmPlacementStatus';placementStatus.setAttribute('role','status');guide.appendChild(placementStatus);palette.appendChild(guide);
-    partySetup=make('details');partySetup.appendChild(make('summary','Adventurers & loadouts'));palette.appendChild(partySetup);
+    const guide=make('div');guide.className='dm-placement-guide';workflowStatus=make('p');workflowStatus.id='dmWorkflowStatus';guide.appendChild(workflowStatus);const floorLabel=make('label','Edit floor ');floorSelect=select([['0','Floor I · Entry halls'],['1','Floor II · Lower archive']],value=>{if(phase()!=='lobby'||remoteId()||busy()||typeof onFloor!=='function')return;tool='select';drag=null;selectedTile=null;tileMarker.visible=false;placementRevision++;setUI(tileStatus,'textContent','Floor '+(Number(value)+1)+' selected. Tap a tile to inspect.');onFloor(Number(value));updateUI();});floorSelect.setAttribute('aria-label','Dungeon floor to edit');floorLabel.appendChild(floorSelect);guide.appendChild(floorLabel);workflowNext=make('p');workflowNext.id='dmNextStep';guide.appendChild(workflowNext);guide.appendChild(make('b','Choose a tool → tap a highlighted tile'));const placementHelp=make('details');placementHelp.appendChild(make('summary','Placement & resources explained'));placementHelp.appendChild(make('p','Tap once to place. Drag to orbit; pinch or scroll to zoom. Gold marks the target tile; red means unsupported floor. Esc returns to Inspect. Setup budget is spent before the run; live stamina pays for changes during play. Keys must be reachable before their locks.'));guide.appendChild(placementHelp);toolStatus=make('p');toolStatus.id='dmToolStatus';guide.appendChild(toolStatus);cancelPlacement=button('Cancel placement',()=>{tool='select';drag=null;placementRevision++;tileMarker.visible=false;setUI(placementStatus,'textContent','Placement canceled. Tap a tile to inspect.');updateUI();});cancelPlacement.hidden=true;guide.appendChild(cancelPlacement);tileStatus=make('p','No tile selected. Point at the DM map to preview a tile.');tileStatus.id='dmTileStatus';guide.appendChild(tileStatus);placementStatus=make('p','Ready to inspect.');placementStatus.id='dmPlacementStatus';placementStatus.setAttribute('role','status');guide.appendChild(placementStatus);palette.appendChild(guide);
+    partySetup=make('details');partySetup.className='dm-setup-group';partySetup.appendChild(make('summary','Adventurers & loadouts'));palette.appendChild(partySetup);
     for (const a of campaign.actors) {
       const pane = make('section'); pane.className = 'party-pane'; pane.dataset.actor = a.id;
       const label = button(a.id, () => focus(a.id)); label.className = 'party-label'; pane.appendChild(label);
       const hud = make('div'); hud.className = 'party-hud'; const stats = make('span'); hud.appendChild(stats); hud.appendChild(button('Inventory', () => openInventory(a)));const hint=make('span');hint.className='party-control-hint';hint.style.flexBasis='100%';hint.hidden=true;hud.appendChild(hint);pane.appendChild(hud); shell.appendChild(pane);
+      const setup=button('Choose class & gear',()=>{if(phase()!=='lobby'||remoteId()||busy())return;focus('dm');setDMOpen(true);partySetup.open=true;partySetup.scrollIntoView?.({block:'nearest'});notify('Choose each adventurer’s class, weapon and off hand below. Inventory equips armor and collected loot.');});setup.className='party-loadout-shortcut';pane.appendChild(setup);
       const row = make('div'); row.className = 'party-setup-row'; row.appendChild(make('b', a.id));
       const classSelect = select(Object.values(CLASSES).map(c => [c.id, c.name]), id => setClass(a, id)); classSelect.setAttribute('aria-label', a.id + ' class'); row.appendChild(classSelect);
       const weapon = select([], id => loadout(a, 'weapon', id)); weapon.setAttribute('aria-label', a.id + ' weapon'); row.appendChild(weapon);
       const offhand = select([], id => loadout(a, 'offhand', id)); offhand.setAttribute('aria-label', a.id + ' offhand'); row.appendChild(offhand);
-      row.appendChild(button('Inventory', () => openInventory(a))); partySetup.appendChild(row); ui.set(a.id, {pane, row, label, stats, hint, classSelect, weapon, offhand});
+      row.appendChild(button('Inventory', () => openInventory(a))); partySetup.appendChild(row); ui.set(a.id, {pane, row, label, stats, hint, setup,classSelect, weapon, offhand});
     }
     const groups=[['Inspect & remove',['select','erase']],['Monsters',TOOLS.filter(k=>k.startsWith('monster:'))],['Traps & obstacles',TOOLS.filter(k=>k.startsWith('trap:'))],['Locks & keys',TOOLS.filter(k=>k.startsWith('door:')||k.startsWith('key:'))]];
     for(const [label,kinds]of groups){const section=make('details');section.open=label==='Monsters'||label==='Inspect & remove';section.className='dm-tool-group';section.appendChild(make('summary',label));
@@ -358,7 +364,8 @@ export function createPartyView(options = {}) {
   listen(canvas, 'pointerdown', event => {
     if (!enabled || event.button > 0) return;
     const rect = hitPartyViewport(getViewports(), event.clientX, event.clientY); if (!rect) return;
-    if(!focus(rect.id))return;drag = {id: rect.id, x: event.clientX, y: event.clientY, startX: event.clientX, startY: event.clientY};
+    if(!focus(rect.id))return;if(rect.id==='dm'&&dmOpen){const target=raycast(event.clientX,event.clientY);if(target)preview(target.position);}
+    drag = {id: rect.id, x: event.clientX, y: event.clientY, startX: event.clientX, startY: event.clientY};
     try {canvas.setPointerCapture?.(event.pointerId);} catch { /* Capture may be denied for a canceled pointer. */ }
     if (rect.id !== 'dm') {event.preventDefault(); event.stopImmediatePropagation?.();}
   }, true);

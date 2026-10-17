@@ -1,4 +1,4 @@
-import {validateDungeon} from './progression-validator.js?v=64ad63ccf9b715304e37145621288e4cb455ca14';
+import {validateDungeon} from './progression-validator.js?v=f07b267ba3b378ae9cbde026bbf48f44495e778f';
 const dirs=[[0,-1],[1,0],[0,1],[-1,0]];
 /** Snapshot the navigation recipe, not scene meshes or enemy positions. */
 export function dungeonProgression({levels,size,tiles,locks=[],edgeAt=()=>null,extraKeys=[]}={}){

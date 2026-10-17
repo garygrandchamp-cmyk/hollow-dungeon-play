@@ -1,4 +1,4 @@
-import {createPeerSession, MAX_CODE_LENGTH} from './peer-session.js?v=64ad63ccf9b715304e37145621288e4cb455ca14';
+import {createPeerSession, MAX_CODE_LENGTH} from './peer-session.js?v=f07b267ba3b378ae9cbde026bbf48f44495e778f';
 
 // Callbacks start gameplay only after the player explicitly chooses a play button.
 // sessionFactory(peerOptions) may inject the application's message/authority hooks.
@@ -7,6 +7,16 @@ export function createStartScreen({onLocal = () => {}, onHost = () => {}, onJoin
   const root = doc.createElement('div'); root.className = 'hollow-start'; root.setAttribute('role', 'dialog'); root.setAttribute('aria-modal', 'true'); root.setAttribute('aria-label', 'Hollow main menu');
   const style = doc.createElement('style'); style.textContent = `
   .hollow-start{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:20px;background:radial-gradient(ellipse at 50% 15%,#293030ed,#080b10fa 70%);color:#eee2c9;font:15px/1.5 Georgia,serif;overflow:auto;box-sizing:border-box}.hollow-start[hidden]{display:none}.hollow-start *{box-sizing:border-box}.hollow-start .hs-card{width:min(760px,100%);max-height:calc(100dvh - 40px);overflow:auto;padding:clamp(22px,4vw,42px);border:1px solid #71634a;background:#141719;box-shadow:0 24px 100px #0009}.hollow-start h1{font-size:clamp(38px,8vw,64px);letter-spacing:.18em;margin:0;color:#ead4a2}.hollow-start h2{font-size:25px;margin:12px 0}.hollow-start h3{margin:0 0 8px}.hollow-start p{color:#c2bdaf}.hollow-start .hs-kicker{color:#bba879;letter-spacing:.2em;font:11px/1.5 system-ui,sans-serif;text-transform:uppercase}.hollow-start button{font:inherit;color:#eee2c9;border:1px solid #6d624e;background:#24292a;padding:10px 16px;cursor:pointer}.hollow-start button:hover{background:#343c3b}.hollow-start button:focus-visible,.hollow-start textarea:focus-visible{outline:3px solid #e3bf72;outline-offset:3px}.hollow-start button:disabled{opacity:.45;cursor:wait}.hollow-start .hs-main{display:grid;gap:10px;margin-top:26px}.hollow-start .hs-primary{background:#6a512d;border-color:#bea16a}.hollow-start .hs-row{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}.hollow-start textarea{display:block;width:100%;min-height:86px;margin:6px 0 10px;padding:10px;color:#e7e3d8;background:#0c1012;border:1px solid #646456;resize:vertical;font:12px/1.4 monospace;word-break:break-all}.hollow-start label{display:block;margin-top:10px}.hollow-start fieldset{border:1px solid #514d40;margin:20px 0;padding:16px}.hollow-start legend{padding:0 8px;color:#e5cb97}.hollow-start .hs-status{min-height:1.5em;color:#e3c783}.hollow-start small{color:#aaa89e}.hollow-start [hidden]{display:none!important}`;
+  style.textContent+=`
+  .hollow-start .hs-choice{min-width:0;display:grid;gap:3px}
+  .hollow-start .hs-choice button{width:100%;min-height:44px;text-align:left;white-space:normal;overflow-wrap:anywhere}
+  .hollow-start .hs-choice small{display:block;font:11px/1.5 "Lucida Console",monospace;color:#b8b2a4}
+  .hollow-start .hs-main h3{font:12px/1.5 "Lucida Console",monospace;color:#c7b17f;margin:10px 0 0;letter-spacing:1px}
+  .hollow-start .hs-main{margin-top:12px}
+  .hollow-start .hs-flow{font:11px/1.6 "Lucida Console",monospace;border-block:1px solid #514d40;padding-block:9px;margin:10px 0 0}
+  .hollow-start .hs-status:empty{margin:0;min-height:0}
+  .hollow-start .hs-tools{border-top:1px solid #514d40;padding-top:10px;margin-top:6px}
+  `;
   root.append(style); const card = doc.createElement('section'); card.className = 'hs-card'; root.append(card);
   let session = null, page = 'main', disposed = false, resume = false, previousFocus = null, generation = 0;
   const connected = new Set();
@@ -46,19 +56,32 @@ export function createStartScreen({onLocal = () => {}, onHost = () => {}, onJoin
   }
   function networkNote() { node('small', 'Manual connection: exchange codes privately. Codes include network addresses. STUN can help discover a route; some networks require a TURN relay and will not connect with this setup.'); }
   function main(keepSession = false) {
-    if (keepSession !== true) closeSession(); heading('The party awaits', 'Play locally, host a dungeon for up to three remote adventurers, or join a host.');
+    if (keepSession !== true) closeSession(); heading('The party awaits', 'Choose your role: explore as an adventurer or command the dungeon as its master.');
+    node('p','Choose loadouts → validate the dungeon → start the expedition. Survivors carry found loot into the next run.').className='hs-flow';
     const menu = node('div'); menu.className = 'hs-main';
+    const choice=(id,label,description,action,parent=menu)=>{
+      const row=node('div',undefined,parent);row.className='hs-choice';
+      const actionButton=button(label,action,row),help=node('small',description,row);help.id='hs-mode-'+id;
+      actionButton.setAttribute('aria-describedby',help.id);return actionButton;
+    };
     if (resume) button('Resume game', () => invoke(onResume), menu).className = 'hs-primary';
-    button('Play locally', () => { closeSession(); return invoke(onLocal); }, menu).className = 'hs-primary';
-    button('Solo adventurer · AI DM + companions', () => { closeSession(); return invoke(onLocal,{mode:'adventurer'}); }, menu);
-    button('Solo DM · three bot adventurers', () => { closeSession(); return invoke(onLocal,{mode:'dm'}); }, menu);
-    if(typeof onLab==='function')button('Dungeon Lab · build & edit',()=>invoke(onLab),menu);
-    button('Host a party', host, menu); button('Join a party', join, menu); button('Options', () => invoke(onOptions), menu);
+    node('h3','Play on this device',menu);
+    choice('adventurer','Solo adventurer','You explore. An AI dungeon master opposes you; two AI companions follow.',() => { closeSession(); return invoke(onLocal,{mode:'adventurer'}); }).className='hs-primary';
+    choice('dm','Solo dungeon master','You build and direct encounters against three bot adventurers.',() => { closeSession(); return invoke(onLocal,{mode:'dm'}); });
+    choice('local','Local party · shared screen','Human-controlled DM and three adventurers share this device. Switch between roles.',() => { closeSession(); return invoke(onLocal); });
+    node('h3','Play online',menu);
+    choice('host','Host online · dungeon master','Invite up to three remote adventurers by exchanging connection codes.',host);
+    choice('join','Join online · adventurer','Use an invite code from your dungeon master. No public matchmaking.',join);
+    button('Options', () => invoke(onOptions), menu);
+    if(typeof onLab==='function'){
+      const tools=node('div',undefined,menu);tools.className='hs-tools';
+      choice('lab','Dungeon Lab · advanced editor','Generate, inspect and edit dungeon geometry. Separate from starting a game.',()=>invoke(onLab),tools);
+    }
     focusFirst();
   }
   function invoke(callback, data = {}) { return Promise.resolve().then(() => callback({...data, screen: api})).catch(error => setStatus(errorText(error))); }
   function host() {
-    heading('Host a party', 'Create one invite per adventurer. Give each player their invite, then paste their answer into the matching slot.');
+    heading('Host a party', 'You are the dungeon master. Create one invite per remote adventurer, then paste each answer into its matching slot. After connecting, prepare the dungeon before starting the expedition.');
     try { newSession(); } catch (error) { setStatus(errorText(error)); }
     for (let slot = 1; slot <= 3; slot++) {
       const group = node('fieldset'); node('legend', `Adventurer ${slot}`, group);
@@ -71,11 +94,11 @@ export function createStartScreen({onLocal = () => {}, onHost = () => {}, onJoin
       button('Accept answer', el => busy(el, async current => { if (!session) throw new Error('Create an invite first.'); await session.acceptAnswer(slot, answer.value); if (current()) setStatus(`Connecting adventurer ${slot}…`); }), group);
       button('Reset slot', () => { session?.disconnect(slot); offer.value = ''; answer.value = ''; connected.delete(slot); updateConnections(); setStatus(`Slot ${slot} cleared. Create a new invite.`); }, group);
     }
-    const play = button('Start hosted game', () => invoke(onHost, {session})); play.dataset.hostPlay = ''; play.className = 'hs-primary';
+    const play = button('Open party setup', () => invoke(onHost, {session})); play.dataset.hostPlay = ''; play.className = 'hs-primary';
     button('Back', main); networkNote(); updateConnections(); focusFirst();
   }
   function join() {
-    heading('Join a party', 'Paste your host’s invite, create an answer, and send that answer back to the host. Wait for the connection before continuing.');
+    heading('Join a party', 'You are an adventurer. Paste your dungeon master’s invite, create an answer, and send it back. Once connected, enter the party to choose your loadout and wait for the expedition.');
     try { newSession(); } catch (error) { setStatus(errorText(error)); }
     const offer = codeBox('Paste host invite', card), answer = codeBox('Your answer code', card, true);
     const actions = node('div'); actions.className = 'hs-row';
