@@ -1,4 +1,5 @@
-import {batchStaticGroup} from './mesh-batch.js?v=d4e934c03d90dda7229472246676281450a3dcd7';
+import {roomContainsCell} from './room-footprint.js?v=4bd264fda816e55230532703e5373771ce7389ce';
+import {batchStaticGroup} from './mesh-batch.js?v=4bd264fda816e55230532703e5373771ce7389ce';
 
 /** Two central tile cells in each axis are lowered. Four stepped ring sides
  * stay inside those tiles, so existing room doors/perimeter remain at0m.
@@ -12,6 +13,20 @@ export function createRoomElevationPlan(room,size,module=4.8,{depth=.9,stairWidt
   if(avoid.some(b=>b&&left<b.right&&right>b.left&&north<b.south&&south>b.north))return null;
   const tileIndices=[];for(let z=tileZ;z<tileZ+2;z++)for(let x=tileX;x<tileX+2;x++)tileIndices.push(z*size+x);
   return {kind:'sunken-room',left,right,north,south,depth,stairWidth,steps,tileX,tileZ,tileIndices,module,size,floorHeight:-depth};
+}
+/** Find a fully occupied 4×4 patch before cutting a sunken court. Its outer
+ * ring remains level, so doors and concave corners never acquire hidden drops.
+ * Rectangles retain their saved south-side treatment beside the gallery.
+ */
+export function roomElevationCore(room){
+ if(!room||room.w<5||room.h<5)return null;
+ if(!room.footprint)return {...room,z:room.z+room.h-4,w:4,h:4};
+ const candidates=[];
+ for(let row=0;row<=room.h-4;row++)for(let col=0;col<=room.w-4;col++){
+  if(Array.from({length:4},(_,z)=>Array.from({length:4},(_,x)=>roomContainsCell(room,col+x,row+z)).every(Boolean)).every(Boolean))candidates.push({col,row});
+ }
+ candidates.sort((a,b)=>(a.col+2-room.w/2)**2+(a.row+2-room.h/2)**2-((b.col+2-room.w/2)**2+(b.row+2-room.h/2)**2)||b.row-a.row||a.col-b.col);
+ const core=candidates[0];return core?{x:room.x+core.col,z:room.z+core.row,w:4,h:4}:null;
 }
 export const tileElevationOffset=(plans,index)=>{for(const p of plans??[])if(p?.tileIndices.includes(index))return -p.depth;return 0;};
 

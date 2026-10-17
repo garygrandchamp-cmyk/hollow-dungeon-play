@@ -3,6 +3,8 @@
  * No footprint means the original full rectangle; no Sets are serialized.
  */
 export const ROOM_SHAPES=Object.freeze(['l','cross','t','clipped-corner']);
+export const LARGE_ROOM_SHAPES=Object.freeze(['octagonal','transept','apse']);
+const knownShapes=[...ROOM_SHAPES,...LARGE_ROOM_SHAPES];
 const bounds=r=>r&&[r.x,r.z,r.w,r.h].every(Number.isInteger)&&r.w>0&&r.h>0&&r.w<=128&&r.h<=128;
 export function roomContainsCell(room,col,row){
  if(!bounds(room)||!Number.isInteger(col)||!Number.isInteger(row)||col<0||row<0||col>=room.w||row>=room.h)return false;
@@ -36,7 +38,7 @@ export function roomCenterTile(room){
 }
 export function validateRoomFootprint(room){
  if(!bounds(room))return false;if(room.footprint===undefined)return true;
- const f=room.footprint;if(!f||f.version!==1||!ROOM_SHAPES.includes(f.shape)||!Number.isInteger(f.rotation)||f.rotation<0||f.rotation>3||!Array.isArray(f.rows)||f.rows.length!==room.h||f.rows.some(row=>typeof row!=='string'||row.length!==room.w||!/^[01]+$/.test(row)))return false;
+ const f=room.footprint;if(!f||f.version!==1||!knownShapes.includes(f.shape)||!Number.isInteger(f.rotation)||f.rotation<0||f.rotation>3||!Array.isArray(f.rows)||f.rows.length!==room.h||f.rows.some(row=>typeof row!=='string'||row.length!==room.w||!/^[01]+$/.test(row)))return false;
  const cells=roomCells(room);if(cells.length<7||cells.length>=room.w*room.h||f.rows.some(row=>!row.includes('1')))return false;
  if(Array.from({length:room.w},(_,col)=>f.rows.every(row=>row[col]==='0')).some(Boolean))return false;
  const occupied=new Set(cells.map(p=>p.row*room.w+p.col)),queue=[cells[0]],seen=new Set([queue[0].row*room.w+queue[0].col]);
@@ -49,12 +51,16 @@ export function validateRoomFootprint(room){
  return cells.every(p=>[-1,0].some(dx=>[-1,0].some(dz=>[0,1].every(x=>[0,1].every(z=>roomContainsCell(room,p.col+dx+x,p.row+dz+z))))));
 }
 export function makeRoomFootprint(room,shape,rotation=0){
- if(!bounds(room)||room.w<3||room.h<3||!ROOM_SHAPES.includes(shape))throw TypeError('Room shape requires valid bounds and a known shape.');
+ if(!bounds(room)||room.w<3||room.h<3||!knownShapes.includes(shape))throw TypeError('Room shape requires valid bounds and a known shape.');
+ if(LARGE_ROOM_SHAPES.includes(shape)&&Math.min(room.w,room.h)<6)throw TypeError('Large room shapes require at least 6×6 cells.');
  const turns=((Math.trunc(rotation)%4)+4)%4;
  if(shape==='cross'&&Math.min(room.w,room.h)<4)shape='clipped-corner';
  const width=turns%2?room.h:room.w,height=turns%2?room.w:room.h;
  const stem=Math.max(2,Math.floor(width/2)),band=Math.max(2,Math.floor(height/2)),left=Math.floor((width-stem)/2),top=Math.floor((height-band)/2),clip=Math.min(2,Math.floor((Math.min(width,height)-1)/2));
  let rows=Array.from({length:height},(_,z)=>Array.from({length:width},(_,x)=>{
+  if(shape==='octagonal')return Math.min(x,width-1-x)+Math.min(z,height-1-z)>=2;
+  if(shape==='transept')return x>=1&&x<width-1||z>=Math.floor(height/3)&&z<height-Math.floor(height/3);
+  if(shape==='apse')return z>=2||x>=2-z&&x<width-(2-z);
   if(shape==='l')return !(x>=width-Math.floor(width/2)&&z<Math.floor(height/2));
   if(shape==='cross')return x>=left&&x<left+stem||z>=top&&z<top+band;
   if(shape==='t')return z<band||x>=left&&x<left+stem;

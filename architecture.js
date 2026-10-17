@@ -1,5 +1,5 @@
-import {solve,DIRS,tiles,random} from './wfc.js?v=d4e934c03d90dda7229472246676281450a3dcd7';
-import {roomContainsTile,roomCells as enumerateRoomCells,roomPerimeter,roomCenterTile,makeRoomFootprint,ROOM_SHAPES} from './room-footprint.js?v=d4e934c03d90dda7229472246676281450a3dcd7';
+import {solve,DIRS,tiles,random} from './wfc.js?v=4bd264fda816e55230532703e5373771ce7389ce';
+import {roomContainsTile,roomCells as enumerateRoomCells,roomPerimeter,roomCenterTile,makeRoomFootprint,ROOM_SHAPES,LARGE_ROOM_SHAPES} from './room-footprint.js?v=4bd264fda816e55230532703e5373771ce7389ce';
 function legacyPlan(size,scale='mixed'){
  const main=Math.min(size-5,scale==='intimate'?3:scale==='grand'?8:Math.max(3,Math.min(6,Math.floor(size*.38)))),entry=Math.max(3,Math.min(scale==='grand'?5:scale==='intimate'?3:4,size-main-3));
  const rooms=[{x:1,z:1,w:entry,h:entry,name:'Entry hall'},{x:size-main-1,z:size-main-1,w:main,h:main,name:'Grand reliquary'}],pins=new Map(),doors=[],route=[];
@@ -68,6 +68,15 @@ export function plan(size,scale='mixed',seed,extra=null){
   const fits=extras.every(pin=>{const s=pin.sockets??tiles[pin.tile]?.s,x=pin.index%size,z=Math.floor(pin.index/size);if(!s||x<r.x||x>=r.x+r.w||z<r.z||z>=r.z+r.h)return true;
    return inside(shaped,x,z)&&s.every((v,d)=>v===null||v===(inside(shaped,x+DIRS[d][0],z+DIRS[d][1])?1:0));});
   if(fits)rooms[k]=shaped;
+ }
+ // Grand chambers share the grid/socket contract but have their own broad masks.
+ // A separate stream leaves waypoint shapes and macro bounds stable. One quarter
+ // retain the rectangular double-height gallery; exact saved plans are untouched.
+ const grandRng=random(String(seed)+'|grand-footprints-v1|'+size+'|'+scale),grandChoice=Math.floor(grandRng()*4),main=rooms[1];
+ if(Math.min(main.w,main.h)>=6&&grandChoice<3){
+  const shape=LARGE_ROOM_SHAPES[grandChoice],shaped={...main,name:shape==='octagonal'?'Octagonal reliquary':shape==='transept'?'Transept chapel':'Apsidal sanctum',footprint:makeRoomFootprint(main,shape,Math.floor(grandRng()*4))};
+  const fits=extras.every(pin=>{const sockets=pin.sockets??tiles[pin.tile]?.s,x=pin.index%size,z=Math.floor(pin.index/size);return !sockets||!inside(main,x,z)||inside(shaped,x,z)&&sockets.every((v,d)=>v===null||v===(inside(shaped,x+DIRS[d][0],z+DIRS[d][1])?1:0));});
+  if(fits)rooms[1]=shaped;
  }
  const pins=new Map(),roomCells=new Set(),active=new Set(),doors=[null,null],route=[];
  const ensure=i=>{if(!pins.has(i))pins.set(i,[null,null,null,null]);return pins.get(i);};
