@@ -1,8 +1,8 @@
-import {combatTiming} from './combat-timing.js?v=b8b6cbf7a249f190b877d02f83550c5a29daf9e3';
-import {createDMEntranceOverlay} from './dm-entrance-overlay.js?v=b8b6cbf7a249f190b877d02f83550c5a29daf9e3';
-import {CLASSES} from './party-campaign.js?v=b8b6cbf7a249f190b877d02f83550c5a29daf9e3';
-import {createHeldInput} from './held-input.js?v=b8b6cbf7a249f190b877d02f83550c5a29daf9e3';
-import {MONSTER_KINDS} from './monster-sprites.js?v=b8b6cbf7a249f190b877d02f83550c5a29daf9e3';
+import {combatTiming} from './combat-timing.js?v=e3a6ee50098f0c339207c14d31fb32c004d8491c';
+import {createDMEntranceOverlay} from './dm-entrance-overlay.js?v=e3a6ee50098f0c339207c14d31fb32c004d8491c';
+import {CLASSES} from './party-campaign.js?v=e3a6ee50098f0c339207c14d31fb32c004d8491c';
+import {createHeldInput} from './held-input.js?v=e3a6ee50098f0c339207c14d31fb32c004d8491c';
+import {MONSTER_KINDS} from './monster-sprites.js?v=e3a6ee50098f0c339207c14d31fb32c004d8491c';
 
 const HERO_IDS = ['hero-1', 'hero-2', 'hero-3'];
 const MOVEMENT = new Set(['w', 'a', 's', 'd', 'arrowup', 'arrowleft', 'arrowdown', 'arrowright']);

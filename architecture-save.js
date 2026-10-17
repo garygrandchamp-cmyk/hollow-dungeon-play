@@ -1,5 +1,5 @@
-import {validateRoomFootprint,roomCellIndices} from './room-footprint.js?v=b8b6cbf7a249f190b877d02f83550c5a29daf9e3';
-import {plan} from './architecture.js?v=b8b6cbf7a249f190b877d02f83550c5a29daf9e3';
+import {validateRoomFootprint,roomCellIndices} from './room-footprint.js?v=e3a6ee50098f0c339207c14d31fb32c004d8491c';
+import {plan} from './architecture.js?v=e3a6ee50098f0c339207c14d31fb32c004d8491c';
 
 // Preserve the exact macro recipe, including void expanded by manual stamps.
 export function saveArchitecture(architecture) {
