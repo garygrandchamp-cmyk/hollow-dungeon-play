@@ -50,6 +50,8 @@ export function createStartScreen({onLocal = () => {}, onHost = () => {}, onJoin
     const menu = node('div'); menu.className = 'hs-main';
     if (resume) button('Resume game', () => invoke(onResume), menu).className = 'hs-primary';
     button('Play locally', () => { closeSession(); return invoke(onLocal); }, menu).className = 'hs-primary';
+    button('Solo adventurer · AI DM + companions', () => { closeSession(); return invoke(onLocal,{mode:'adventurer'}); }, menu);
+    button('Solo DM · three bot adventurers', () => { closeSession(); return invoke(onLocal,{mode:'dm'}); }, menu);
     if(typeof onLab==='function')button('Dungeon Lab · build & edit',()=>invoke(onLab),menu);
     button('Host a party', host, menu); button('Join a party', join, menu); button('Options', () => invoke(onOptions), menu);
     focusFirst();

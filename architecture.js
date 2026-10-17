@@ -1,4 +1,5 @@
 import {solve,DIRS,tiles,random} from './wfc.js';
+import {roomContainsTile,roomCells as enumerateRoomCells,roomPerimeter,roomCenterTile,makeRoomFootprint,ROOM_SHAPES} from './room-footprint.js';
 function legacyPlan(size,scale='mixed'){
  const main=Math.min(size-5,scale==='intimate'?3:scale==='grand'?8:Math.max(3,Math.min(6,Math.floor(size*.38)))),entry=Math.max(3,Math.min(scale==='grand'?5:scale==='intimate'?3:4,size-main-3));
  const rooms=[{x:1,z:1,w:entry,h:entry,name:'Entry hall'},{x:size-main-1,z:size-main-1,w:main,h:main,name:'Grand reliquary'}],pins=new Map(),doors=[],route=[];
@@ -11,7 +12,7 @@ function legacyPlan(size,scale='mixed'){
  for(let j=0;j<chain.length-1;j++){const a=chain[j],b=chain[j+1],dx=b%size-a%size,dz=Math.floor(b/size)-Math.floor(a/size),d=DIRS.findIndex(v=>v[0]===dx&&v[1]===dz);if(d<0)throw Error('Invalid architecture route');ensure(a)[d]=1;ensure(b)[(d+2)%4]=1;}
  return {scale,rooms,doors,start,stair,pins:[...pins].map(([index,sockets])=>({index,sockets})),protected:new Set(pins.keys())};
 }
-const inside=(r,x,z)=>x>=r.x&&x<r.x+r.w&&z>=r.z&&z<r.z+r.h;
+const inside=roomContainsTile;
 const separate=(a,b)=>a.x+a.w<b.x||b.x+b.w<a.x||a.z+a.h<b.z||b.z+b.h<a.z;
 function neighbor(i,d,n){const [dx,dz]=DIRS[d],x=i%n+dx,z=Math.floor(i/n)+dz;return x>=0&&z>=0&&x<n&&z<n?z*n+x:-1;}
 function pathBetween(n,start,goal,blocked,order){
@@ -57,15 +58,29 @@ export function plan(size,scale='mixed',seed,extra=null){
  }
  if(!rooms)throw Error('Could not place separated macro rooms.');
  rooms=rooms.map(rotate);
+ // Separate RNG preserves the existing seeded room bounds/entry/grand sizing.
+ // Saved architecture without this metadata continues to mean full rectangles.
+ const shapeRng=random(String(seed)+'|room-footprints-v1|'+size+'|'+scale);
+ for(let k=2;k<rooms.length;k++){
+  const r=rooms[k],chosen=ROOM_SHAPES[Math.floor(shapeRng()*ROOM_SHAPES.length)],turns=Math.floor(shapeRng()*4);
+  if(k>2&&shapeRng()<.25)continue;
+  const shaped={...r,footprint:makeRoomFootprint(r,chosen,turns)};
+  const fits=extras.every(pin=>{const s=pin.sockets??tiles[pin.tile]?.s,x=pin.index%size,z=Math.floor(pin.index/size);if(!s||x<r.x||x>=r.x+r.w||z<r.z||z>=r.z+r.h)return true;
+   return inside(shaped,x,z)&&s.every((v,d)=>v===null||v===(inside(shaped,x+DIRS[d][0],z+DIRS[d][1])?1:0));});
+  if(fits)rooms[k]=shaped;
+ }
  const pins=new Map(),roomCells=new Set(),active=new Set(),doors=[null,null],route=[];
  const ensure=i=>{if(!pins.has(i))pins.set(i,[null,null,null,null]);return pins.get(i);};
- for(const r of rooms)for(let z=r.z;z<r.z+r.h;z++)for(let x=r.x;x<r.x+r.w;x++){
+ for(const r of rooms)for(const {x,z}of enumerateRoomCells(r)){
   const i=z*size+x;active.add(i);roomCells.add(i);pins.set(i,DIRS.map(([dx,dz])=>inside(r,x+dx,z+dz)?1:0));
  }
+ function doorCandidates(room){
+  const candidates=room.footprint?roomPerimeter(room):[{x:room.x+Math.floor(room.w/2),z:room.z,d:0},{x:room.x+room.w-1,z:room.z+Math.floor(room.h/2),d:1},{x:room.x+Math.floor(room.w/2),z:room.z+room.h-1,d:2},{x:room.x,z:room.z+Math.floor(room.h/2),d:3}];
+  return candidates.map(p=>({...p,index:p.z*size+p.x})).filter(p=>{const j=neighbor(p.index,p.d,size);return j>=0&&!roomCells.has(j);});
+ }
  function doorFor(room,target){
-  const candidates=[{x:room.x+Math.floor(room.w/2),z:room.z,d:0},{x:room.x+room.w-1,z:room.z+Math.floor(room.h/2),d:1},{x:room.x+Math.floor(room.w/2),z:room.z+room.h-1,d:2},{x:room.x,z:room.z+Math.floor(room.h/2),d:3}];
-  const center={x:target.x+(target.w-1)/2,z:target.z+(target.h-1)/2};
-  return candidates.map(p=>({...p,index:p.z*size+p.x})).filter(p=>{const j=neighbor(p.index,p.d,size);return j>=0&&!roomCells.has(j);}).sort((a,b)=>Math.abs(a.x-center.x)+Math.abs(a.z-center.z)-Math.abs(b.x-center.x)-Math.abs(b.z-center.z))[0];
+  const center=roomCenterTile(target);
+  return doorCandidates(room).sort((a,b)=>Math.abs(a.x-center.x)+Math.abs(a.z-center.z)-Math.abs(b.x-center.x)-Math.abs(b.z-center.z))[0];
  }
  const order=[0,1,2,3];for(let k=3;k>0;k--){const j=int(0,k);[order[k],order[j]]=[order[j],order[k]];}
  function carve(path){for(const i of path){active.add(i);if(!pins.has(i))pins.set(i,[0,0,0,0]);if(!roomCells.has(i)&&!route.includes(i))route.push(i);}for(let k=1;k<path.length;k++){const a=path[k-1],b=path[k],d=DIRS.findIndex((_,d)=>neighbor(a,d,size)===b);ensure(a)[d]=1;ensure(b)[(d+2)%4]=1;}}
@@ -75,14 +90,20 @@ export function plan(size,scale='mixed',seed,extra=null){
   let a=doorFor(fromRoom,toRoom),b=doorFor(toRoom,fromRoom);
   const previous=roomDoors.get(journeyRooms[leg-1]);
   if(previous?.d===a.d){
-   const alternatives=[0,1,2,3].filter(d=>d!==a.d).map(d=>({index:(fromRoom.z+(d===0?0:d===2?fromRoom.h-1:Math.floor(fromRoom.h/2)))*size+fromRoom.x+(d===3?0:d===1?fromRoom.w-1:Math.floor(fromRoom.w/2)),d})).filter(v=>{const j=neighbor(v.index,v.d,size);return j>=0&&!roomCells.has(j);});
+   const alternatives=doorCandidates(fromRoom).filter(p=>p.d!==a.d);
    if(alternatives.length)a=alternatives[int(0,alternatives.length-1)];
   }
-  const from=neighbor(a.index,a.d,size),to=neighbor(b.index,b.d,size),blocked=new Set([...roomCells,...route]);blocked.delete(from);blocked.delete(to);
-  const corridor=pathBetween(size,from,i=>i===to,blocked,order)??pathBetween(size,from,i=>i===to,roomCells,order);
+  let from=neighbor(a.index,a.d,size),to=neighbor(b.index,b.d,size);const blocked=new Set([...roomCells,...route]);blocked.delete(from);blocked.delete(to);
+  let corridor=pathBetween(size,from,i=>i===to,blocked,order)??pathBetween(size,from,i=>i===to,roomCells,order);
+  // A concave edge can face a clipped pocket against the grid boundary.
+  // Select a reachable perimeter pair rather than carving through room walls.
+  if(!corridor)outer:for(const candidateA of doorCandidates(fromRoom))for(const candidateB of doorCandidates(toRoom)){
+   const candidateFrom=neighbor(candidateA.index,candidateA.d,size),candidateTo=neighbor(candidateB.index,candidateB.d,size),path=pathBetween(size,candidateFrom,i=>i===candidateTo,roomCells,order);
+   if(path){a=candidateA;b=candidateB;from=candidateFrom;to=candidateTo;corridor=path;break outer;}
+  }
   if(!corridor)throw Error('Macro corridor cannot connect its rooms.');
   carve([a.index,...corridor,b.index]);
-  const entrance={index:a.index,d:a.d,name:fromRoom.name},exit={index:b.index,d:b.d,name:toRoom.name};
+  const entrance={index:a.index,d:a.d,name:fromRoom.name,roomIndex:journeyRooms[leg-1]},exit={index:b.index,d:b.d,name:toRoom.name,roomIndex:journeyRooms[leg]};
   if(leg===1)doors[0]=entrance;else doors.push(entrance);
   if(leg===journeyRooms.length-1)doors[1]=exit;else doors.push(exit);
   roomDoors.set(journeyRooms[leg],b);
@@ -124,7 +145,7 @@ export function plan(size,scale='mixed',seed,extra=null){
  const a=rooms[0],b=rooms[1],start=(a.z+Math.floor(a.h/2))*size+a.x+Math.floor(a.w/2),stair=(b.z+Math.floor(b.h/2))*size+b.x+Math.floor(b.w/2);
  const footprint=[...active].sort((a,b)=>a-b);
  const voidSet=new Set(voidCells);
- const topology={layoutVersion:2,planVersion:2,seed:String(seed),layoutSeed:String(seed),scale,quarterTurns,rooms,doors,start,stair,route,wings,journeyRooms,optionalAlcoves,optionalPins:[...optionalCells].map(index=>({index,sockets:pins.get(index)})),footprint,footprintSet:new Set(footprint),voidCells,voidSet,pins:[...pins].filter(([index])=>!optionalCells.has(index)).map(([index,sockets])=>voidSet.has(index)?{index,tile:0,sockets:[0,0,0,0]}:{index,sockets}),protected:protectedCells};
+ const topology={layoutVersion:2,planVersion:2,roomFootprintVersion:1,seed:String(seed),layoutSeed:String(seed),scale,quarterTurns,rooms,roomCenters:rooms.map(roomCenterTile),doors,start,stair,route,wings,journeyRooms,optionalAlcoves,optionalPins:[...optionalCells].map(index=>({index,sockets:pins.get(index)})),footprint,footprintSet:new Set(footprint),voidCells,voidSet,pins:[...pins].filter(([index])=>!optionalCells.has(index)).map(([index,sockets])=>voidSet.has(index)?{index,tile:0,sockets:[0,0,0,0]}:{index,sockets}),protected:protectedCells};
  return addJourneyObjectives(topology,size,pins);
 }
 function traceSockets(size,start,goal,sockets){

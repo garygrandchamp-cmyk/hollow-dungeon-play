@@ -123,6 +123,7 @@ export function createPartyView(options = {}) {
     const bounds = canvas.getBoundingClientRect(), size = new THREE.Vector2();
     if (renderer.getSize) renderer.getSize(size); else size.set(bounds.width, bounds.height);
     const remote = syncMode(), rectangles = computePartyViewports(bounds, {width: size.x, height: size.y});
+    if(world().mobileLayout){const id=remote??focusedId;if(!['dm',...HERO_IDS].includes(id))return [];return [{id,index:['dm',...HERO_IDS].indexOf(id),left:bounds.left,top:bounds.top,right:bounds.left+bounds.width,bottom:bounds.top+bounds.height,width:bounds.width,height:bounds.height,glX:0,glY:0,glWidth:Math.floor(size.x),glHeight:Math.floor(size.y)}];}
     if (!remote&&buildWorkspace()){const inset=Math.min(bounds.width*.55,Math.max(0,(palette?.getBoundingClientRect?.().right??350)-bounds.left+10)),glX=Math.ceil(inset*size.x/bounds.width);return [{id:'dm',index:0,left:bounds.left+inset,top:bounds.top,right:bounds.left+bounds.width,bottom:bounds.top+bounds.height,width:bounds.width-inset,height:bounds.height,glX,glY:0,glWidth:Math.floor(size.x)-glX,glHeight:Math.floor(size.y)}];}
     if (!remote) return rectangles;
     if (!HERO_IDS.includes(remote) || !rectangles.length) return [];
@@ -207,8 +208,8 @@ export function createPartyView(options = {}) {
     for (const control of hostControls) control.hidden = !!remote;
     if (title) title.textContent = remote ? 'HOLLOW · ' + remote : 'HOLLOW · DM + 3';
     if (launcher) launcher.hidden = enabled || !!remote;
-    shell.style.gridTemplateColumns = remote ? '1fr' : ''; shell.style.gridTemplateRows = remote ? '1fr' : '';
-    dmPane.hidden = !!remote;dmPane.style.cssText=buildWorkspace()?'position:absolute;left:360px;right:0;top:0;bottom:0':''; palette.hidden = !!remote || !dmOpen;
+    shell.style.gridTemplateColumns = remote||w.mobileLayout ? '1fr' : ''; shell.style.gridTemplateRows = remote||w.mobileLayout ? '1fr' : '';
+    dmPane.hidden = !!remote||!!w.mobileLayout&&focusedId!=='dm';dmPane.style.cssText=buildWorkspace()&&!w.mobileLayout?'position:absolute;left:360px;right:0;top:0;bottom:0':''; palette.hidden = !!remote || !dmOpen;
     dmPane.classList.toggle('focused', !remote && focusedId === 'dm');dmPane.dataset.focused=String(!remote && focusedId==='dm');
     dmLabel.textContent=focusedId==='dm'&&!remote?'0 · DM · ACTIVE CONTROL':'0 · DM · overhead / edit';dmLabel.setAttribute('aria-pressed',String(!remote&&focusedId==='dm'));
     dmHint.textContent=dmOpen?'Choose a tool, then click a highlighted tile. Drag map to orbit. Esc cancels.':active?'Local controls: 1 / 2 / 3 select hero · 0 DM · or click a pane':'Local test: 1 / 2 / 3 select hero · Start expedition to move';
@@ -221,13 +222,13 @@ export function createPartyView(options = {}) {
     resourceLabel.textContent = dm ? active?`DM stamina ${Math.floor(dm.stamina??0)} / ${dm.maxStamina??'?'}`:`Setup budget ${dm.remainingBudget??'?'} / ${dm.budget??'?'}` : 'DM resources pending';
     for (const [id, controls] of ui) {
       const a = actor(id); if (!a) continue;
-      controls.pane.hidden = buildWorkspace() || !!remote && id !== remote;
+      controls.pane.hidden = buildWorkspace() || !!remote && id !== remote || !!w.mobileLayout&&id!==(remote??focusedId);
       controls.row.hidden = !!remote && (id !== remote || active);
       const rowParent = remote === id ? controls.pane : partySetup;
       if (controls.row.parentNode !== rowParent && controls.row.parent !== rowParent) rowParent.appendChild(controls.row);
       controls.row.style.cssText = remote === id ? 'position:absolute;left:12px;top:76px;pointer-events:auto;max-width:calc(100% - 24px)' : '';
       const owned=locallyOwned(a),selected=focusedId===id&&owned;
-      controls.label.textContent = `${id.slice(-1)} · ${CLASSES[a.classId]?.name ?? a.classId ?? 'Adventurer'}${!owned?' · REMOTE CONTROL':selected?' · ACTIVE CONTROL':''}`;
+      controls.label.textContent = `${id.slice(-1)} · ${CLASSES[a.classId]?.name ?? a.classId ?? 'Adventurer'}${!owned?' · REMOTE CONTROL':w.botIds?.includes(id)?' · BOT':selected?' · ACTIVE CONTROL':''}`;
       controls.label.disabled=!owned;controls.label.setAttribute('aria-pressed',String(selected));controls.label.title=owned?(remote?'Your adventurer':`Click this pane or press ${id.slice(-1)} to control this adventurer`):'Controlled by a remote player';
       controls.pane.dataset.focused=String(selected);controls.hint.hidden=!selected;
       controls.hint.textContent=remote?'ACTIVE CONTROL · WASD move · drag look · Space strike · E interact':active?'ACTIVE CONTROL · 1 / 2 / 3 switch hero · 0 DM · WASD move':'ACTIVE CONTROL · 1 / 2 / 3 switch hero · Start expedition to move';
@@ -384,6 +385,7 @@ export function createPartyView(options = {}) {
       const focused = actor(focusedId);
       if (playable(focused) && !typing()) {const input = intents.get(focused.id); input.forward += (keys.has('w') || keys.has('arrowup') ? 1 : 0) - (keys.has('s') || keys.has('arrowdown') ? 1 : 0); input.side += (keys.has('d') || keys.has('arrowright') ? 1 : 0) - (keys.has('a') || keys.has('arrowleft') ? 1 : 0);}
       else {keys.clear(); release('keyboard');}
+      const touch=world().touchInput;if(touch?.actorId===focused?.id&&playable(focused)){const input=intents.get(focused.id);input.forward+=clamp(touch.forward??0,-1,1);input.side+=clamp(touch.side??0,-1,1);}
       const connected = new Set(); let remotePadSeen = false;
       for (const [index, pad] of Array.from(gamepads()).entries()) {
         if (!pad || pad.connected === false) continue;
@@ -404,24 +406,24 @@ export function createPartyView(options = {}) {
       for (const padId of [...padOwners.keys()]) if (!connected.has(padId)) {release('pad:' + padId); padOwners.delete(padId); padButtons.delete(padId);}
     }
     for (const r of records.values()) {
-      const a = r.actor, input = intents.get(a.id), length = Math.hypot(input.forward, input.side); r.moving = false;
+      const a = r.actor, input = intents.get(a.id), botInput=world().autoplayInputs?.[a.id];if(botInput&&playable(a)){input.forward=clamp(botInput.forward??0,-1,1);input.side=clamp(botInput.side??0,-1,1);}const length = Math.hypot(input.forward, input.side); r.moving = false;
       if (length && playable(a)) {
         if (length > 1) {input.forward /= length; input.side /= length;}
         const before = [a.position.x, a.position.y, a.position.z];
         try {const moved = moveActor(a, input); r.moving = moved === true || before.some((value, i) => value !== a.position[['x', 'y', 'z'][i]]);} catch (error) {report(error);}
       }
       r.sprite.position.set(a.position.x, a.position.y, a.position.z); r.sprite.rotation.y = a.yaw ?? 0;
-      r.sprite.userData.animate?.({time: now / 1000, moving: r.moving, attacking: now < r.attackUntil, dead: a.alive === false, hurt: now < (a.hurtUntil ?? 0)});
+      r.sprite.userData.animate?.({time: now / 1000, moving: r.moving, attacking: now < r.attackUntil||now<(a.lastAttack??-Infinity)+280, dead: a.alive === false, hurt: now < (a.hurtUntil ?? 0)});
       r.camera.position.set(a.position.x, a.position.y + 1.48, a.position.z); r.camera.rotation.set(a.pitch ?? 0, a.yaw ?? 0, 0);
       r.equipment?.setTorchState?.({fuel:a.torchFuel??120,lit:a.torchLit!==false});
-      r.equipment?.animate?.({time: now, moving: r.moving, attacking: now < r.attackUntil, casting: now < r.castUntil || now < (a.castingUntil ?? 0), blocking: hand(a) === 'shield' && [...guards.values()].includes(a.id)});
+      r.equipment?.animate?.({time: now, moving: r.moving, attacking: now < r.attackUntil||now<(a.lastAttack??-Infinity)+280, casting: now < r.castUntil || now < (a.castingUntil ?? 0)||now<(a.lastCast??-Infinity)+380, blocking: hand(a) === 'shield' && ([...guards.values()].includes(a.id)||!!a.guarding)});
     }
     updateUI();
   }
   function render() {
     if (!enabled || destroyed) return false;
     attachActors(); updateUI();
-    const rectangles = getViewports(); if (rectangles.length !== (remoteId()||buildWorkspace() ? 1 : 4)) return false;
+    const rectangles = getViewports(); if (rectangles.length !== (remoteId()||buildWorkspace()||world().mobileLayout ? 1 : 4)) return false;
     const savedViewport = renderer.getViewport?.(new THREE.Vector4()), savedScissor = renderer.getScissor?.(new THREE.Vector4()), savedScissorTest = renderer.getScissorTest?.() ?? false, savedAutoClear = renderer.autoClear;
     const oldAspect = dmCamera.aspect, oldView = dmCamera.view ? {...dmCamera.view} : null, oldFog = scene.fog?.density;
     const w = world(), hidden = (w.hideDuringParty ?? []).filter(Boolean), dmOnly = [];const dmLights=(w.dmLights??[]).filter(l=>Number.isFinite(l?.intensity)),lightPowers=new Map(dmLights.map(l=>[l,l.intensity]));
@@ -466,7 +468,7 @@ export function createPartyView(options = {}) {
     for (const node of [launcher, toolbar, shell, palette, result]) node?.remove();
     if (originalTabIndex === null) canvas.removeAttribute?.('tabindex'); else canvas.setAttribute?.('tabindex', originalTabIndex);
   }
-  return {setEnabled, focus, attachActors, getViewportRect, tick, render, start, validate, clearInputs, destroy, dispose: destroy,
+  return {setEnabled, focus, attachActors, getViewportRect, tick, render, start, validate, clearInputs, act:(id,kind)=>emit(actor(id),kind), destroy, dispose: destroy,
     get enabled() {return enabled;}, set enabled(value) {setEnabled(value);}, get focusedActor() {syncMode(); return actor(focusedId);}, get focusedId() {syncMode(); return focusedId;},
     get actorRoot() {return root;}, get toolbar() {return toolbar;}, get palette() {return palette;}, get shell() {return shell;},
     getCamera(id) {if (remoteId() && id !== remoteId()) return null; return records.get(id)?.camera ?? (id === 'dm' ? dmCamera : null);}, get validation() {return validation;}};

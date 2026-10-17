@@ -1,3 +1,4 @@
+import {roomContainsWorld,roomCells} from './room-footprint.js';
 // Local, low-level atmosphere: three batched draws, no canvas/assets/lights.
 const TAU=Math.PI*2;
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
@@ -32,7 +33,7 @@ export function createDungeonAtmosphere(THREE){
    const x=clamp(r.x,0,size),z=clamp(r.z,0,size),w=clamp(r.w,0,size-x),h=clamp(r.h,0,size-z);if(w<2||h<2||w*h<9)continue;
    const key=[x,z,w,h].join(':');if(seen.has(key))continue;seen.add(key);
    const width=w*moduleSize,depth=h*moduleSize,margin=Math.min(moduleSize*.65,width*.24,depth*.24),left=(x-size/2)*moduleSize,right=left+width,north=(z-size/2)*moduleSize,south=north+depth,damp=r.damp===true||/damp|sunken|archive|cistern|flood|crypt/i.test(String(r.name??r.theme??''));
-   rooms.push({left,right,north,south,margin,weight:w*h*(damp?1.45:1),width,depth});
+   rooms.push({left,right,north,south,margin,weight:(r.footprint?roomCells(r).length:w*h)*(damp?1.45:1),width,depth,accept:(px,pz)=>!r.footprint||roomContainsWorld(r,px,pz,size,moduleSize),fallback:roomCells(r).map(p=>({x:(p.x-(size-1)/2)*moduleSize,z:(p.z-(size-1)/2)*moduleSize}))});
   }return rooms.slice(0,8);
  }
  function addBatch(name,count,rooms,rng,map,dust,layer,moduleSize){
@@ -40,7 +41,8 @@ export function createDungeonAtmosphere(THREE){
   for(let i=0;i<count;i++){
    let choice=rng()*total,room=rooms.at(-1);for(const r of rooms){choice-=r.weight;if(choice<=0){room=r;break;}}
    const margin=room.margin,rangeX=room.right-room.left-margin*2,rangeZ=room.south-room.north-margin*2,centerX=(room.left+room.right)/2,centerZ=(room.north+room.south)/2;
-   const x=dust?centerX+(rng()-.5)*Math.min(rangeX,moduleSize*1.5):room.left+margin+rng()*rangeX,z=dust?centerZ+(rng()-.5)*Math.min(rangeZ,moduleSize*1.5):room.north+margin+rng()*rangeZ;
+   let x=dust?centerX+(rng()-.5)*Math.min(rangeX,moduleSize*1.5):room.left+margin+rng()*rangeX,z=dust?centerZ+(rng()-.5)*Math.min(rangeZ,moduleSize*1.5):room.north+margin+rng()*rangeZ;
+   if(!room.accept(x,z)){const cell=room.fallback[Math.floor(rng()*room.fallback.length)];x=cell.x;z=cell.z;}
    const p={x,z,phase:rng()*TAU,speed:.045+rng()*.04,height:dust?.65+rng()*1.4:.3+rng()*(layer?.45:.25),room};particles.push(p);positions.set([x,ground(x,z)+p.height,z],i*3);
    if(colors){const value=.52+rng()*.2;colors.set([value,value*.83,value*.59],i*3);}
   }
@@ -66,7 +68,7 @@ export function createDungeonAtmosphere(THREE){
    for(const b of batches){
     const data=b.positions;for(let i=0;i<b.particles.length;i++){
      const p=b.particles[i],t=elapsed*p.speed,drift=b.dust?.18:.6,dx=(Math.sin(t+p.phase)-Math.sin(p.phase))*drift,dz=(Math.cos(t*.81+p.phase)-Math.cos(p.phase))*drift*.8,r=p.room,x=clamp(p.x+dx,r.left+r.margin*.5,r.right-r.margin*.5),z=clamp(p.z+dz,r.north+r.margin*.5,r.south-r.margin*.5),rise=Math.sin(elapsed*(b.dust?.17:.11)+p.phase)* (b.dust?.14:.06);
-     data.set([x,ground(x,z)+p.height+rise,z],i*3);
+     const px=r.accept(x,z)?x:p.x,pz=r.accept(x,z)?z:p.z;data.set([px,ground(px,pz)+p.height+rise,pz],i*3);
     }b.geometry.attributes.position.needsUpdate=true;
    }
   },

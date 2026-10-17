@@ -326,3 +326,5 @@ body.party-active #inventoryQuick {display:none;}
 .party-pane[data-actor] .party-hud button {font-size:10px;min-height:24px;padding:3px 6px;}
 
 .tileset-lab-link{display:block;padding:10px;margin:8px 0;border:3px double #6a757a;background:#171c22;color:#c4d3d2;font:11px monospace;text-decoration:none}
+
+.local-bot-controls{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font:11px monospace}.local-bot-controls small{color:#b8af93;max-width:340px}.local-bot-controls[hidden]{display:none}

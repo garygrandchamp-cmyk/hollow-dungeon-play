@@ -1,0 +1,109 @@
+/* Mobile controls share the worn pixel-era UI palette. Menus retain scrolling. */
+#mobileControls{position:fixed;inset:0;z-index:65;pointer-events:none;font:11px "Lucida Console",monospace}
+#mobileControls[hidden],#mobileControls [hidden],#mobileDrawerToggle[hidden]{display:none!important}
+#mobileControls button{min-width:48px;min-height:46px;border:3px double #9c8a69;border-radius:0;background:#171b24e8;color:#dfcea9;font:inherit;pointer-events:auto;touch-action:none;user-select:none;-webkit-user-select:none}
+#mobileControls button:active,#mobileControls button[aria-pressed=true]{background:#514631;border-color:#e2ca95}
+.mobile-view-tabs{position:absolute;top:calc(env(safe-area-inset-top) + 48px);left:env(safe-area-inset-left,0px);right:env(safe-area-inset-right,0px);display:flex;justify-content:center;gap:4px;pointer-events:auto}
+.mobile-view-tabs button{flex:0 1 90px}
+.mobile-quick{position:absolute;right:calc(8px + env(safe-area-inset-right));top:calc(104px + env(safe-area-inset-top));display:flex;gap:4px}
+.mobile-look{position:absolute;left:40%;right:0;top:152px;bottom:0;pointer-events:auto;touch-action:none}
+.mobile-stick{position:absolute;left:calc(15px + env(safe-area-inset-left));bottom:calc(20px + env(safe-area-inset-bottom));width:124px;height:124px;background:#14192177;border:3px double #96866b;display:grid;place-items:center;pointer-events:auto;touch-action:none;user-select:none}
+.mobile-stick-knob{display:grid;place-items:center;width:58px;height:58px;background:#393b3ab8;border:2px solid #b0a182;color:#e1d1ae;pointer-events:none;font-size:10px}
+.mobile-actions{position:absolute;right:calc(12px + env(safe-area-inset-right));bottom:calc(16px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(2,minmax(60px,90px));gap:6px;pointer-events:auto}
+.mobile-actions [data-touch-action=attack]{grid-column:2;min-height:60px!important;background:#45352bea!important}
+.mobile-actions [data-touch-action=search]{grid-column:1 / -1;font-size:10px!important}
+#mobileDrawerToggle{min-height:44px;width:100%;position:sticky;top:0;z-index:4;background:#252b34;color:#dac39a;border:2px solid #9c8a69}
+body.mobile-game #scene canvas{touch-action:none}
+body.mobile-game{overscroll-behavior:none}
+body.mobile-game :is(button,select,input[type=checkbox],summary){min-height:44px}
+body.mobile-game :is(select,input,textarea){font-size:16px!important}
+body.mobile-game .hollow-start{padding:max(10px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
+body.mobile-game .hollow-start .hs-card{padding:18px;max-height:calc(100dvh - 24px);box-shadow:none}
+body.mobile-game .hollow-start h1{font-size:34px}body.mobile-game .hollow-start h2{font-size:20px}
+body.mobile-game .hollow-start .hs-main{margin-top:14px;gap:8px}
+body.mobile-game #partyToolbar{top:env(safe-area-inset-top);left:env(safe-area-inset-left);right:env(safe-area-inset-right);height:46px!important;min-height:46px;max-width:100vw;overflow-x:auto;overflow-y:hidden;flex-wrap:nowrap!important;justify-content:flex-start;padding:2px 4px!important;gap:4px;z-index:80;scrollbar-width:thin}
+body.mobile-game #partyToolbar>*{flex-shrink:0}body.mobile-game #partyToolbar>b{display:none}
+body.mobile-game #partyToolbar button{font-size:10px;white-space:nowrap;padding:4px 8px;min-height:40px}
+body.mobile-game #partyToolbar .local-bot-controls{flex-wrap:nowrap}.mobile-game .local-bot-controls small{display:none}
+body.mobile-game #partyShell{inset:0!important;grid-template:1fr / 1fr!important}
+body.mobile-game .party-pane{grid-area:1 / 1!important;position:absolute!important;inset:0!important}
+body.mobile-game .party-label{top:calc(98px + env(safe-area-inset-top));left:8px;max-width:55%;font-size:10px;min-height:34px!important}
+body.mobile-game .party-pane[data-actor] .party-hud{left:8px;right:auto;top:calc(140px + env(safe-area-inset-top));bottom:auto;max-width:75%;font-size:10px;padding:4px;gap:4px}
+body.mobile-game .party-hud button,body.mobile-game .party-control-hint{display:none!important}
+body.mobile-game #dmPalette{position:fixed!important;left:calc(6px + env(safe-area-inset-left));right:calc(6px + env(safe-area-inset-right));top:auto!important;bottom:env(safe-area-inset-bottom);width:auto!important;max-height:48dvh;overflow:auto;z-index:85;padding:8px}
+body.mobile-game #dmPalette.mobile-collapsed{max-height:125px;overflow:hidden}
+body.mobile-game #dmPalette.mobile-collapsed :is(.dm-tool-group,.dm-setup-group){display:none}
+body.mobile-game #dmPalette .dm-placement-guide{position:static;padding:4px}body.mobile-game #dmPalette h2{display:none}
+body.mobile-game #dmPalette .dm-tool-grid button{min-height:48px;font-size:12px}
+body.mobile-game #partySetup{max-height:48dvh;overflow:auto}
+body.mobile-game .hollow-map:not(.expanded){width:90px!important;right:8px!important;top:calc(156px + env(safe-area-inset-top))!important;bottom:auto!important}
+body.mobile-game .hollow-map:not(.expanded) header,body.mobile-game .hollow-map:not(.expanded) figcaption{display:none}
+body.mobile-game .hollow-map.expanded{max-height:calc(100dvh - 30px);overflow:auto}
+body.mobile-game dialog{max-width:calc(100vw - 16px)!important;max-height:calc(100dvh - 24px)!important;overflow:auto;padding:12px!important}
+body.mobile-game dialog :is(button,summary){min-height:44px;padding:8px}
+body.mobile-game .adventurer-inventory .inventory-slots{grid-template-columns:repeat(2,minmax(0,1fr))}
+body.mobile-game .adventurer-inventory table{display:block;overflow-x:auto;max-width:100%}
+body.mobile-game #toast{bottom:calc(192px + env(safe-area-inset-bottom))!important;left:50%!important;width:max-content;max-width:90vw;font-size:11px;pointer-events:none;z-index:66}
+body.mobile-game :is(#fpHint,#world-label,footer,.keys){display:none!important}
+body.mobile-game.first-person #adventureHud{left:6px;top:8px;max-width:calc(100vw - 12px);font-size:10px;padding:5px;gap:5px}
+body.mobile-game.first-person #adventureHud button{display:none}
+body.mobile-game.first-person #viewMode{display:none}
+body.mobile-game.first-person #playbar{bottom:calc(154px + env(safe-area-inset-bottom));font-size:10px;padding:4px}
+body.mobile-game.first-person #playbar button{display:none}
+body.mobile-game:not(.party-active):not(.first-person) aside{top:90px;left:8px;width:min(310px,calc(100vw - 16px));max-height:calc(100dvh - 180px);overflow:auto}
+@media(orientation:landscape) and (max-height:540px){
+ body.mobile-game .mobile-stick{width:104px;height:104px;bottom:12px}
+ body.mobile-game .mobile-actions{grid-template-columns:repeat(3,64px);gap:4px;bottom:10px}
+ body.mobile-game .mobile-actions [data-touch-action=attack]{grid-column:auto;min-height:50px!important}
+ body.mobile-game .mobile-actions [data-touch-action=search]{grid-column:auto}
+ body.mobile-game .mobile-look{top:100px}
+ body.mobile-game .mobile-view-tabs{justify-content:flex-start;left:8px}
+ body.mobile-game .mobile-quick{top:calc(50px + env(safe-area-inset-top))}
+ body.mobile-game .party-label{top:102px;font-size:9px;min-height:26px!important}
+ body.mobile-game .party-pane[data-actor] .party-hud{top:132px;max-width:60%}
+ body.mobile-game .hollow-map:not(.expanded){top:106px!important;width:72px!important}
+ body.mobile-game #toast{bottom:135px!important}
+}
+
+#graphicsRecovery{position:fixed;z-index:11000;left:50%;top:50%;transform:translate(-50%,-50%);width:min(400px,90vw);padding:18px;background:#161b24;border:3px double #b49b70;color:#e4d3ac;font:14px monospace}#graphicsRecovery[hidden]{display:none}#graphicsRecovery button{min-height:48px;padding:10px;background:#332f25;color:#e4d3ac;border:2px solid #aa9370}
+
+/* Keep touch targets inside their frames and long loot/loadout names contained. */
+body.mobile-game #partyToolbar{height:52px!important;min-height:52px;padding:2px 4px!important;scroll-padding-inline:8px;overscroll-behavior-x:contain}
+body.mobile-game #partyToolbar button{min-height:44px}
+body.mobile-game .mobile-view-tabs{top:calc(56px + env(safe-area-inset-top));padding-inline:8px}
+body.mobile-game .mobile-quick{top:calc(112px + env(safe-area-inset-top))}
+body.mobile-game .mobile-look{top:calc(164px + env(safe-area-inset-top))}
+body.mobile-game .party-label{top:calc(106px + env(safe-area-inset-top));left:calc(8px + env(safe-area-inset-left));min-height:44px!important;max-width:calc(100% - 176px - env(safe-area-inset-left) - env(safe-area-inset-right))}
+body.mobile-game .party-pane[data-actor] .party-hud{top:calc(154px + env(safe-area-inset-top));left:calc(8px + env(safe-area-inset-left));max-width:calc(100% - 114px - env(safe-area-inset-left) - env(safe-area-inset-right));overflow-wrap:anywhere}
+body.mobile-game #dmPalette{overscroll-behavior:contain;scroll-padding-block:52px 12px}
+body.mobile-game #dmPalette.mobile-collapsed>details{display:none}
+body.mobile-game #dmPalette :is(details,.dm-tool-grid,.party-setup-row){min-width:0}
+body.mobile-game #dmPalette .dm-tool-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+body.mobile-game #dmPalette .party-setup-row{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;padding-block:10px;border-bottom:1px solid #4d4b46}
+body.mobile-game #dmPalette :is(select,button){max-width:100%;min-width:0}
+body.mobile-game #dmPalette summary{display:flex;align-items:center;min-height:44px;padding-block:6px}
+body.mobile-game .hollow-start .hs-card{min-width:0;max-width:100%;max-height:calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));overflow:auto;overscroll-behavior:contain;overflow-wrap:anywhere}
+body.mobile-game .hollow-start :is(input,textarea,select){max-width:100%;min-width:0}
+body.mobile-game dialog{max-width:calc(100vw - 16px - env(safe-area-inset-left) - env(safe-area-inset-right))!important;max-height:calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important;overscroll-behavior:contain;overflow-wrap:anywhere;scroll-padding-block:12px}
+body.mobile-game dialog :is(input,select,textarea){max-width:100%;min-width:0}
+body.mobile-game dialog :is(input[type=range],input[type=text],textarea){min-height:44px}
+body.mobile-game dialog .inventory-head{align-items:flex-start}
+body.mobile-game dialog .inventory-head h2{min-width:0}
+body.mobile-game dialog .inventory-head button{flex-shrink:0}
+body.mobile-game dialog .inventory-actions{flex-wrap:wrap}
+body.mobile-game dialog table{overscroll-behavior-x:contain}
+body.mobile-game #toast{white-space:normal;overflow-wrap:anywhere}
+body.mobile-game.first-person #adventureHud{top:calc(8px + env(safe-area-inset-top));left:calc(6px + env(safe-area-inset-left));max-width:calc(100vw - 12px - env(safe-area-inset-left) - env(safe-area-inset-right))}
+body.mobile-game.first-person #staminaHud{top:calc(156px + env(safe-area-inset-top));left:calc(8px + env(safe-area-inset-left));bottom:auto;max-width:calc(100vw - 116px - env(safe-area-inset-left) - env(safe-area-inset-right));padding:4px;font-size:10px}
+body.mobile-game.first-person #partyToggle{display:none}
+@media(orientation:landscape) and (max-height:540px){
+ body.mobile-game .mobile-stick{bottom:calc(12px + env(safe-area-inset-bottom))}
+ body.mobile-game .mobile-actions{bottom:calc(10px + env(safe-area-inset-bottom))}
+ body.mobile-game .mobile-view-tabs{left:calc(8px + env(safe-area-inset-left));right:auto;padding:0}
+ body.mobile-game .mobile-quick{top:calc(56px + env(safe-area-inset-top))}
+ body.mobile-game .mobile-look{top:calc(108px + env(safe-area-inset-top))}
+ body.mobile-game .party-label{top:calc(110px + env(safe-area-inset-top))}
+ body.mobile-game .party-pane[data-actor] .party-hud{top:calc(158px + env(safe-area-inset-top));max-width:60%}
+ body.mobile-game .hollow-map:not(.expanded){top:calc(110px + env(safe-area-inset-top))!important;right:calc(8px + env(safe-area-inset-right))!important}
+ body.mobile-game #toast{bottom:calc(135px + env(safe-area-inset-bottom))!important}
+}

@@ -1,3 +1,4 @@
+import {validateRoomFootprint,roomCellIndices} from './room-footprint.js';
 import {plan} from './architecture.js';
 
 // Preserve the exact macro recipe, including void expanded by manual stamps.
@@ -14,7 +15,7 @@ export function restoreArchitecture(layout, size, scale = 'mixed', catalog) {
   const fail = () => { throw Error('Invalid saved architecture.'); };
   if (!p || ![undefined, 2].includes(p.layoutVersion) || !cell(p.start) || !cell(p.stair) ||
       !Array.isArray(p.rooms) || p.rooms.length > 32 || !p.rooms.length ||
-      p.rooms.some(r => ![r.x,r.z,r.w,r.h].every(Number.isInteger) || r.w < 1 || r.h < 1 || r.x < 0 || r.z < 0 || r.x+r.w > size || r.z+r.h > size) ||
+      p.rooms.some(r => !validateRoomFootprint(r) || ![r.x,r.z,r.w,r.h].every(Number.isInteger) || r.w < 1 || r.h < 1 || r.x < 0 || r.z < 0 || r.x+r.w > size || r.z+r.h > size) ||
       !Array.isArray(p.doors) || p.doors.length > 128 || p.doors.some(d => !cell(d.index) || !Number.isInteger(d.d) || d.d < 0 || d.d > 3) ||
       !cells(p.protected)) fail();
   for (const list of [p.pins, p.optionalPins ?? []]) {
@@ -30,7 +31,7 @@ export function restoreArchitecture(layout, size, scale = 'mixed', catalog) {
         !cells(p.objectiveIndices) || p.objectiveIndices.length !== 3 || new Set(p.objectiveIndices).size !== 3) fail();
     p.footprintSet = new Set(p.footprint); p.voidSet = new Set(p.voidCells);
     if (p.footprintSet.size + p.voidSet.size !== count || [...p.footprintSet].some(i => p.voidSet.has(i)) ||
-        [p.start,p.stair,...p.objectiveIndices].some(i => !p.footprintSet.has(i)) ||
+        [p.start,p.stair,...p.objectiveIndices,...p.rooms.flatMap(r=>roomCellIndices(r,size))].some(i => !p.footprintSet.has(i)) ||
         catalog && p.voidCells.some(i => layout.grid[i] !== 0)) fail();
   }
   p.protected = new Set(p.protected);

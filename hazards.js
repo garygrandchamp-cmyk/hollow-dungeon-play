@@ -1,3 +1,4 @@
+import {roomContainsTile} from './room-footprint.js';
 import {random} from './wfc.js';
 import {makeDungeonProp as makePropSprite} from './dungeon-props.js';
 import {batchStaticGroup} from './mesh-batch.js';
@@ -15,7 +16,7 @@ function reservedCells(s){
 export function canPlaceHazard(s,index){
  if(!s?.architecture||!Number.isInteger(index)||index<0||index>=s.size*s.size||!s.tiles?.[s.grid?.[index]]?.s.every(v=>v===1))return false;
  const x=index%s.size,z=Math.floor(index/s.size),a=s.architecture;
- return !reservedCells(s).has(index)&&Math.abs(x-a.start%s.size)+Math.abs(z-Math.floor(a.start/s.size))>2&&a.rooms.some(r=>x>r.x&&x<r.x+r.w-1&&z>r.z&&z<r.z+r.h-1);
+ return !reservedCells(s).has(index)&&Math.abs(x-a.start%s.size)+Math.abs(z-Math.floor(a.start/s.size))>2&&a.rooms.some(r=>[[0,0],[0,-1],[1,0],[0,1],[-1,0]].every(([dx,dz])=>roomContainsTile(r,x+dx,z+dz)));
 }
 export function hazardPlan(s){
  if(s.enabled===false)return [];
