@@ -1,7 +1,7 @@
-import {createDMEntranceOverlay} from './dm-entrance-overlay.js?v=80b357f2bd55a10a9dd6b4b39394372730871214';
-import {CLASSES} from './party-campaign.js?v=80b357f2bd55a10a9dd6b4b39394372730871214';
-import {createHeldInput} from './held-input.js?v=80b357f2bd55a10a9dd6b4b39394372730871214';
-import {MONSTER_KINDS} from './monster-sprites.js?v=80b357f2bd55a10a9dd6b4b39394372730871214';
+import {createDMEntranceOverlay} from './dm-entrance-overlay.js?v=30121f299882b406d928fe246006652b70636e05';
+import {CLASSES} from './party-campaign.js?v=30121f299882b406d928fe246006652b70636e05';
+import {createHeldInput} from './held-input.js?v=30121f299882b406d928fe246006652b70636e05';
+import {MONSTER_KINDS} from './monster-sprites.js?v=30121f299882b406d928fe246006652b70636e05';
 
 const HERO_IDS = ['hero-1', 'hero-2', 'hero-3'];
 const MOVEMENT = new Set(['w', 'a', 's', 'd', 'arrowup', 'arrowleft', 'arrowdown', 'arrowright']);
