@@ -1,0 +1,602 @@
+[
+  {
+    "classId": "mage",
+    "source": "mage-source.png",
+    "sourceCuts": [
+      [
+        124,
+        32,
+        348,
+        445
+      ],
+      [
+        558,
+        38,
+        812,
+        446
+      ],
+      [
+        920,
+        11,
+        1290,
+        446
+      ],
+      [
+        1409,
+        82,
+        1738,
+        446
+      ],
+      [
+        123,
+        467,
+        374,
+        859
+      ],
+      [
+        520,
+        471,
+        819,
+        861
+      ],
+      [
+        865,
+        451,
+        1290,
+        859
+      ],
+      [
+        1395,
+        486,
+        1728,
+        861
+      ]
+    ],
+    "baseline": 120,
+    "standingPixels": 104,
+    "authoredPosesPerDirection": 4,
+    "sideFaces": "left",
+    "sideMirroredForRight": true,
+    "death": "front atlas fallback",
+    "clips": {
+      "idle": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "walk": [
+        0,
+        1,
+        1,
+        0,
+        0,
+        1,
+        1,
+        0
+      ],
+      "attack": [
+        0,
+        0,
+        2,
+        2,
+        2,
+        2,
+        0,
+        0
+      ],
+      "hurt": [
+        3,
+        3,
+        3,
+        0
+      ]
+    },
+    "provenance": {
+      "source": "C:\\Users\\Garyg\\.codex\\generated_images\\01a14677-ed2f-7071-8217-9bea7daa6c00\\exec-5e14273e-7953-4963-89cf-277cb5ccf2f8.png",
+      "correction": null,
+      "prompt": "Create a matching directional sprite sheet for the EXACT mage character in the reference. Preserve its identity, gear, realistic adult anatomy, proportions, muted palette, clothing construction and deliberate crisp pixel clusters. elderly gray-bearded mage, faded navy hood and layered robes, leather belt and boots, carved wooden staff topped with small blue crystal. Original grim medieval gothic dark fantasy pixel art, worn materials, restrained highlights, no text, no ground shadows, no cartoon/chibi or smooth painted rendering.\nTransparent canvas, STRICT 4 columns by 2 rows, exactly eight separated full-body characters with all weapons included and generous transparent gutters. Each figure same body height and feet baseline within its cell. TOP ROW: four TRUE BACK views, face and chest turned entirely away: idle standing, walking stride, attacking with class weapon, recoiling hurt. BOTTOM ROW: four TRUE LEFT PROFILE views, nose/chest/feet aimed toward screen LEFT: idle standing, walking stride, attacking with class weapon, recoiling hurt. Every pose remains in that row's direction. Back must show backs of hood/helmet, armor/cloak and equipment, absolutely no frontal face/beard/chest details. Profile must be visibly anatomical side view, never a mirrored frontal character. Four poses per row from left to right. Match reference pixel density after reduction to 104 standing pixels. Entire image transparent background, clean hard cutout edges.",
+      "reference": "../mage-source.png"
+    }
+  },
+  {
+    "classId": "paladin",
+    "source": "paladin-source.png",
+    "sourceCuts": [
+      [
+        91,
+        42,
+        430,
+        440
+      ],
+      [
+        534,
+        42,
+        871,
+        439
+      ],
+      [
+        959,
+        15,
+        1325,
+        447
+      ],
+      [
+        1418,
+        103,
+        1754,
+        438
+      ],
+      [
+        43,
+        458,
+        357,
+        865
+      ],
+      [
+        460,
+        463,
+        850,
+        854
+      ],
+      [
+        830,
+        510,
+        1340,
+        861
+      ],
+      [
+        1398,
+        504,
+        1743,
+        848
+      ]
+    ],
+    "baseline": 120,
+    "standingPixels": 104,
+    "authoredPosesPerDirection": 4,
+    "sideFaces": "left",
+    "sideMirroredForRight": true,
+    "death": "front atlas fallback",
+    "clips": {
+      "idle": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "walk": [
+        0,
+        1,
+        1,
+        0,
+        0,
+        1,
+        1,
+        0
+      ],
+      "attack": [
+        0,
+        0,
+        2,
+        2,
+        2,
+        2,
+        0,
+        0
+      ],
+      "hurt": [
+        3,
+        3,
+        3,
+        0
+      ]
+    },
+    "provenance": {
+      "source": "C:\\Users\\Garyg\\.codex\\generated_images\\01a14677-ed2f-7071-8217-9bea7daa6c00\\exec-46f04e53-3674-4211-a41b-c3f30ed71b82.png",
+      "correction": "Edit this sprite sheet. Keep the entire BOTTOM ROW of four left profile views exactly unchanged. Replace ONLY the TOP ROW of four figures with anatomically TRUE REAR/BACK views of the same character. The current top row is wrong: it shows the front chest. Show the BACK of the head/helmet/hood, shoulder blades and rear clothing. Plain rear helmet with no visor slit. Back plate and the plain back of faded red tabard, no chest cross, no front belt buckle. Shield seen from its inside attached to left forearm. Top row idle, walking, attack and hurt, all facing AWAY from viewer, absolutely no face or chest visible. Preserve exact gear style, dark fantasy pixel clusters, grounded adult anatomy, muted worn palette. Eight full body clean cutouts, 4x2 grid, transparent background, no text.",
+      "prompt": "Create a matching directional sprite sheet for the EXACT paladin character in the reference. Preserve its identity, gear, realistic adult anatomy, proportions, muted palette, clothing construction and deliberate crisp pixel clusters. closed visor helmet, worn iron plate, faded red-brown tabard, longsword and red-brown shield. Original grim medieval gothic dark fantasy pixel art, worn materials, restrained highlights, no text, no ground shadows, no cartoon/chibi or smooth painted rendering.\nTransparent canvas, STRICT 4 columns by 2 rows, exactly eight separated full-body characters with all weapons included and generous transparent gutters. Each figure same body height and feet baseline within its cell. TOP ROW: four TRUE BACK views, face and chest turned entirely away: idle standing, walking stride, attacking with class weapon, recoiling hurt. BOTTOM ROW: four TRUE LEFT PROFILE views, nose/chest/feet aimed toward screen LEFT: idle standing, walking stride, attacking with class weapon, recoiling hurt. Every pose remains in that row's direction. Back must show backs of hood/helmet, armor/cloak and equipment, absolutely no frontal face/beard/chest details. Profile must be visibly anatomical side view, never a mirrored frontal character. Four poses per row from left to right. Match reference pixel density after reduction to 104 standing pixels. Entire image transparent background, clean hard cutout edges.",
+      "reference": "../paladin-source.png"
+    }
+  },
+  {
+    "classId": "barbarian",
+    "source": "barbarian-source.png",
+    "sourceCuts": [
+      [
+        44,
+        27,
+        368,
+        445
+      ],
+      [
+        555,
+        34,
+        843,
+        445
+      ],
+      [
+        961,
+        6,
+        1252,
+        445
+      ],
+      [
+        1438,
+        99,
+        1749,
+        444
+      ],
+      [
+        56,
+        461,
+        334,
+        864
+      ],
+      [
+        517,
+        464,
+        852,
+        861
+      ],
+      [
+        918,
+        491,
+        1392,
+        862
+      ],
+      [
+        1481,
+        511,
+        1756,
+        860
+      ]
+    ],
+    "baseline": 120,
+    "standingPixels": 104,
+    "authoredPosesPerDirection": 4,
+    "sideFaces": "left",
+    "sideMirroredForRight": true,
+    "death": "front atlas fallback",
+    "clips": {
+      "idle": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "walk": [
+        0,
+        1,
+        1,
+        0,
+        0,
+        1,
+        1,
+        0
+      ],
+      "attack": [
+        0,
+        0,
+        2,
+        2,
+        2,
+        2,
+        0,
+        0
+      ],
+      "hurt": [
+        3,
+        3,
+        3,
+        0
+      ]
+    },
+    "provenance": {
+      "source": "C:\\Users\\Garyg\\.codex\\generated_images\\01a14677-ed2f-7071-8217-9bea7daa6c00\\exec-03d4d874-39e2-442b-af4a-d05b51c5364d.png",
+      "correction": null,
+      "prompt": "Create a matching directional sprite sheet for the EXACT barbarian character in the reference. Preserve its identity, gear, realistic adult anatomy, proportions, muted palette, clothing construction and deliberate crisp pixel clusters. muscular adult man, dark hair and beard, worn brown fur and leather straps, exposed arms, boots, axe. Original grim medieval gothic dark fantasy pixel art, worn materials, restrained highlights, no text, no ground shadows, no cartoon/chibi or smooth painted rendering.\nTransparent canvas, STRICT 4 columns by 2 rows, exactly eight separated full-body characters with all weapons included and generous transparent gutters. Each figure same body height and feet baseline within its cell. TOP ROW: four TRUE BACK views, face and chest turned entirely away: idle standing, walking stride, attacking with class weapon, recoiling hurt. BOTTOM ROW: four TRUE LEFT PROFILE views, nose/chest/feet aimed toward screen LEFT: idle standing, walking stride, attacking with class weapon, recoiling hurt. Every pose remains in that row's direction. Back must show backs of hood/helmet, armor/cloak and equipment, absolutely no frontal face/beard/chest details. Profile must be visibly anatomical side view, never a mirrored frontal character. Four poses per row from left to right. Match reference pixel density after reduction to 104 standing pixels. Entire image transparent background, clean hard cutout edges.",
+      "reference": "../barbarian-source.png"
+    }
+  },
+  {
+    "classId": "warlock",
+    "source": "warlock-source.png",
+    "sourceCuts": [
+      [
+        70,
+        8,
+        393,
+        439
+      ],
+      [
+        528,
+        8,
+        841,
+        439
+      ],
+      [
+        879,
+        12,
+        1394,
+        441
+      ],
+      [
+        1426,
+        23,
+        1750,
+        444
+      ],
+      [
+        91,
+        448,
+        406,
+        863
+      ],
+      [
+        510,
+        447,
+        853,
+        863
+      ],
+      [
+        846,
+        448,
+        1381,
+        858
+      ],
+      [
+        1467,
+        459,
+        1755,
+        864
+      ]
+    ],
+    "baseline": 120,
+    "standingPixels": 104,
+    "authoredPosesPerDirection": 4,
+    "sideFaces": "left",
+    "sideMirroredForRight": true,
+    "death": "front atlas fallback",
+    "clips": {
+      "idle": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "walk": [
+        0,
+        1,
+        1,
+        0,
+        0,
+        1,
+        1,
+        0
+      ],
+      "attack": [
+        0,
+        0,
+        2,
+        2,
+        2,
+        2,
+        0,
+        0
+      ],
+      "hurt": [
+        3,
+        3,
+        3,
+        0
+      ]
+    },
+    "provenance": {
+      "source": "C:\\Users\\Garyg\\.codex\\generated_images\\01a14677-ed2f-7071-8217-9bea7daa6c00\\exec-179772e0-d43b-4994-94e2-b108594d07a2.png",
+      "correction": "Edit this sprite sheet. Keep the entire BOTTOM ROW of four left profile views exactly unchanged. Replace ONLY the TOP ROW of four figures with anatomically TRUE REAR/BACK views of the same character. The current top row is wrong: it shows the front chest. Show the BACK of the head/helmet/hood, shoulder blades and rear clothing. Closed back of violet hood, no face opening whatsoever. Plain back of robe with seams, no chest necklace, no skull belt buckle. Top row idle, walking, attack and hurt, all facing AWAY from viewer, absolutely no face or chest visible. Preserve exact gear style, dark fantasy pixel clusters, grounded adult anatomy, muted worn palette. Eight full body clean cutouts, 4x2 grid, transparent background, no text.",
+      "prompt": "Create a matching directional sprite sheet for the EXACT warlock character in the reference. Preserve its identity, gear, realistic adult anatomy, proportions, muted palette, clothing construction and deliberate crisp pixel clusters. dark hood hiding the face, faded violet robes with tarnished gold details, skull-topped staff. Original grim medieval gothic dark fantasy pixel art, worn materials, restrained highlights, no text, no ground shadows, no cartoon/chibi or smooth painted rendering.\nTransparent canvas, STRICT 4 columns by 2 rows, exactly eight separated full-body characters with all weapons included and generous transparent gutters. Each figure same body height and feet baseline within its cell. TOP ROW: four TRUE BACK views, face and chest turned entirely away: idle standing, walking stride, attacking with class weapon, recoiling hurt. BOTTOM ROW: four TRUE LEFT PROFILE views, nose/chest/feet aimed toward screen LEFT: idle standing, walking stride, attacking with class weapon, recoiling hurt. Every pose remains in that row's direction. Back must show backs of hood/helmet, armor/cloak and equipment, absolutely no frontal face/beard/chest details. Profile must be visibly anatomical side view, never a mirrored frontal character. Four poses per row from left to right. Match reference pixel density after reduction to 104 standing pixels. Entire image transparent background, clean hard cutout edges.",
+      "reference": "../warlock-source.png"
+    }
+  },
+  {
+    "classId": "thief",
+    "source": "thief-source.png",
+    "sourceCuts": [
+      [
+        94,
+        16,
+        360,
+        428
+      ],
+      [
+        545,
+        16,
+        799,
+        428
+      ],
+      [
+        957,
+        48,
+        1394,
+        428
+      ],
+      [
+        1390,
+        85,
+        1736,
+        428
+      ],
+      [
+        114,
+        465,
+        339,
+        863
+      ],
+      [
+        488,
+        462,
+        764,
+        860
+      ],
+      [
+        810,
+        523,
+        1267,
+        853
+      ],
+      [
+        1401,
+        512,
+        1726,
+        860
+      ]
+    ],
+    "baseline": 120,
+    "standingPixels": 104,
+    "authoredPosesPerDirection": 4,
+    "sideFaces": "left",
+    "sideMirroredForRight": true,
+    "death": "front atlas fallback",
+    "clips": {
+      "idle": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "walk": [
+        0,
+        1,
+        1,
+        0,
+        0,
+        1,
+        1,
+        0
+      ],
+      "attack": [
+        0,
+        0,
+        2,
+        2,
+        2,
+        2,
+        0,
+        0
+      ],
+      "hurt": [
+        3,
+        3,
+        3,
+        0
+      ]
+    },
+    "provenance": {
+      "source": "C:\\Users\\Garyg\\.codex\\generated_images\\01a14677-ed2f-7071-8217-9bea7daa6c00\\exec-f4beb240-5c4c-4e3f-b6a6-fd124b3ed416.png",
+      "correction": null,
+      "prompt": "Create a matching directional sprite sheet for the EXACT thief character in the reference. Preserve its identity, gear, realistic adult anatomy, proportions, muted palette, clothing construction and deliberate crisp pixel clusters. slim hooded adult in fitted brown leather jerkin, belts, trousers, boots, dual daggers. Original grim medieval gothic dark fantasy pixel art, worn materials, restrained highlights, no text, no ground shadows, no cartoon/chibi or smooth painted rendering.\nTransparent canvas, STRICT 4 columns by 2 rows, exactly eight separated full-body characters with all weapons included and generous transparent gutters. Each figure same body height and feet baseline within its cell. TOP ROW: four TRUE BACK views, face and chest turned entirely away: idle standing, walking stride, attacking with class weapon, recoiling hurt. BOTTOM ROW: four TRUE LEFT PROFILE views, nose/chest/feet aimed toward screen LEFT: idle standing, walking stride, attacking with class weapon, recoiling hurt. Every pose remains in that row's direction. Back must show backs of hood/helmet, armor/cloak and equipment, absolutely no frontal face/beard/chest details. Profile must be visibly anatomical side view, never a mirrored frontal character. Four poses per row from left to right. Match reference pixel density after reduction to 104 standing pixels. Entire image transparent background, clean hard cutout edges.",
+      "reference": "../thief-source.png"
+    }
+  },
+  {
+    "classId": "archer",
+    "source": "archer-source.png",
+    "sourceCuts": [
+      [
+        79,
+        35,
+        373,
+        431
+      ],
+      [
+        516,
+        35,
+        814,
+        431
+      ],
+      [
+        954,
+        7,
+        1304,
+        431
+      ],
+      [
+        1407,
+        92,
+        1730,
+        429
+      ],
+      [
+        119,
+        477,
+        383,
+        864
+      ],
+      [
+        526,
+        477,
+        838,
+        860
+      ],
+      [
+        886,
+        446,
+        1299,
+        864
+      ],
+      [
+        1404,
+        532,
+        1731,
+        864
+      ]
+    ],
+    "baseline": 120,
+    "standingPixels": 104,
+    "authoredPosesPerDirection": 4,
+    "sideFaces": "left",
+    "sideMirroredForRight": true,
+    "death": "front atlas fallback",
+    "clips": {
+      "idle": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "walk": [
+        0,
+        1,
+        1,
+        0,
+        0,
+        1,
+        1,
+        0
+      ],
+      "attack": [
+        0,
+        0,
+        2,
+        2,
+        2,
+        2,
+        0,
+        0
+      ],
+      "hurt": [
+        3,
+        3,
+        3,
+        0
+      ]
+    },
+    "provenance": {
+      "source": "C:\\Users\\Garyg\\.codex\\generated_images\\01a14677-ed2f-7071-8217-9bea7daa6c00\\exec-5c4a9483-4460-4dc6-8392-74dd6c76bf4f.png",
+      "correction": null,
+      "prompt": "Create a matching directional sprite sheet for the EXACT archer character in the reference. Preserve its identity, gear, realistic adult anatomy, proportions, muted palette, clothing construction and deliberate crisp pixel clusters. muted olive hood and cloak, brown leather, quiver behind shoulder, bow, brown boots. Original grim medieval gothic dark fantasy pixel art, worn materials, restrained highlights, no text, no ground shadows, no cartoon/chibi or smooth painted rendering.\nTransparent canvas, STRICT 4 columns by 2 rows, exactly eight separated full-body characters with all weapons included and generous transparent gutters. Each figure same body height and feet baseline within its cell. TOP ROW: four TRUE BACK views, face and chest turned entirely away: idle standing, walking stride, attacking with class weapon, recoiling hurt. BOTTOM ROW: four TRUE LEFT PROFILE views, nose/chest/feet aimed toward screen LEFT: idle standing, walking stride, attacking with class weapon, recoiling hurt. Every pose remains in that row's direction. Back must show backs of hood/helmet, armor/cloak and equipment, absolutely no frontal face/beard/chest details. Profile must be visibly anatomical side view, never a mirrored frontal character. Four poses per row from left to right. Match reference pixel density after reduction to 104 standing pixels. Entire image transparent background, clean hard cutout edges.",
+      "reference": "../archer-source.png"
+    }
+  }
+]

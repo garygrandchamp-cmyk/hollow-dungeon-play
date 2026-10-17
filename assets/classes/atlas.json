@@ -1,0 +1,332 @@
+[
+  {
+    "classId": "mage",
+    "file": "mage-atlas.png",
+    "source": "mage-source.png",
+    "width": 1024,
+    "height": 640,
+    "frameSize": 128,
+    "baseline": 120,
+    "authoredPoses": 8,
+    "clipFrames": {
+      "idle": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "walk": [
+        1,
+        1,
+        0,
+        2,
+        2,
+        2,
+        0,
+        1
+      ],
+      "attack": [
+        0,
+        0,
+        3,
+        3,
+        3,
+        3,
+        0,
+        0
+      ],
+      "hurt": [
+        5,
+        5,
+        5,
+        0
+      ],
+      "death": [
+        5,
+        5,
+        6,
+        6,
+        6,
+        7,
+        7,
+        7
+      ]
+    },
+    "sha256": "37127bbdefb5a73d011e3d5daeb2b39bebdf2a3b7ca45e7885f23ee4c0baf684"
+  },
+  {
+    "classId": "paladin",
+    "file": "paladin-atlas.png",
+    "source": "paladin-source.png",
+    "width": 1024,
+    "height": 640,
+    "frameSize": 128,
+    "baseline": 120,
+    "authoredPoses": 8,
+    "clipFrames": {
+      "idle": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "walk": [
+        1,
+        1,
+        0,
+        2,
+        2,
+        2,
+        0,
+        1
+      ],
+      "attack": [
+        0,
+        0,
+        3,
+        3,
+        3,
+        3,
+        0,
+        0
+      ],
+      "hurt": [
+        5,
+        5,
+        5,
+        0
+      ],
+      "death": [
+        5,
+        5,
+        6,
+        6,
+        6,
+        7,
+        7,
+        7
+      ]
+    },
+    "sha256": "59780a90ac7ff391a712b43ee08e81e01703b2f8d107420f43a25b0080e6bac4"
+  },
+  {
+    "classId": "barbarian",
+    "file": "barbarian-atlas.png",
+    "source": "barbarian-source.png",
+    "width": 1024,
+    "height": 640,
+    "frameSize": 128,
+    "baseline": 120,
+    "authoredPoses": 8,
+    "clipFrames": {
+      "idle": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "walk": [
+        1,
+        1,
+        0,
+        2,
+        2,
+        2,
+        0,
+        1
+      ],
+      "attack": [
+        0,
+        0,
+        3,
+        3,
+        3,
+        3,
+        0,
+        0
+      ],
+      "hurt": [
+        5,
+        5,
+        5,
+        0
+      ],
+      "death": [
+        5,
+        5,
+        6,
+        6,
+        6,
+        7,
+        7,
+        7
+      ]
+    },
+    "sha256": "fa557dea53c77ba7a7fbb5212ef5c007e0c54f1b0c09146d12814cd1458ca234"
+  },
+  {
+    "classId": "warlock",
+    "file": "warlock-atlas.png",
+    "source": "warlock-source.png",
+    "width": 1024,
+    "height": 640,
+    "frameSize": 128,
+    "baseline": 120,
+    "authoredPoses": 8,
+    "clipFrames": {
+      "idle": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "walk": [
+        1,
+        1,
+        0,
+        2,
+        2,
+        2,
+        0,
+        1
+      ],
+      "attack": [
+        0,
+        0,
+        3,
+        3,
+        3,
+        3,
+        0,
+        0
+      ],
+      "hurt": [
+        5,
+        5,
+        5,
+        0
+      ],
+      "death": [
+        5,
+        5,
+        6,
+        6,
+        6,
+        7,
+        7,
+        7
+      ]
+    },
+    "sha256": "a8d3c72b58bd032e826c70d6093bdcc27418b35319606bd39018512e7c2c403a"
+  },
+  {
+    "classId": "thief",
+    "file": "thief-atlas.png",
+    "source": "thief-source.png",
+    "width": 1024,
+    "height": 640,
+    "frameSize": 128,
+    "baseline": 120,
+    "authoredPoses": 8,
+    "clipFrames": {
+      "idle": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "walk": [
+        1,
+        1,
+        0,
+        2,
+        2,
+        2,
+        0,
+        1
+      ],
+      "attack": [
+        0,
+        0,
+        3,
+        3,
+        3,
+        3,
+        0,
+        0
+      ],
+      "hurt": [
+        5,
+        5,
+        5,
+        0
+      ],
+      "death": [
+        5,
+        5,
+        6,
+        6,
+        6,
+        7,
+        7,
+        7
+      ]
+    },
+    "sha256": "ccd4c09bc3b81a9dec90c140c5dff3270c99fc4043dee57f20221851094463cf"
+  },
+  {
+    "classId": "archer",
+    "file": "archer-atlas.png",
+    "source": "archer-source.png",
+    "width": 1024,
+    "height": 640,
+    "frameSize": 128,
+    "baseline": 120,
+    "authoredPoses": 8,
+    "clipFrames": {
+      "idle": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "walk": [
+        1,
+        1,
+        0,
+        2,
+        2,
+        2,
+        0,
+        1
+      ],
+      "attack": [
+        0,
+        0,
+        3,
+        3,
+        3,
+        3,
+        0,
+        0
+      ],
+      "hurt": [
+        5,
+        5,
+        5,
+        0
+      ],
+      "death": [
+        5,
+        5,
+        6,
+        6,
+        6,
+        7,
+        7,
+        7
+      ]
+    },
+    "sha256": "6fecc59988d477f163720c3c1d03fd0b316d0573c5668171d650336c0cc3922a"
+  }
+]

@@ -1,0 +1,37 @@
+{
+  "method": "Procedural native-pixel elemental VFX. Independent effect artwork, never baked into the PixelLab hand.",
+  "themes": [
+    {
+      "theme": "fire",
+      "width": 512,
+      "height": 64,
+      "frames": 8,
+      "pngSHA256": "ce69f0305b231f0449b6ad4e56a9982b65a10cb9ff4e2f919f37befd7f63a6ae",
+      "rgbaSHA256": "b81719631376955a2bee4b8f5ce7b3751a1ff1e0912acd07afed58772f156853"
+    },
+    {
+      "theme": "ice",
+      "width": 512,
+      "height": 64,
+      "frames": 8,
+      "pngSHA256": "93de723936672a9af1ddaf22ecfdce6dc561b637a9be97b7a0d98dd63584d21f",
+      "rgbaSHA256": "2475a34f579060e2c87b9f7791122f62f35ba684eeead77196c809c3b374e7b1"
+    },
+    {
+      "theme": "poison",
+      "width": 512,
+      "height": 64,
+      "frames": 8,
+      "pngSHA256": "433eb9b7039705462d949e1412abcb5c34f2d7ad6eedb92c339194deb1ee0b8b",
+      "rgbaSHA256": "1055caa922cfbd26318e45fcd7d2f5b552aa6acab6af0521994dc6998a4e46a6"
+    },
+    {
+      "theme": "arcane",
+      "width": 512,
+      "height": 64,
+      "frames": 8,
+      "pngSHA256": "cea0a3d51aa34493917c0c68827b9b76040dec4b5d5c55e729ab876a16b1ea9b",
+      "rgbaSHA256": "4f4e8c6dde606f78e395ec2d958d13c02ee8c9d2b49d266d6d3adcfe9054cda4"
+    }
+  ]
+}

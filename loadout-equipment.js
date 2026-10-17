@@ -1,0 +1,21 @@
+import {createEquipmentSprites,HELD_PIXELS_PER_UNIT,sampleHeldPixels} from './equipment-sprites.js';
+import {generateWeapon,makeWeaponSprite,CLASS_WEAPON_DEFAULTS} from './weapon-forge.js';
+import {hydrateWeaponArt} from './loot-art.js';
+const kinds={wand:'staff',dagger:'sword'};
+function matchHeldDensity(THREE,root,recipe,height){let mesh;root.traverse(o=>{if(o.isMesh)mesh??=o;});if(!mesh?.material?.map)return;const map=mesh.material.map,source=map.image.data,sourceWidth=recipe.width,sourceHeight=recipe.height,width=Math.max(1,Math.ceil(height*recipe.width/recipe.height*HELD_PIXELS_PER_UNIT)),rows=Math.max(1,Math.ceil(height*HELD_PIXELS_PER_UNIT));map.source=new THREE.Source({data:sampleHeldPixels(source,sourceWidth,sourceHeight,width,rows),width,height:rows});map.userData.pixelDensity={target:HELD_PIXELS_PER_UNIT,frameWidth:width,frameHeight:rows,frames:1,sourceWidth,sourceHeight};map.needsUpdate=true;let displayedVersion=map.version;function update(){if(map.version===displayedVersion)return;map.image.data.set(sampleHeldPixels(source,sourceWidth,sourceHeight,width,rows));map.needsUpdate=true;displayedVersion=map.version;}for(const method of ['setStain','setArtPixels']){const original=root.userData[method];if(typeof original==='function')root.userData[method]=(...args)=>{const result=original(...args);update();return result;};}}
+/** The gauntlet stays a separate cutout; forged blades/hafts are replaceable. */
+export function createLoadoutEquipment(THREE,actor={},equipmentOptions={}){
+ const base=createEquipmentSprites(THREE,{...equipmentOptions,modularRightHand:true}),right=base.right,hand=right.userData.hand,handGrip=right.userData.gripAnchor;right.name='modular-right-hand';
+ let weapon=null,recipe=null,key='',weaponKey='starter:'+(actor.classId??'adventurer'),stain=null;
+ function release(){if(!weapon)return;weapon.userData.disposeMaterials?.();weapon.traverse(o=>o.geometry?.dispose());weapon.removeFromParent();weapon=null;}
+ function setWeapon(item={kind:actor.equipment?.weapon?.id??'sword'}){
+  const signature=JSON.stringify(item);if(signature===key)return;key=signature;release();weaponKey=item.id??'starter:'+(actor.classId??'adventurer');const kind=kinds[item.kind]??item.kind;
+  const profile=Object.entries(CLASS_WEAPON_DEFAULTS).find(([name])=>name.toLowerCase()===actor.classId)?.[1],starter=item.seed==null&&profile?.kind===kind?profile:{};
+  const blade=item.blade??item.parts?.blade,grip=item.base??item.parts?.base;
+  recipe=generateWeapon({...starter,kind:['sword','axe','mace','hammer','bow','staff'].includes(kind)?kind:'sword',seed:item.seed??actor.id??'starter',theme:item.theme??starter.theme??'steel',...(blade!==undefined?{blade}:{}),...(grip!==undefined?{base:grip}:{}),...(item.color?{color:item.color}:{})});
+  const height=recipe.kind==='sword'?.90:recipe.kind==='bow'?.66:.76;weapon=makeWeaponSprite(THREE,recipe,{firstPerson:true,height});matchHeldDensity(THREE,weapon,recipe,height);weapon.userData.heldHeight=height;weapon.rotation.z=.28;right.add(weapon);
+  const currentWeapon=weapon;weapon.userData.setGripAnchor=anchor=>{if(weapon!==currentWeapon||!anchor||!Number.isFinite(anchor.x)||!Number.isFinite(anchor.y)||anchor.x<0||anchor.x>1||anchor.y<0||anchor.y>1)return false;const local=new THREE.Vector3((anchor.x-.5)*height*recipe.width/recipe.height,(1-anchor.y)*height,0);weapon.userData.gripAnchor={x:anchor.x,y:anchor.y};weapon.userData.localGrip=local;weapon.position.copy(handGrip).sub(local.clone().multiply(weapon.scale).applyQuaternion(weapon.quaternion));return true;};weapon.userData.setGripAnchor(recipe.anchors?.grip??{x:.5,y:.75});weapon.userData.setStain?.(actor.weaponStains?.[weaponKey]??stain);Promise.resolve(hydrateWeaponArt(weapon,recipe)).catch(()=>{});
+ }
+ setWeapon();
+ return {...base,right,setWeapon,layout(aspect,fov=72){if(weapon&&Number.isFinite(aspect)&&aspect>0){weapon.rotation.z=Math.atan(aspect/6.6);weapon.userData.setGripAnchor(weapon.userData.gripAnchor);}return base.layout(aspect,fov);},get magicTheme(){return base.magicTheme;},get torchState(){return base.torchState;},setStain(value){stain=value;weapon?.userData.setStain?.(value);},get weapon(){return recipe;},animate(options){weapon?.userData.setStain?.(actor.weaponStains?.[weaponKey]??stain);base.animate(options);},dispose(){release();base.dispose();right.removeFromParent();}};
+}

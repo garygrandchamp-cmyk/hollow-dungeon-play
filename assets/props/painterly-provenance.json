@@ -1,0 +1,95 @@
+{
+  "generator": "PixelLab create_image_pixen",
+  "style": "Gritty painterly desaturated dark-fantasy world props inspired by late-1990s action RPG material shading; original generic objects.",
+  "assets": [
+    {
+      "key": "chest",
+      "width": 128,
+      "height": 128,
+      "seed": 461051,
+      "description": "A realistically proportioned small medieval iron-bound oak treasure coffer, CLOSED curved wooden lid, three-quarter front view from only slightly above at standing player eye level, full object isolated. Heavy aged dark oak boards with uneven grain, rust-black iron straps, tiny dull brass lock, scratched corners, soot and grime, sparse nuanced warm highlights. Gritty painterly pixel art evoking classic late-1990s Diablo II inventory-world sprites, realistic pre-rendered-looking material shading hand translated to sharp native pixels, muted brown and charcoal palette, dim dungeon light baked into object, detailed rough surface, no fat black outlines, no cartoon or cute icon simplification, no vector flats, no oversaturated gold, no floor tile, no scene, no text. Transparent background.",
+      "jobId": "b6c991ea-5b49-4067-8d3d-0ff593dc459c",
+      "assetId": "c4b7904d-8d88-51aa-b3f0-6caabb072f64",
+      "files": [
+        "painterly-chest-closed.png",
+        "painterly-chest-open.png"
+      ],
+      "animation": {
+        "tool": "PixelLab animate_image",
+        "jobId": "95df5605-b321-4b01-b06d-e30a273fdb8e",
+        "assetId": "b2f1de59-04d0-59e5-b873-3d75b16f7563",
+        "seed": 461057,
+        "openFrameIndex": 4,
+        "note": "Not used: animation opened the lid only slightly; explicit fully-open Pixen edit selected instead."
+      },
+      "openPose": {
+        "tool": "PixelLab edit_image_pixen",
+        "jobId": "d7ba2fde-ecbb-43ca-b756-e861e9ea0c39",
+        "assetId": "7534111f-754c-506c-87c3-4048fc870ae6",
+        "seed": 461058,
+        "review": "Visually reviewed fully raised hinged lid, dark interior and a few dull coins; chest base/camera remain consistent."
+      }
+    },
+    {
+      "key": "crate",
+      "width": 96,
+      "height": 96,
+      "seed": 461052,
+      "description": "A realistically proportioned battered medieval shipping crate, square oak box with rough plank construction and a diagonal reinforcing board, three-quarter front view only slightly above, full object isolated. Dark desaturated brown old wood, splinters, black nail heads, scuffed edges, damp stains and dirt in joints. Gritty painterly pixel art evoking classic late-1990s Diablo II world sprites, realistic material shading translated to sharp native pixel clusters, dim dungeon lighting baked in, restrained highlights and textured shadows, no fat black outlines, no cartoon or cute icon simplification, no vector flats, no floor tile or scenery, no text. Transparent background.",
+      "jobId": "a8d57e33-2480-46d3-a27a-c876514e3b41",
+      "assetId": "52c39b1c-edc2-5c16-8ea8-a1f14c50b80b",
+      "files": [
+        "painterly-crate.png"
+      ]
+    },
+    {
+      "key": "barrel",
+      "width": 96,
+      "height": 128,
+      "seed": 461053,
+      "description": "A realistically proportioned old medieval oak barrel, standing upright, three-quarter front view only slightly above, full object isolated. Swollen curved wooden staves, rusted dark iron hoops, dry worn top, water stains, dirt, many subtle grain marks and chipped edges. Gritty painterly pixel art evoking classic late-1990s Diablo II world sprites, realistic desaturated brown wood and charcoal iron shading translated to sharp native pixels, dim warm dungeon light baked in, no fat black outlines, no cartoon proportions, no clean vector flats, no cute icon, no floor tile or scenery, no text. Transparent background.",
+      "jobId": "b6c0c201-53be-423f-927c-3304c705e380",
+      "assetId": "4d72ff8c-c5b5-5d3e-a779-41156bfed136",
+      "files": [
+        "painterly-barrel.png"
+      ]
+    },
+    {
+      "key": "tomb",
+      "width": 128,
+      "height": 128,
+      "seed": 461054,
+      "description": "A realistically proportioned ancient stone sarcophagus lying on a low rectangular tomb base, three-quarter front view only slightly above, full object isolated. Heavy oblong coffin of weathered gray-brown limestone with a worn carved recumbent medieval figure on its slab lid, eroded skull-like face, crossed stone hands, broken corners, hairline cracks, soot, tiny patches of dull dry moss. Gritty painterly pixel art evoking classic late-1990s Diablo II crypt world sprites, realistic weight and stone texture, sculpted light and dark planes translated to sharp native pixels, muted taupe and gray palette, no fat black outlines, no cartoon or cute icon simplification, no vector flats, no floor tile, no scenery or text. Transparent background.",
+      "jobId": "72cb89d2-09af-44e7-8cb0-ea05e4284100",
+      "assetId": "b3538a86-a3c3-5819-8450-ce058cd90945",
+      "files": [
+        "painterly-tomb.png"
+      ]
+    },
+    {
+      "key": "bookshelf",
+      "width": 96,
+      "height": 160,
+      "seed": 461055,
+      "description": "A realistically proportioned tall narrow medieval wooden bookcase, front with a slight three-quarter angle, full object isolated. Heavy carved dark oak frame, sagging shelves, dusty old leather-bound books of different sizes leaning irregularly, muted oxblood brown dark olive and faded tan spines, a few rolled parchment scrolls, chipped edges and grime. Gritty painterly pixel art evoking classic late-1990s Diablo II monastery world sprites, realistic material shading and dim baked dungeon light translated to sharp native pixel clusters, no bright toy colors, no fat black outlines, no cartoon or cute icon simplification, no clean vector flats, no floor tile, no scenery or text. Transparent background.",
+      "jobId": "433ff92d-c0ef-4cc4-b550-f6b002df45a0",
+      "assetId": "f9b1a0e2-1f76-5ffd-9eb0-85d61aac02b2",
+      "files": [
+        "painterly-bookshelf.png"
+      ]
+    },
+    {
+      "key": "shrine",
+      "width": 96,
+      "height": 160,
+      "seed": 461056,
+      "description": "A realistically proportioned small ancient Gothic healing shrine, full object isolated, front view with slight three-quarter perspective. Weathered gray-brown stone plinth and eroded carved basin supporting a modest rough blue crystal, chipped corners, soot, dust and subtle dark moss, faint cold cyan reflection on nearest stone edges but no large aura. Gritty painterly pixel art evoking classic late-1990s Diablo II crypt world sprites, realistically sculpted stone and nuanced muted material shading translated to sharp native pixels, dim baked dungeon light, crystal small not a giant cartoon gem, no fat black outlines, no clean vector flats, no cute icon, no scenery, floor tile or text. Transparent background.",
+      "jobId": "1e85551b-5982-40c1-ba35-821901271b88",
+      "assetId": "33c328bf-8106-5e90-8486-08cafb315313",
+      "files": [
+        "painterly-shrine.png"
+      ]
+    }
+  ],
+  "review": "All six painterly furnishing replacements visually inspected: realistically proportioned and shaded dark oak, iron, limestone, old books, and a modest healing crystal. No heavy cartoon icon contours."
+}

@@ -1,0 +1,25 @@
+export const ACTION_COSTS=Object.freeze({attack:4,cast:6,guard:3,search:8,disarm:7,door:2,walk:0,run:0});
+export function createActionBudget({actor={stamina:100,maxStamina:100,fainted:false},random=Math.random,onResult=()=>{}}={}){
+ function attempt(kind,{dc,modifier=0,silent=false}={}){
+  if(!Object.hasOwn(ACTION_COSTS,kind))throw RangeError('Unknown action');
+  if(actor.fainted||actor.alive===false){const result={allowed:false,success:false,cost:0,remaining:actor.stamina,fainted:true};onResult({...result,kind});return result;}
+  const cost=ACTION_COSTS[kind],before=Math.max(0,actor.stamina??actor.maxStamina??100);
+  actor.stamina=Math.max(0,before-cost);if(actor.stamina===0){actor.fainted=true;actor.alive=false;}
+  const roll=dc===undefined?null:1+Math.min(19,Math.max(0,Math.floor(random()*20))),total=roll===null?null:roll+modifier;
+  const result={kind,maxStamina:actor.maxStamina??100,silent,allowed:true,success:roll===null||roll===20||roll!==1&&total>=dc,roll,total,dc,cost,remaining:actor.stamina,fainted:!!actor.fainted};onResult(result);return result;
+ }
+ return {actor,attempt,exhaust(){actor.stamina=0;actor.fainted=true;actor.alive=false;onResult({kind:'exhaustion',allowed:false,success:false,cost:0,remaining:0,fainted:true});},reset(){actor.stamina=actor.maxStamina??100;actor.fainted=false;actor.alive=true;},get fainted(){return !!actor.fainted;}};
+}
+
+export function createAdventureActions({notify=()=>{},sound=()=>{}}={}){
+ const hud=document.createElement('div');hud.id='staminaHud';hud.innerHTML='<span>STAMINA <b>100 / 100</b></span><small>Strike 4 · Cast 6 · Search 8 · Disarm 7</small>';document.body.appendChild(hud);
+ const dice=document.createElement('div');dice.id='actionDice';dice.setAttribute('role','status');dice.hidden=true;document.body.appendChild(dice);
+ const style=document.createElement('style');style.textContent='#staminaHud{display:none;position:fixed;left:12px;bottom:95px;background:#171b24;border:3px double #807357;padding:7px 10px;color:#a8b68c;z-index:50;font:11px monospace}body.first-person #staminaHud{display:block}#staminaHud small{display:block;font-size:9px;color:#96998b;margin-top:3px}#staminaHud.exhausted{color:#c17d65}#actionDice{position:fixed;left:50%;top:34%;transform:translate(-50%,-50%);padding:12px 20px;background:#141820;border:4px double #a28a60;color:#d2c7a9;font:13px monospace;z-index:140;text-align:center;pointer-events:none}#actionDice strong{display:block;font-size:38px;color:#d0b173}#actionDice small{display:block;margin-top:6px}.dice-pulse{animation:dice-settle .3s steps(4)}@keyframes dice-settle{from{transform:translate(-50%,-50%) scale(.8) rotate(-10deg)}to{transform:translate(-50%,-50%) scale(1)}}';document.head.appendChild(style);
+ let hideTimer,rollTimer;
+ const showResult=result=>{
+  hud.querySelector('b').textContent=result.remaining+' / '+(result.maxStamina??100);hud.classList.toggle('exhausted',result.fainted);
+  if(!result.silent&&result.roll!==null&&result.roll!==undefined){clearTimeout(hideTimer);clearInterval(rollTimer);dice.hidden=false;dice.textContent='';const label=document.createElement('span');label.textContent=result.kind.toUpperCase()+' - D20 - TARGET '+result.dc;const number=document.createElement('strong');number.textContent='?';number.setAttribute('aria-hidden','true');const text=document.createElement('small');text.textContent='Rolling... -'+result.cost+' stamina';dice.append(label,number,text);sound('dice-roll-start');const started=performance.now();let lastTick=0;dice.classList.remove('dice-pulse');rollTimer=setInterval(()=>{const elapsed=performance.now()-started;if(elapsed-lastTick>=140&&elapsed<1100){sound('dice-roll-tick');lastTick=elapsed;}number.textContent=String(1+Math.floor(Math.random()*20));if(performance.now()-started<1100)return;clearInterval(rollTimer);rollTimer=null;number.textContent=String(result.roll);const difference=result.total-result.dc;text.textContent=(result.fainted?'EXHAUSTED':result.success?'SUCCESS':'FAILED')+' - '+result.total+' vs DC '+result.dc+' - '+(difference===0?'target met exactly':Math.abs(difference)+(difference>0?' above target':' below target'))+(result.roll===20?' - NATURAL 20':result.roll===1?' - NATURAL 1':'');dice.classList.add('dice-pulse');sound(result.success&&!result.fainted?'dice-success':'dice-failure');hideTimer=setTimeout(()=>dice.hidden=true,2800);},65);}
+  if(result.fainted)notify('Exhausted. You fainted and are out for this run. Start a new dungeon to adventure again.');
+ };const budget=createActionBudget({onResult:showResult});
+ return {...budget,showResult,attempt:budget.attempt,reset(){clearInterval(rollTimer);clearTimeout(hideTimer);budget.reset();hud.querySelector('b').textContent=budget.actor.stamina+' / '+budget.actor.maxStamina;hud.classList.remove('exhausted');dice.hidden=true;},get fainted(){return budget.fainted;}};
+}

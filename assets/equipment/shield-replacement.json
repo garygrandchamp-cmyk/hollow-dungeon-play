@@ -1,0 +1,10 @@
+{
+  "description": "First-person player-eye POV equipment sprite of the INSIDE BACK INTERIOR of a medieval round wooden shield held in the LEFT ARM. We are the player looking at the INNER surface toward our own left hand: plain rough brown wooden planks, two clearly visible dark leather arm straps and an inside horizontal handgrip. The armored LEFT FOREARM enters from bottom left and passes THROUGH the broad leather forearm strap. The left gloved FIST wraps firmly AROUND the internal handle in the center, attached naturally to that forearm. The shield is raised defensively in front of the player, foreshortened slightly, thick iron rim around its outside edge. The outward shield boss points AWAY from camera and MUST NOT be visible: NO exterior central metal boss, NO crest, NO decorative outward face, NO hand touching the outside. Crisp gritty 16-bit dark fantasy dungeon RPG pixel art, muted slate steel gauntlet, aged dark oak and brown leather, strong dark outlines and deliberate pixel clusters. Isolated transparent background, no body, no scenery, no ground shadow, no text.",
+  "width": 192,
+  "height": 192,
+  "seed": 461031,
+  "model": "PixelLab Pixen",
+  "jobId": "658eeeaf-429c-401e-a31e-c5d66f12eca8",
+  "assetId": "d7b5d856-db83-59e5-a008-62610a76033b",
+  "review": "Visually reviewed: interior oak back, leather forearm support and gloved fist wrapped around inside transverse handle; no outward central boss; forearm extends to bottom canvas edge."
+}

@@ -1,0 +1,1978 @@
+[
+  {
+    "file": "artisticdude/battle/magic1.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 232576,
+    "sha256": "cadea162f3fe91c27666ab2a0516fa3bf156997d92d4f8145919126bca7b1e8a"
+  },
+  {
+    "file": "artisticdude/battle/spell.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 861816,
+    "sha256": "61d79416a7cbb04e1f46618ded72386f82bb6bd9dc170170480d271f4efb3958"
+  },
+  {
+    "file": "artisticdude/battle/swing.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 61462,
+    "sha256": "c7d50b9cb20ccda5aee6c023f4450915594061e36f3f9e78af241ca9fde0f817"
+  },
+  {
+    "file": "artisticdude/battle/swing2.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 39384,
+    "sha256": "2e4064e294d136e06c40cc562df969493907e6873f39895ca86b4a6b2e034c6e"
+  },
+  {
+    "file": "artisticdude/battle/swing3.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 37316,
+    "sha256": "d725421956c9958de6d7a17c4fca299abe583a1800c59eaec358ec2e82d79bae"
+  },
+  {
+    "file": "artisticdude/battle/sword-unsheathe.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 156950,
+    "sha256": "2cc0518b65d3a11b4f7cf22a5be6700d36fa1e681491dfb71b87ae5bce2296f6"
+  },
+  {
+    "file": "artisticdude/battle/sword-unsheathe2.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 107086,
+    "sha256": "1df8bdb5e4f852821a9b5b7cf27b2c1c516c3a6382cb14b2865005d786503b0a"
+  },
+  {
+    "file": "artisticdude/battle/sword-unsheathe3.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 148990,
+    "sha256": "4a1a54402789bd08278c332086ed427805dc5d42c3e7c3fce0f30d1e19e20c91"
+  },
+  {
+    "file": "artisticdude/battle/sword-unsheathe4.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 138926,
+    "sha256": "89202f82cfac83bdadbf41c88998cd5f60c00609a53c1ae769c00bf1031cd272"
+  },
+  {
+    "file": "artisticdude/battle/sword-unsheathe5.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 123006,
+    "sha256": "7a6a08b555cd0948a7460b26f411448fbd28c03d0ef1baa3443008c0fb52efb7"
+  },
+  {
+    "file": "artisticdude/interface/interface1.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 50150,
+    "sha256": "89290b137f013eb02f7f192069c7e3819a71cb87f56ce3832544cd49d410d5f8"
+  },
+  {
+    "file": "artisticdude/interface/interface2.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 119004,
+    "sha256": "b900ac84cd3d7fa6e07f8accd68fd96c2b9493ea5dea7b6d29fa6ec676f0cb3a"
+  },
+  {
+    "file": "artisticdude/interface/interface3.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 119010,
+    "sha256": "68f25d638cf4f82b26bcbe525a393b60b069591ad7054f62854215c81207a86f"
+  },
+  {
+    "file": "artisticdude/interface/interface4.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 72414,
+    "sha256": "e9c30727c763338f64d17da1f338197ace4e59f6917c654f061daa8b3e89b1a8"
+  },
+  {
+    "file": "artisticdude/interface/interface5.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 72326,
+    "sha256": "68ad13be55417e8ad6ebe150af9381b0ff4ab726f777458432b00c74c9c21aa8"
+  },
+  {
+    "file": "artisticdude/interface/interface6.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 88434,
+    "sha256": "f35b9705613b208a9b7b351763016edec96ffe55d4a869af3f52e3ee60903708"
+  },
+  {
+    "file": "artisticdude/inventory/armor-light.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 88434,
+    "sha256": "1600329c7607eede7a441f66152f0626dd84e4b13f84ccd07887d020ba1c6b9e"
+  },
+  {
+    "file": "artisticdude/inventory/beads.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 88434,
+    "sha256": "dd8ae313bcb28b50725050780fe0d312d248e3aad15f33d7bea2ba58cbb2093b"
+  },
+  {
+    "file": "artisticdude/inventory/bottle.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 127698,
+    "sha256": "b80e52ce602f0e8f75b3a80516771a759b815416f749888f72cadcd9448ecea0"
+  },
+  {
+    "file": "artisticdude/inventory/bubble.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 121630,
+    "sha256": "c5f15d81e2b169784b737d31876ef67eb6957232f3e9c8186dde12c2370c822e"
+  },
+  {
+    "file": "artisticdude/inventory/bubble2.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 116662,
+    "sha256": "fea5d8f0049a71b0a73b3086271fc18d0b5d733965b53fbfe550b6de26b1bef9"
+  },
+  {
+    "file": "artisticdude/inventory/bubble3.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 193934,
+    "sha256": "d6a3d8e0119b902f5d01ceeda42bf34f31da6b53e854742db65f06b805a9c302"
+  },
+  {
+    "file": "artisticdude/inventory/chainmail1.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 155298,
+    "sha256": "44d4d6b0cda8138c9d5545ba4f434f53b7817ba32d98ddfdf5bff6ae7acdefdf"
+  },
+  {
+    "file": "artisticdude/inventory/chainmail2.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 199456,
+    "sha256": "74b5e34233ea69fd76b6f016bae74f3432d7ca1921fa403c32f6c45cab2fdfa8"
+  },
+  {
+    "file": "artisticdude/inventory/cloth-heavy.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 108792,
+    "sha256": "73bbbd383b5bbc8b8313f6fee84040aecc1de09714afbe51ba4e5162cbac3528"
+  },
+  {
+    "file": "artisticdude/inventory/cloth.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 132918,
+    "sha256": "d829b5ed7a47086771c639495713498e44ce28814f4ea6ddf30cb1f18c085c3f"
+  },
+  {
+    "file": "artisticdude/inventory/coin.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 174974,
+    "sha256": "ee72adacc8630cb590f22130a9c7c855f6eeb698d9fce6461667255ec45ed184"
+  },
+  {
+    "file": "artisticdude/inventory/coin2.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 289122,
+    "sha256": "4147e7fbe404d2cd97ba7b5af61e88ebe4f652626589c4ee9d570595262b8802"
+  },
+  {
+    "file": "artisticdude/inventory/coin3.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 89812,
+    "sha256": "b7ee8ca02c9ba9293e6ea91bc518213b44aea39636c05801af7b7d8c542e738e"
+  },
+  {
+    "file": "artisticdude/inventory/metal-ringing.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 149740,
+    "sha256": "55b1ba32e57070ef150c3fe88e1e04f0a4dc382f47e0bfc77249d1ac62dba517"
+  },
+  {
+    "file": "artisticdude/inventory/metal-small1.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 140536,
+    "sha256": "8ebfaf55f946fd2af5086c333551dfc7c774a908759022081010c32085d600b3"
+  },
+  {
+    "file": "artisticdude/inventory/metal-small2.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 96422,
+    "sha256": "19c13a87e0f241cf05417506760d32eb1e2a61dc77c7798ea86b22fa9260f596"
+  },
+  {
+    "file": "artisticdude/inventory/metal-small3.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 132918,
+    "sha256": "d68a259dfe36bd8cb5974154cfabb7baeaf1c92bce4526352dbb103f1865e1e8"
+  },
+  {
+    "file": "artisticdude/inventory/wood-small.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 83546,
+    "sha256": "679184e2a0c37e68450f8f2b511daca8ce187af306789215197dc73c0193386e"
+  },
+  {
+    "file": "artisticdude/misc/burp.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 349200,
+    "sha256": "cebc5ef40701bd7916b7e9661f23fe431efa5df1d4a52aad769e27b4c7f29f15"
+  },
+  {
+    "file": "artisticdude/misc/random1.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 174594,
+    "sha256": "78e5e6ff5761e168c099437f80c0d77cabaa274725e79ab9ca3499c6c40f272c"
+  },
+  {
+    "file": "artisticdude/misc/random2.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 120904,
+    "sha256": "a9737e601ec31caf58d059c6fc7c3bb673426a254dd2644122f5a2d242eb1306"
+  },
+  {
+    "file": "artisticdude/misc/random3.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 114896,
+    "sha256": "9cbcccd429442d5ae83ae4a243ce5e4f6d8900e9478f14f4001bc06bb2330744"
+  },
+  {
+    "file": "artisticdude/misc/random4.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 199004,
+    "sha256": "a8870e97cab64305b2f8eeb10eee18c7c6e52bece60864f69f0d78f94ac41442"
+  },
+  {
+    "file": "artisticdude/misc/random5.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 103000,
+    "sha256": "d1ebe23940f65efbfc952c7bfa05fdee514fc09259c7b5d6bab551287366e860"
+  },
+  {
+    "file": "artisticdude/misc/random6.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 133220,
+    "sha256": "fb36dc8557f581f9d1e0e795f58f50cfafb3ba1e789549c9ba32cee8c0869e32"
+  },
+  {
+    "file": "artisticdude/NPC/beetle/bite-small.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 73804,
+    "sha256": "bc0e9d150aaf71aefa99111cfff90ca1deea5e72fb31c7371df75288d74ab2b5"
+  },
+  {
+    "file": "artisticdude/NPC/beetle/bite-small2.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 101078,
+    "sha256": "58318528da572fc30eb50487aa733a6dc7f9c06d2ca5141dae8ab57aac022c96"
+  },
+  {
+    "file": "artisticdude/NPC/beetle/bite-small3.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 149290,
+    "sha256": "6451f3d697ba8e741e1d4bc032d771a5bd3ee33c3c01e81417c60947d3d1b25d"
+  },
+  {
+    "file": "artisticdude/NPC/giant/giant1.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 186990,
+    "sha256": "e9aeb6012c03fb426019f8d485d0da8a6aaf2e46499acd3636afe05966cd752e"
+  },
+  {
+    "file": "artisticdude/NPC/giant/giant2.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 267794,
+    "sha256": "3e5b30a8fa8f6eb8f94bb50a43fb410669f78da13f4108f60f8a851ddde2f2a8"
+  },
+  {
+    "file": "artisticdude/NPC/giant/giant3.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 180982,
+    "sha256": "90ecb38bb1a454668e95f85453c782a6b779addc2fe35f588c002c589f46b30e"
+  },
+  {
+    "file": "artisticdude/NPC/giant/giant4.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 156950,
+    "sha256": "ad27630c04029a3b454f8e99d4b61aa3516666a0437d28e3ba2f67e4f6d46801"
+  },
+  {
+    "file": "artisticdude/NPC/giant/giant5.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 205314,
+    "sha256": "663f4dbafdd680b9103f58066a433cfd4ba7150a759fdbeb510f7f753dab6f25"
+  },
+  {
+    "file": "artisticdude/NPC/gutteral beast/mnstr1.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 126912,
+    "sha256": "4d4979bb409239dee5e7848c9931d2c28c165069db4cdab5a2e38be52d8fb10d"
+  },
+  {
+    "file": "artisticdude/NPC/gutteral beast/mnstr10.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 157702,
+    "sha256": "57572215ae5c5fc093e500c2b68a4b5614bb1d314c0c23f2af6f50208a7e1c65"
+  },
+  {
+    "file": "artisticdude/NPC/gutteral beast/mnstr11.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 217028,
+    "sha256": "d50f050e6de5557064e566b46646f7eeb337f9d7e04e6a538e350f5882c17239"
+  },
+  {
+    "file": "artisticdude/NPC/gutteral beast/mnstr12.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 126912,
+    "sha256": "01a9842de18b0df4520aebdc864d4fa6235b4234fc4fb3352050c508ea71219b"
+  },
+  {
+    "file": "artisticdude/NPC/gutteral beast/mnstr13.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 156800,
+    "sha256": "1742bd5415c37bbbbcbc1e6d99871a714a6f958ba0bc4af15f1fea1250dc1924"
+  },
+  {
+    "file": "artisticdude/NPC/gutteral beast/mnstr14.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 305042,
+    "sha256": "c00485d1a395575ed85c7f49073cd9affa7fafcaaad2b23fcbea6cd162a4e366"
+  },
+  {
+    "file": "artisticdude/NPC/gutteral beast/mnstr15.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 108888,
+    "sha256": "6fcfe0e796ac8746785c4ae36e85675395e0c5d6b06659cc150e100dd1ce1f1b"
+  },
+  {
+    "file": "artisticdude/NPC/gutteral beast/mnstr2.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 144934,
+    "sha256": "5a017cb86406c3c6f4ffc1a26170654a41571c383091607392c491578cc33a60"
+  },
+  {
+    "file": "artisticdude/NPC/gutteral beast/mnstr3.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 156950,
+    "sha256": "c0876bdcff8443cd50389ca296cb79dab225091a690b47b8f28ba4c520b196d2"
+  },
+  {
+    "file": "artisticdude/NPC/gutteral beast/mnstr4.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 203510,
+    "sha256": "10ab9dbd3d804e86c84f37db4d17c054bb76505079ae616866237033e45b2389"
+  },
+  {
+    "file": "artisticdude/NPC/gutteral beast/mnstr5.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 266292,
+    "sha256": "2037e71b73377e367764f9b0d8cae58073f1c0d15e951f69ef2951ffe7e2aebb"
+  },
+  {
+    "file": "artisticdude/NPC/gutteral beast/mnstr6.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 205012,
+    "sha256": "508d933792943f0c68d1dd56d6d595a1c66b8f6372b307ebd030363d7babdedf"
+  },
+  {
+    "file": "artisticdude/NPC/gutteral beast/mnstr7.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 188040,
+    "sha256": "16a9ed40187c22a16f8dac15eaba4ba0563e793ccbcc040a7d8968c2c4b47eeb"
+  },
+  {
+    "file": "artisticdude/NPC/gutteral beast/mnstr8.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 168966,
+    "sha256": "d0d2fc0fb04e3f71a15b777671b04086c88f71cefeef6fdf18039a6ec68d0017"
+  },
+  {
+    "file": "artisticdude/NPC/gutteral beast/mnstr9.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 217780,
+    "sha256": "a316d05d02e1afff715426280017baeebbe54a0820f276f7e8087bdb6ea4691c"
+  },
+  {
+    "file": "artisticdude/NPC/misc/wolfman.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 120152,
+    "sha256": "32664036a8102ca6c733287d9e1483682daed3930304390d1d7adcfc2f8c38a6"
+  },
+  {
+    "file": "artisticdude/NPC/ogre/ogre1.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 117148,
+    "sha256": "acd9428134c6a7c02458983596a084702a9317466c86e586e008a59dc623ea8c"
+  },
+  {
+    "file": "artisticdude/NPC/ogre/ogre2.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 170468,
+    "sha256": "d2d27137448f24471cd401d8248920d8a2e9b903a097be7629b5c1927cd69daa"
+  },
+  {
+    "file": "artisticdude/NPC/ogre/ogre3.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 167614,
+    "sha256": "06c563b15bcc99393492c5ac04bb58c57a591a85d158c963abebe1600a505910"
+  },
+  {
+    "file": "artisticdude/NPC/ogre/ogre4.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 167464,
+    "sha256": "9c35b3748dbeb8c4f079996ce26a87237f513897fb66ce397f18c923a3cdfdb8"
+  },
+  {
+    "file": "artisticdude/NPC/ogre/ogre5.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 99426,
+    "sha256": "893a01f352904ad3aa500d6a43fbed3af5d704565bc52d333c498a06e37cdeac"
+  },
+  {
+    "file": "artisticdude/NPC/shade/shade1.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 153646,
+    "sha256": "962c30499b62b49eb78e70ae72073b26f3a6328bf3bab1ad093f3d7a4db26f7c"
+  },
+  {
+    "file": "artisticdude/NPC/shade/shade10.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 292426,
+    "sha256": "fa24e693ffd4b900ac619b86f17e5bdd6fd9454108f9a89eec0baed99f0d97f5"
+  },
+  {
+    "file": "artisticdude/NPC/shade/shade11.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 325168,
+    "sha256": "159cc829c0c411cb92805f580755fdae224dfeeb4b9cd05e012f2868e883e9b9"
+  },
+  {
+    "file": "artisticdude/NPC/shade/shade12.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 379240,
+    "sha256": "1665fbb30a5707ad73b27dd451460a609ff531a29e74ec0b109df0ba97195e93"
+  },
+  {
+    "file": "artisticdude/NPC/shade/shade13.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 331176,
+    "sha256": "e1706d07ba4e58f4624318c61c2c0e7712e4315040fef287b7c5947ee18e9f6c"
+  },
+  {
+    "file": "artisticdude/NPC/shade/shade14.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 162958,
+    "sha256": "921ae98ce3775c60922d07caec1107690d9fd4f89ff3f46ec4d18bc83d8fc18f"
+  },
+  {
+    "file": "artisticdude/NPC/shade/shade15.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 186990,
+    "sha256": "96558b2db7f912951e25cbe434bcb3801b80718d5c4a22c93fd33512b43e6601"
+  },
+  {
+    "file": "artisticdude/NPC/shade/shade2.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 159654,
+    "sha256": "f83ebcb33463c08a8b1845adaee0df836f047ad05c91ac6ad57f9acd6813a76e"
+  },
+  {
+    "file": "artisticdude/NPC/shade/shade3.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 172120,
+    "sha256": "e3835f7d72240580a609e40159a70cd084a4d9a851c5f6c469db385ba9691a05"
+  },
+  {
+    "file": "artisticdude/NPC/shade/shade4.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 193448,
+    "sha256": "94ef9090546c68994b9cd4bef4099165834dd145a2be7b81c76a6c14e74e88e8"
+  },
+  {
+    "file": "artisticdude/NPC/shade/shade5.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 192996,
+    "sha256": "7ab407c705e68e14b3c7c23aa2900b5e169241449b074e613864fdef81e71794"
+  },
+  {
+    "file": "artisticdude/NPC/shade/shade6.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 316908,
+    "sha256": "7df08dffae2ab909de29f9b9349c38138b085f4f15aa6a47fedd6b8a6646936d"
+  },
+  {
+    "file": "artisticdude/NPC/shade/shade7.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 358062,
+    "sha256": "225aeab01150fb8231b7a484a4651c3e163013b1c5b2725d017884ed08019ebd"
+  },
+  {
+    "file": "artisticdude/NPC/shade/shade8.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 472510,
+    "sha256": "8e55517982029ffd12c4d4c1c4b84809d1c245dd757569754138a8ed6957cc5f"
+  },
+  {
+    "file": "artisticdude/NPC/shade/shade9.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 451332,
+    "sha256": "43fce90072fd37e3084e2048160a371b2c805a1bc844d61961ad8450a39bd604"
+  },
+  {
+    "file": "artisticdude/NPC/slime/slime1.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 49566,
+    "sha256": "522bbe111f080fa762d0109e99db5fef8e23d030003294562972d8dd49a744a8"
+  },
+  {
+    "file": "artisticdude/NPC/slime/slime10.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 61942,
+    "sha256": "d1fb3c56e73d9739e71123f5ece3d9ba1b4a06af2c08e85d0d61b86f2658031d"
+  },
+  {
+    "file": "artisticdude/NPC/slime/slime2.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 55846,
+    "sha256": "decdb2ac4c3dcc8db1a1b24a12bf4af2f599f993ed6aff0b180efeb3f192a3c2"
+  },
+  {
+    "file": "artisticdude/NPC/slime/slime3.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 44524,
+    "sha256": "ed8d37011ad1b575553b6b683ad0b8e6cfe93940b79aead709acd3ba30eabf5b"
+  },
+  {
+    "file": "artisticdude/NPC/slime/slime4.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 49566,
+    "sha256": "c190101f421fbcb2f364d3766e2c8ab5dbc9ee16bdab77e6fb84b666362d3fc7"
+  },
+  {
+    "file": "artisticdude/NPC/slime/slime5.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 49566,
+    "sha256": "8e740858df62cc5e0604921d24875d1876b483040d03103953a2a1805578637a"
+  },
+  {
+    "file": "artisticdude/NPC/slime/slime6.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 74318,
+    "sha256": "0a84418a672321c5615988062c71c7d28f31b132c5484275c2ef56389a62b8bd"
+  },
+  {
+    "file": "artisticdude/NPC/slime/slime7.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 61942,
+    "sha256": "8145ccd81fc086aba7e05706c19833db20e165e96446d6ffc66130ec8dd6dac3"
+  },
+  {
+    "file": "artisticdude/NPC/slime/slime8.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 99070,
+    "sha256": "2219772fd3a123cd5a9c1837c0b3b5b8df6c92739907e904cf1d3385e076d982"
+  },
+  {
+    "file": "artisticdude/NPC/slime/slime9.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 86694,
+    "sha256": "b4c189ca09eac001aab23c52c260b48a59106b9dba2e04281e80804af9571560"
+  },
+  {
+    "file": "artisticdude/world/door.wav",
+    "pack": "artisticdude",
+    "source": "https://opengameart.org/content/rpg-sound-pack",
+    "license": "CC0-1.0",
+    "bytes": 265692,
+    "sha256": "a49cc72a835c1cbdb60877f8b926400e06d544a8d44f5eea2a7686a5f120a32d"
+  },
+  {
+    "file": "kenney-rpg/beltHandle1.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 10820,
+    "sha256": "2ef665bd8b65dbe669f4560be38a6d8f04a162e618b15a49e3e71b58e558aab0"
+  },
+  {
+    "file": "kenney-rpg/beltHandle2.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 15410,
+    "sha256": "f3b692d5c83263c25bce779805b212dbab515d18a603c695fc6a1e8650cf5366"
+  },
+  {
+    "file": "kenney-rpg/bookClose.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 9292,
+    "sha256": "81e976532565f4372abd14e83d2684195fa548d0a28d345de221e56052454f32"
+  },
+  {
+    "file": "kenney-rpg/bookFlip1.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 18248,
+    "sha256": "fa81ac2fedc8c641661b87e349630a36c9800e795e0c800e029214efdbe26a7d"
+  },
+  {
+    "file": "kenney-rpg/bookFlip2.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 12393,
+    "sha256": "3409042acbfaebc24c1a6327dc073e36f9250841712e96c5040da566a97df73c"
+  },
+  {
+    "file": "kenney-rpg/bookFlip3.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 9077,
+    "sha256": "c85db5dceb3f1df073e960630277eaa88a5afda0477c1ddd68dad707621767be"
+  },
+  {
+    "file": "kenney-rpg/bookOpen.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 8273,
+    "sha256": "953390534377222bee89ac8cd9e60a58fdc037c71a4d7c18c43cd647c7f34ba8"
+  },
+  {
+    "file": "kenney-rpg/bookPlace1.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 9901,
+    "sha256": "26f3ce60fbde85b678b0ad7f6624d80535fe540d88232ad1e38e47a96662d977"
+  },
+  {
+    "file": "kenney-rpg/bookPlace2.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 11185,
+    "sha256": "831874e8fd142d4d0a03ff009f1f83966338a7878c0f6f38c613ae5b80dd731e"
+  },
+  {
+    "file": "kenney-rpg/bookPlace3.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 9570,
+    "sha256": "b1afa711e1cabfe5b2c56e20e20e0f9d82142d067727447fa992ddc43dbdb06e"
+  },
+  {
+    "file": "kenney-rpg/chop.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 9370,
+    "sha256": "d00c2b3c9fff07e376145c8c8c45c90e5084ec192f6ce0387db233f7b86f1486"
+  },
+  {
+    "file": "kenney-rpg/cloth1.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 16508,
+    "sha256": "ddb93a3671233f95da0e0b10367f082f7eb42fa6caaddcf776410aa8833c747d"
+  },
+  {
+    "file": "kenney-rpg/cloth2.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 11787,
+    "sha256": "8a7451193c38bc05483aec25dd193e163a15d44cf7fff04ac7912573231b0201"
+  },
+  {
+    "file": "kenney-rpg/cloth3.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 12432,
+    "sha256": "a48632d17a4f1416541d261a32a31612e01267144c407fa3ecab3ff410f0085b"
+  },
+  {
+    "file": "kenney-rpg/cloth4.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 11043,
+    "sha256": "e7ab9a6c4466dea874196c61f59bf1da05cfe58748f42fadd695d441a154a99b"
+  },
+  {
+    "file": "kenney-rpg/clothBelt.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 21491,
+    "sha256": "f29560a2aea95bbfeb643e1e8f56ec2b6f7e32f32ce4e140645a36db81de3253"
+  },
+  {
+    "file": "kenney-rpg/clothBelt2.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 20013,
+    "sha256": "d545b1d9f20e6188140aaf551a96f1e82fe0d15f7ca066fac8b065e1231e0038"
+  },
+  {
+    "file": "kenney-rpg/creak1.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 15761,
+    "sha256": "8a346186fd297254248cab8e8117060a52a5cf2a84f603153a762108550ea95e"
+  },
+  {
+    "file": "kenney-rpg/creak2.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 19012,
+    "sha256": "8a990afdc03aebb91d528f5385e2f95582dbfa8e2c12c71098ab01be9142294a"
+  },
+  {
+    "file": "kenney-rpg/creak3.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 10408,
+    "sha256": "f9638787f95004b9d2d06f8eff8e99d4e594c21b51947daf562856fbcec905d1"
+  },
+  {
+    "file": "kenney-rpg/doorClose_1.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 18564,
+    "sha256": "834d29c60a8a8bfb50b158cdb6b7dfa8f02812a408a1ee9703d038dfab0b1aeb"
+  },
+  {
+    "file": "kenney-rpg/doorClose_2.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 17598,
+    "sha256": "4aa4fe79836c53cd6d0cb0b22ddc33b9901429463ae1bb75131f072683f63f21"
+  },
+  {
+    "file": "kenney-rpg/doorClose_3.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 20889,
+    "sha256": "d0a2540e5e1639bc2fbeef34e76f28e9f9cb8a151736a0ac4c13859994328d0e"
+  },
+  {
+    "file": "kenney-rpg/doorClose_4.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 16902,
+    "sha256": "fd21c0e7a9d0317375d2561590f0770dd3380ee35507d064862cb44d6f71595b"
+  },
+  {
+    "file": "kenney-rpg/doorOpen_1.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 22848,
+    "sha256": "4ab93bab96522d8eb109ff96dc57cb6765deb02448fe14c10472084be5bb2a0b"
+  },
+  {
+    "file": "kenney-rpg/doorOpen_2.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 30280,
+    "sha256": "68962fb0458c9bac59dec3adefa9849703c7c89d34712de03dd0075d095e79e9"
+  },
+  {
+    "file": "kenney-rpg/drawKnife1.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 11134,
+    "sha256": "276403e72c3b71c47bc24db3083970c23f8e5551ffa78f436f83483c56f3f0bb"
+  },
+  {
+    "file": "kenney-rpg/drawKnife2.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 12395,
+    "sha256": "d5df6a4130cbb016f97b4883769a418917b9629cb4c21717030b186e0c73281a"
+  },
+  {
+    "file": "kenney-rpg/drawKnife3.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 12726,
+    "sha256": "a11ae62fb1a628425769d11a9de394980ad8909c31f4c9a4316f226963e21caf"
+  },
+  {
+    "file": "kenney-rpg/dropLeather.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 11695,
+    "sha256": "097e1d3b74949b0145fda0519d40b7e0773ab82ec4858727f95be830927e1a45"
+  },
+  {
+    "file": "kenney-rpg/footstep00.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 9475,
+    "sha256": "6fe61ef1fc3bcf0e253bf2eb64759db6cb69e2fe452f4d88cc597ecf78a3d601"
+  },
+  {
+    "file": "kenney-rpg/footstep01.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 9900,
+    "sha256": "313472dba31fd0c855376069fa368bb5a198c27251cc8398ef464578b7047a4c"
+  },
+  {
+    "file": "kenney-rpg/footstep02.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 9528,
+    "sha256": "2d9575b7dead6e1217ca113991fc5229e9b6d998ea0726ebbb277e7398ab888f"
+  },
+  {
+    "file": "kenney-rpg/footstep03.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 10559,
+    "sha256": "a86756b9af9f370455ab47844239bb07fd1bee7a113068c91f0fcd9b72703fae"
+  },
+  {
+    "file": "kenney-rpg/footstep04.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 11303,
+    "sha256": "fd264d72a7cd622b82abde202f4ed09fa7de95d34c36473ee938ce66cdf39830"
+  },
+  {
+    "file": "kenney-rpg/footstep05.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 10288,
+    "sha256": "817957e1f95d97fd36870064c41673895575cde17bccb245f50364c86ed10198"
+  },
+  {
+    "file": "kenney-rpg/footstep06.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 9885,
+    "sha256": "6cabfe7ae95d227a84066c6e17014ac31cc7c89b14ef51d7877e98352d4a64fb"
+  },
+  {
+    "file": "kenney-rpg/footstep07.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 10264,
+    "sha256": "42924cdbf998d5b3db180a339fd74afc94c570d594a536687e337ef1bdfdb346"
+  },
+  {
+    "file": "kenney-rpg/footstep08.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 9242,
+    "sha256": "668f14dc1254d0d0f33025e9c7dbcdf2c2f00462ed0e07fb8f099c1d711c1337"
+  },
+  {
+    "file": "kenney-rpg/footstep09.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 9356,
+    "sha256": "9324ebb9b2c5bcd078dcb523c6518d38a9f34081069d511602c2efb14ce06ce2"
+  },
+  {
+    "file": "kenney-rpg/handleCoins.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 25394,
+    "sha256": "8a91f969e932df709df80ee124d86a51389eed9b67f22e5e716bc2bbf60d8dab"
+  },
+  {
+    "file": "kenney-rpg/handleCoins2.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 13094,
+    "sha256": "4b857968d64f9ac9336a10ffac6694d7547e1f01566ad6857b30bc8db3ee6c32"
+  },
+  {
+    "file": "kenney-rpg/handleSmallLeather.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 10492,
+    "sha256": "ae3cbf695aa0a8b98b5a80a835be5a3ccbd5446a24db2235cd4c3cd6fc92ed96"
+  },
+  {
+    "file": "kenney-rpg/handleSmallLeather2.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 10028,
+    "sha256": "a66f6db5918ad016c28a9f2768f127a7f39b5fa04481e5a3b4e78ebe2a1c282d"
+  },
+  {
+    "file": "kenney-rpg/knifeSlice.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 15532,
+    "sha256": "4cd96dc630bed9840c15f1dd2306da2cc56a4da26a5d3f1a03c5a7265ac5e54f"
+  },
+  {
+    "file": "kenney-rpg/knifeSlice2.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 15099,
+    "sha256": "6c2064d0ef988d1ec3d56868e823ea8823a5cac00f2742560052633529407def"
+  },
+  {
+    "file": "kenney-rpg/metalClick.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 13615,
+    "sha256": "9851a69d0c613e13bceef08060ecc4148f098ef487927cbebe270d642398a3b3"
+  },
+  {
+    "file": "kenney-rpg/metalLatch.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 10208,
+    "sha256": "ba9ba60b172b3ebc131a940f25793cd2e207aca7af73dc80d637277f060f1708"
+  },
+  {
+    "file": "kenney-rpg/metalPot1.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 31619,
+    "sha256": "159def979e8e386c2c539f5e99cc30a080eb2dcb6c911fa2e4ccc0785b2522fd"
+  },
+  {
+    "file": "kenney-rpg/metalPot2.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 22471,
+    "sha256": "8e1f820d217d380fde10e969d109db34303e3f4d11c3951926eddef813d04ae2"
+  },
+  {
+    "file": "kenney-rpg/metalPot3.ogg",
+    "pack": "kenney-rpg",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "license": "CC0-1.0",
+    "bytes": 23142,
+    "sha256": "d306e5b848f6843332d0ca19f8f7dfe5796aeb56d8273902b085df463273f1dc"
+  },
+  {
+    "file": "kenney-interface/back_001.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 6997,
+    "sha256": "07db973f79f6ae0f2edc34561e7592e24d0577455919fb602cb8ecc0da991dcf"
+  },
+  {
+    "file": "kenney-interface/back_002.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 7029,
+    "sha256": "61581c58194e3f19f531072edabbc344204c7e0a2887b8ededce4357bcf09195"
+  },
+  {
+    "file": "kenney-interface/back_003.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 7208,
+    "sha256": "ff5e87de1230b1a5f1fa83e5a4ba9d7eb1c07154267ac34b510a17d4caa03cef"
+  },
+  {
+    "file": "kenney-interface/back_004.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 6923,
+    "sha256": "c22e3c49f42c2a5ba6748e91283efe124f32822469c1258c3e5d7b3d7ab9361c"
+  },
+  {
+    "file": "kenney-interface/bong_001.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 4848,
+    "sha256": "d21d0f0b782445db579d11e2506b24cd1ac9d664ee33aeaf807761aa7b6fd710"
+  },
+  {
+    "file": "kenney-interface/click_001.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 4876,
+    "sha256": "ccfb7fa0cccdd9faec0eb16033c732b1e308d139d80f799161495d58f7adcdb9"
+  },
+  {
+    "file": "kenney-interface/click_002.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 4275,
+    "sha256": "adcd1f4adc35f1b41bc1b5bbefeff7aa44f2f3f0d96d3199b544140c7c1e761c"
+  },
+  {
+    "file": "kenney-interface/click_003.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 4371,
+    "sha256": "2fa929138bc3a0f432696588f66eac94b8f6d463905ec8808c6461ce4b054292"
+  },
+  {
+    "file": "kenney-interface/click_004.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 4486,
+    "sha256": "09e2c1b643b71b9aff9932b4e02d78db116446b9a14b00a5b2a9b28d2668fd8e"
+  },
+  {
+    "file": "kenney-interface/click_005.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 4410,
+    "sha256": "a3ee7ebb036bc3cdc218ae52bb27548c4f49bcf07505274f8b61b1af8236acc2"
+  },
+  {
+    "file": "kenney-interface/close_001.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 9915,
+    "sha256": "44af8249b933e0fd35ec957a638bb1a0b01f85b53fbe9674bf77bd3ca3168ef4"
+  },
+  {
+    "file": "kenney-interface/close_002.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 14752,
+    "sha256": "bc4279d2bb2bf86592473eab6a8eab55e51b54a8619315000dbd780a83b102d8"
+  },
+  {
+    "file": "kenney-interface/close_003.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 15648,
+    "sha256": "39a1a7f3bc001766c1881841e9903c6b16f5a10b5666e0791d7f6444677d8b05"
+  },
+  {
+    "file": "kenney-interface/close_004.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 16263,
+    "sha256": "41b41e01ac75f4bc5a9c8dc3b0de744fa7f877757463692783c12a8ae4bfae6b"
+  },
+  {
+    "file": "kenney-interface/confirmation_001.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 8968,
+    "sha256": "063564703b6094d70718a3e787a55cc9141611e4ecd6b6637f8828f79b4a8c3a"
+  },
+  {
+    "file": "kenney-interface/confirmation_002.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 14169,
+    "sha256": "33b17a9a9a2397c62b285c52c33a907fdffb476909c99e42dde603f6a7a8b12c"
+  },
+  {
+    "file": "kenney-interface/confirmation_003.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 9535,
+    "sha256": "3091bf0be0497f825769ee0733ca7bdc3bcd59bd6c6e8f2ba8f93d580ff38022"
+  },
+  {
+    "file": "kenney-interface/confirmation_004.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 12391,
+    "sha256": "568967a3d9f8a8f6af54ea01729c4882284308f2a27d78c07ffd7ee0d6951661"
+  },
+  {
+    "file": "kenney-interface/drop_001.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 5859,
+    "sha256": "692ee3a6f1821402ca649ff735bee9591dc4846c8098fc7d6a90fd15fa57c1af"
+  },
+  {
+    "file": "kenney-interface/drop_002.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 6411,
+    "sha256": "4ac4d1cef7e936965cbf795852ca2020300b9e2ba7daa59f2bf4f1f7bf416218"
+  },
+  {
+    "file": "kenney-interface/drop_003.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 6288,
+    "sha256": "43d086d50f90493a98cd2e09aa6dbf150d164f1578e1ec768d21cb185571ad87"
+  },
+  {
+    "file": "kenney-interface/drop_004.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 7230,
+    "sha256": "10738707f9300f9b963ceba46d5da2ed4a221faf7d39484a643c2d3bc151c5f2"
+  },
+  {
+    "file": "kenney-interface/error_001.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 7373,
+    "sha256": "46e67425d16339772e8d328fb36a49426c9467418686e11beeb71ff84b0f6433"
+  },
+  {
+    "file": "kenney-interface/error_002.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 7369,
+    "sha256": "76810ec365f41078fd0507101da5bb7b8730fe011dde43908329fdabd8575e79"
+  },
+  {
+    "file": "kenney-interface/error_003.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 12256,
+    "sha256": "885b28175c7b511118bcffab95675b48bbac9005cf6514656ebdad979276b3ab"
+  },
+  {
+    "file": "kenney-interface/error_004.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 6393,
+    "sha256": "0b574cea597d96507e782ae9764f88482ce49f46e931e57054bf7150047f2d69"
+  },
+  {
+    "file": "kenney-interface/error_005.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 7266,
+    "sha256": "3f75b11df5b06d68d2c25fbf0e9c9d9e7dd9250562a4007ee34856b8a309a2ae"
+  },
+  {
+    "file": "kenney-interface/error_006.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 8288,
+    "sha256": "a97513d7fd2b12b1210c423be943b4c1ab0e899b11db95855e9b74836e646ae0"
+  },
+  {
+    "file": "kenney-interface/error_007.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 10225,
+    "sha256": "f1ee4c1ac8bfe1a82eacb54b26f49e8974bab93bcf10c01800bc10dbf730f559"
+  },
+  {
+    "file": "kenney-interface/error_008.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 9215,
+    "sha256": "eba17ecb2a426bfd4a8a6acff5f8a86202b6424a77af0fd842e37809a1ab6d81"
+  },
+  {
+    "file": "kenney-interface/glass_001.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 6103,
+    "sha256": "183eebee20eb0a532b0b85104d139cbf2673eb66d95c3cc733ac9ea98362e7e8"
+  },
+  {
+    "file": "kenney-interface/glass_002.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 4917,
+    "sha256": "08e972c73e53c91d6d310e107e80db60edce78ae47225889a028e628a6f3da49"
+  },
+  {
+    "file": "kenney-interface/glass_003.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 5732,
+    "sha256": "9a6f16e3c2eff6fe5d017a4755a28306b14555728831cd00d70308e8f9689566"
+  },
+  {
+    "file": "kenney-interface/glass_004.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 8323,
+    "sha256": "2379b58f953e3d86982aa8cddcae763022c6258e9820171bf905ce58b4e97766"
+  },
+  {
+    "file": "kenney-interface/glass_005.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 6206,
+    "sha256": "1f6c88008d0d9fe449197512811785e1d4638daf408a96a4a02756530e019172"
+  },
+  {
+    "file": "kenney-interface/glass_006.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 6956,
+    "sha256": "840500be48078f1210f1fd7a9ac4e5665ed9b6f4a2b8dce91a237152a65e94cc"
+  },
+  {
+    "file": "kenney-interface/glitch_001.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 5121,
+    "sha256": "da78c642bbd95da2c364ed0e991ebbfc5a4c0d281165d932b5819e0dd31a39d2"
+  },
+  {
+    "file": "kenney-interface/glitch_002.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 5473,
+    "sha256": "1da06a2e63ce131f5e0316ca27c75fc0d672db7a8f9b986c70693f2bd992eabc"
+  },
+  {
+    "file": "kenney-interface/glitch_003.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 4915,
+    "sha256": "d55e0c64aee9f1ab2ba9523d0e256ca76639c3ec2f230405e2ff25aff36020b3"
+  },
+  {
+    "file": "kenney-interface/glitch_004.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 5225,
+    "sha256": "d0f4db4d12f88592bc328bd621d356d099eaa2dda37bab37a6cf17891c5026d1"
+  },
+  {
+    "file": "kenney-interface/maximize_001.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 12111,
+    "sha256": "fd3e75e1de2f2fda90aceeacaeb0427ac8bddd3b07a6ce2a8f9ba923df3771f9"
+  },
+  {
+    "file": "kenney-interface/maximize_002.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 9915,
+    "sha256": "cc51162cb4506158b953b121bf479aad070056533ade5c5cd2f980183127ceb4"
+  },
+  {
+    "file": "kenney-interface/maximize_003.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 11748,
+    "sha256": "df16f25d45189f5d44d6a482ab20d5067350ca8525a9affa1f8ce599e31a20a5"
+  },
+  {
+    "file": "kenney-interface/maximize_004.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 17723,
+    "sha256": "59c7a24b204be24d2a44a86d1e4d18c2cf51fa0446967a14b2590e8fb3afaf34"
+  },
+  {
+    "file": "kenney-interface/maximize_005.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 20900,
+    "sha256": "0ee06fc3ee494723fc95b2224f9dc0af857f2903e7f94d5d33d8e67f454b3cf7"
+  },
+  {
+    "file": "kenney-interface/maximize_006.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 11618,
+    "sha256": "f050b3bb77cb0b901bc8df43d2cc1872c353aebae10b4030cf8ae681726ad343"
+  },
+  {
+    "file": "kenney-interface/maximize_007.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 8097,
+    "sha256": "3400931f3f3a1e9cf253efef9069bcdf053edd2234e4ee9bf88977c389943484"
+  },
+  {
+    "file": "kenney-interface/maximize_008.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 9085,
+    "sha256": "57c074e600e193a303ce781c04c0ccc191c6030f9f106594fd94a65e55435c17"
+  },
+  {
+    "file": "kenney-interface/maximize_009.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 7650,
+    "sha256": "b4d56386258b3cc1c8f6e5a22465f8cd65de3d4309e022664050f43151e466cd"
+  },
+  {
+    "file": "kenney-interface/minimize_001.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 11924,
+    "sha256": "8481912bc7fa5828924a00ef15b6cd613b994956e0817bd3122065c9b2896d2d"
+  },
+  {
+    "file": "kenney-interface/minimize_002.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 9441,
+    "sha256": "670e47846dc003fe29d39c8dfebb8635bfcacae3c0916392c0e8bff659493ad6"
+  },
+  {
+    "file": "kenney-interface/minimize_003.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 11739,
+    "sha256": "400e1041499de85ec8b5529a35ff36787288175c4696cf2018ecff24a3a3fd29"
+  },
+  {
+    "file": "kenney-interface/minimize_004.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 17099,
+    "sha256": "fcfe6fbb03a728e90b907f34d2ec7bf3ea1857397c3e47ee01990c1be059e4f6"
+  },
+  {
+    "file": "kenney-interface/minimize_005.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 19501,
+    "sha256": "4e6792a98c75d3ff187c0c55561c38c569e02c64757ebebb98831cfe84e3e172"
+  },
+  {
+    "file": "kenney-interface/minimize_006.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 11292,
+    "sha256": "39d7c47855b9642f43548b7b132c20e20a1490c7eb13d10008c32fcb24da19f8"
+  },
+  {
+    "file": "kenney-interface/minimize_007.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 7677,
+    "sha256": "e951505044de0d5d87b72ce7f312ac3fbbdde025ec8c10db70f9d2651a2c8947"
+  },
+  {
+    "file": "kenney-interface/minimize_008.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 9298,
+    "sha256": "bc14c17875436dcaaf809c25db5e61454dbc35612880f329ff37a95ef9b6a865"
+  },
+  {
+    "file": "kenney-interface/minimize_009.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 7665,
+    "sha256": "885c20fc8b5b52226288794842a403821cd16e9800ec1d76be7a2f1655542eb8"
+  },
+  {
+    "file": "kenney-interface/open_001.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 9834,
+    "sha256": "a27c6bb0df7da1e6af5dd5937593c98bc58b6e513f42fe6a3254cd6a6949c648"
+  },
+  {
+    "file": "kenney-interface/open_002.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 14975,
+    "sha256": "24ff224fe2c09c6aed1b41249825382dc74cf324b887ff279d8494912ce2beee"
+  },
+  {
+    "file": "kenney-interface/open_003.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 15046,
+    "sha256": "bcdca6b5c9c33aa15ca3fb18a1fa8d98a01b528b85be08c5a610e57c75fc022d"
+  },
+  {
+    "file": "kenney-interface/open_004.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 15879,
+    "sha256": "4e02b8287bc4d9e7bf7a889cb9e48613c8eb22a310dfb0bf29c2bfd0a1e4bea5"
+  },
+  {
+    "file": "kenney-interface/pluck_001.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 6317,
+    "sha256": "be97ec4893a02d6eccfb678daa76c83e34cb2583b834ec2593d2641def739fa4"
+  },
+  {
+    "file": "kenney-interface/pluck_002.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 6941,
+    "sha256": "c977fe249ff42d1c93a552b33abc13a8399df3879fa510475426e5c4bbac1da9"
+  },
+  {
+    "file": "kenney-interface/question_001.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 11700,
+    "sha256": "abb8f9e4eb2071491b0b15f84ee302386b1847609310c1b000ae174639a6cc5a"
+  },
+  {
+    "file": "kenney-interface/question_002.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 9455,
+    "sha256": "46056f10c70dda860e93bd27b66f4d33c0b7154eff28def06471b50028efa5b3"
+  },
+  {
+    "file": "kenney-interface/question_003.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 8233,
+    "sha256": "00bafc564e29c12e99da584864a750260e7110378251d63d3aa5b3d727836efe"
+  },
+  {
+    "file": "kenney-interface/question_004.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 9821,
+    "sha256": "585ecb58b529dc49b5c5ce5ba93427bf73b7052bae55e49c43ba8f169c93ac99"
+  },
+  {
+    "file": "kenney-interface/scratch_001.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 8989,
+    "sha256": "5c294d2e1a6b6d07ee2d75b17105a55ad3527e5482dd60652dc49c2ea4c70096"
+  },
+  {
+    "file": "kenney-interface/scratch_002.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 9319,
+    "sha256": "2b07edafc1f3f49c4813f2b0ae9481c566c1f9962a22d5f5b79da7111e058e56"
+  },
+  {
+    "file": "kenney-interface/scratch_003.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 8849,
+    "sha256": "2d80371b55ebe2e8b916b84093a8ae7717d09a80c6b617079ade5bd0dacba7b7"
+  },
+  {
+    "file": "kenney-interface/scratch_004.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 16478,
+    "sha256": "26009c67ef90ee7a5a2bc458ef9e7f5a9da83da9397a830cff9e4a1813914687"
+  },
+  {
+    "file": "kenney-interface/scratch_005.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 15824,
+    "sha256": "65742c15dca9853611e1c9e83bd04ac0d693f79896715cafa90bad39745d7a62"
+  },
+  {
+    "file": "kenney-interface/scroll_001.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 21633,
+    "sha256": "320c6aafb2c7a503eae508dc443b72d7f7c0a317bfd16813157ed400cd04cf16"
+  },
+  {
+    "file": "kenney-interface/scroll_002.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 24628,
+    "sha256": "6fbcda22bc45349c66f1ba4b56d6c211b12264e83667de4b9af1e4ffcef74be5"
+  },
+  {
+    "file": "kenney-interface/scroll_003.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 29488,
+    "sha256": "c2fecaa6e37c73d7141d0bd303d1c2231428d97c19ce83d50236a56804818643"
+  },
+  {
+    "file": "kenney-interface/scroll_004.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 20348,
+    "sha256": "431398a3c12ba3aa30ead97f3e2f9b05eb00978facf04b31bda138ab77a2f54c"
+  },
+  {
+    "file": "kenney-interface/scroll_005.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 20448,
+    "sha256": "e39d059462225efa31f758fb2e01871cc96781972b5062873a24a55c88174e02"
+  },
+  {
+    "file": "kenney-interface/select_001.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 5468,
+    "sha256": "aec0c31ea934a35936ae0d2ab8fac8123c93aa5647f935853a58dbaf90278b7a"
+  },
+  {
+    "file": "kenney-interface/select_002.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 5463,
+    "sha256": "4cc6ac5341b9b2c86fef80c347de028e9ab9f2e037586ac7d9fa59a403a1c012"
+  },
+  {
+    "file": "kenney-interface/select_003.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 6901,
+    "sha256": "9a612fd2f513d52a296906b41071c990f75defe56be3bee60d2d4e2423b51b8b"
+  },
+  {
+    "file": "kenney-interface/select_004.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 6909,
+    "sha256": "eb6cb435f3f2ab14f85f46a2bdd9073ec511d0f1f8d8c890c6636045703a5fd4"
+  },
+  {
+    "file": "kenney-interface/select_005.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 6767,
+    "sha256": "ad09146e4ea33b931b2f5dfb4051a4f1fe4a36f1a48c42c5e9269c292ae21214"
+  },
+  {
+    "file": "kenney-interface/select_006.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 8101,
+    "sha256": "b44550fa8d3276c072ce7c3c1315d949f7a28a95bc22b3618ad4eea62eac8abe"
+  },
+  {
+    "file": "kenney-interface/select_007.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 6580,
+    "sha256": "cd4390dd2b24f09016a5fa1be63334fa0f1859811f4cf29c02e8e2750f6a2cd0"
+  },
+  {
+    "file": "kenney-interface/select_008.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 6339,
+    "sha256": "f703b6b1c62dae1c246a46d5c2442802588f68be2df4d17e0d65cf7e0dbfc826"
+  },
+  {
+    "file": "kenney-interface/switch_001.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 6753,
+    "sha256": "3b74efad87f1e69dbd1d05c5ad952ab90859b5a3d11da6ec5bd79b4f03b42afa"
+  },
+  {
+    "file": "kenney-interface/switch_002.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 7097,
+    "sha256": "6fc395be2ad1f99ce318a5d28f98fb76dbeb676d83a0b28239d8c1fb90736180"
+  },
+  {
+    "file": "kenney-interface/switch_003.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 9653,
+    "sha256": "ca12dd32103f401481d5aff56d5e9831174e99bb577139c09b07d046eb8b837e"
+  },
+  {
+    "file": "kenney-interface/switch_004.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 7248,
+    "sha256": "541c19cc1ab712a9efc5765df602e7d0da09d9cafdd297ce1e19b092289fd62f"
+  },
+  {
+    "file": "kenney-interface/switch_005.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 7814,
+    "sha256": "e94dfab6fd6558068ab3ea97e22e4b4f16b83ee440e6abf33ec4c4e9fbe8a70e"
+  },
+  {
+    "file": "kenney-interface/switch_006.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 7873,
+    "sha256": "2676ddc4e341ee557b4d1dc8767ef8655540d66fb3ded6a1614080dbc4dc6f18"
+  },
+  {
+    "file": "kenney-interface/switch_007.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 7921,
+    "sha256": "eeaf60c2abc7e1b715e2b032401bcbf6b3753b77f96b238f861a034a75515967"
+  },
+  {
+    "file": "kenney-interface/tick_001.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 4497,
+    "sha256": "9d057b918024c787bbe6c00beed13a7ef72a3fa0c259add3cef36582792f4230"
+  },
+  {
+    "file": "kenney-interface/tick_002.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 4514,
+    "sha256": "869442f54214be902ec7437f79e400dc91c1bfd90d18a6dd2d5b7e41ffbf457b"
+  },
+  {
+    "file": "kenney-interface/tick_004.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 5031,
+    "sha256": "0253d5f7d8d2afbbc370eac2a4539bb844239f0c98343e516d376b137c06d27c"
+  },
+  {
+    "file": "kenney-interface/toggle_001.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 7369,
+    "sha256": "ca1d2dde5f0b286abac4f070e23edab8f30927c8a533665cdf2ac6492a415e49"
+  },
+  {
+    "file": "kenney-interface/toggle_002.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 8056,
+    "sha256": "1f564f5520cfa0764028ce245ad97599d3ece8f0ab504554c403af92ac72b900"
+  },
+  {
+    "file": "kenney-interface/toggle_003.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 8654,
+    "sha256": "7e69aba356d590826cce291bbd9dc6a85d7c53858b0e3712fcad30e1ad080b23"
+  },
+  {
+    "file": "kenney-interface/toggle_004.ogg",
+    "pack": "kenney-interface",
+    "source": "https://kenney.nl/assets/interface-sounds",
+    "license": "CC0-1.0",
+    "bytes": 6695,
+    "sha256": "d7bf2236fc95a0fe1e3b278259392bcb062644e2d4ec5f9c96f7c09a9928262f"
+  }
+]

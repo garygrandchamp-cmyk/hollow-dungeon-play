@@ -1,0 +1,11 @@
+{
+  "provider": "PixelLab",
+  "player": {
+    "base": "58f98fed-c7bf-4f8a-9263-69ce8383150d",
+    "idle": "0a5eee0b-91aa-4199-9b1c-079e19504298",
+    "walk": "740d65d1-1c6e-4815-b75c-6ef8faed295d",
+    "attack": "a5884ad7-b004-4c98-8d0d-face26c269d1",
+    "hurt": "e55fd478-3709-4880-880e-3e633a41565c",
+    "death": "4374607b-86ef-47f4-addb-689d11071252"
+  }
+}

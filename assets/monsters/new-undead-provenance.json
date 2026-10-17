@@ -1,0 +1,223 @@
+{
+  "provider": "PixelLab",
+  "status": "complete",
+  "legacyAtlasSHA256": {
+    "dist\\assets\\monsters\\bat-atlas.png": "b96bf16446937e756174be12ba6196e16cc08dc7014d0207b451b6a945a315b0",
+    "dist\\assets\\monsters\\crawler-atlas.png": "bc4fa262c291075e51d0d623cb2b8b080f1279aa42973c86629a0686ab94fbb1",
+    "dist\\assets\\monsters\\rat-atlas.png": "9c6b674d24c39e11b4903c44ef54ad3c7a663f39f0e0464d4e5ad67cc69e4e92",
+    "dist\\assets\\monsters\\slime-atlas.png": "554722033bd45a4f70640432de3ae9bdfe24ef4d0a1519172bc67e7c13ecb990",
+    "dist\\assets\\monsters\\spider-atlas.png": "a1a29d53af1e7b64c7923c027bfea9d2ad00215042f426114412285d9e48698e",
+    "dist\\assets\\monsters\\wraith-atlas.png": "c65db00f4845c8e0c434d3d2ff4f29c99ed96f76b65dce54d97cd3374f0e3795",
+    "dist\\assets\\enemies\\goblin-atlas.png": "c01b8f121c4a1d3c84b1e2c36f8e93b93fac723f1f740100686a048445504b3f",
+    "dist\\assets\\enemies\\skeleton-atlas.png": "0de52ea09be77c4fb26a2d58b643dff8597fd0636fa4bf821b20c73b2ad95dc1"
+  },
+  "jobs": {
+    "skeletal-mage": {
+      "base": "fb07c670-ca5b-4ac7-b427-da7ec58ca7d4",
+      "idle": "8494329f-f886-4549-aea2-75975fabdcac",
+      "walk": "11a94c75-7821-43d4-9ccd-490e32d4164c",
+      "attack": "29bc4bab-b54e-4aeb-9c86-c1a1cbf75d85",
+      "corpse": "5e65a598-f0e8-4732-a53f-00a4503c4cc2",
+      "death": "99178a13-dd92-49e0-bc3d-3c823312878c"
+    },
+    "drowned": {
+      "base": "ea39740d-396a-4032-8e75-ab86b87f00eb",
+      "idle": "1466d971-96a6-4b05-855f-3208fa9936f3",
+      "walk": "563935e8-7527-4a05-9886-a523098a79ad",
+      "attack": "ec13773d-5862-4e96-9cd9-15a457af2dcc",
+      "corpse": "3e341c67-4354-4fc8-a892-56a695a50b6b",
+      "death": "d51c830d-b706-47fa-bf34-2bf780c5fc8c"
+    }
+  },
+  "hurtFallback": "idle art, independently played on the hurt row",
+  "assets": {
+    "skeletal-mage": {
+      "files": [
+        {
+          "path": "dist/assets/monsters/source/skeletal-mage-base.png",
+          "sha256": "ad4290b9e67ad8549c5c352d369cef2ddfcebbe170031204f502cf57f63b3dad"
+        },
+        {
+          "path": "dist/assets/monsters/source/skeletal-mage-corpse.png",
+          "sha256": "17c396d7592bbc688539cd24b87fe9e8981908d576c87ed91ced90e99e4e02d8"
+        },
+        {
+          "path": "dist/assets/monsters/source/skeletal-mage-idle/00.png",
+          "sha256": "b69683a2c18d9cb1c05797c87802368296de2e3de96620d38c9f366659ea4676"
+        },
+        {
+          "path": "dist/assets/monsters/source/skeletal-mage-idle/01.png",
+          "sha256": "45f46ecd90e6278932f1ee1c61d0a383671fcc7a0094e10091e0c8b80e134ebc"
+        },
+        {
+          "path": "dist/assets/monsters/source/skeletal-mage-idle/02.png",
+          "sha256": "d1792a0adb9ab6f98d2524a8ec18b77e42dd2008436b0b34b2f4ac47c9324179"
+        },
+        {
+          "path": "dist/assets/monsters/source/skeletal-mage-idle/03.png",
+          "sha256": "a33ce6f3e8d7d5c2df817ae5e8dd99e6d243f07f0fd622a66cc22caef25b95d6"
+        },
+        {
+          "path": "dist/assets/monsters/source/skeletal-mage-idle/04.png",
+          "sha256": "2b51c9b4f4fba092b3d5be51152ad40df4a4763ef699bbbf0d78e60f52efbc5b"
+        },
+        {
+          "path": "dist/assets/monsters/source/skeletal-mage-walk/00.png",
+          "sha256": "37c0c8941061936778142bf612e385b6fe93828cb205e0ca54540d62b90e4545"
+        },
+        {
+          "path": "dist/assets/monsters/source/skeletal-mage-walk/01.png",
+          "sha256": "f8fa1ace87066c7dc0e37b646908411a208457c4f5d709a388f94a0b81b1621c"
+        },
+        {
+          "path": "dist/assets/monsters/source/skeletal-mage-walk/02.png",
+          "sha256": "7c49ee333eff7d295b515e1b911dc38f19de16aac7a1d636e1d36520cb9198d2"
+        },
+        {
+          "path": "dist/assets/monsters/source/skeletal-mage-walk/03.png",
+          "sha256": "58ec6888bb27c87887b08532d4f372d82d919d455564093372e93dfe1851ae07"
+        },
+        {
+          "path": "dist/assets/monsters/source/skeletal-mage-walk/04.png",
+          "sha256": "52027fae2351257a7907c999dcc0c3be00617e7c02e8f86632d537f79444a9ae"
+        },
+        {
+          "path": "dist/assets/monsters/source/skeletal-mage-attack/00.png",
+          "sha256": "8b085ee09a1bf013f9e40d5f7c6674b94d8730be056ceec70ffe925b6da5c64a"
+        },
+        {
+          "path": "dist/assets/monsters/source/skeletal-mage-attack/01.png",
+          "sha256": "cf25746de34ad3b755ce0158d935416d25ecb3ceb2a6f35fe9a0ba24ffb4a8be"
+        },
+        {
+          "path": "dist/assets/monsters/source/skeletal-mage-attack/02.png",
+          "sha256": "5e513caa45af845afcd06b74b89c4426ce7f7f8eeac8669fd714494a4db7e2e3"
+        },
+        {
+          "path": "dist/assets/monsters/source/skeletal-mage-attack/03.png",
+          "sha256": "b9811aad641d4e108b9022ca3815c7ebb6d1d6a8b3e95feb834508c6d39f5219"
+        },
+        {
+          "path": "dist/assets/monsters/source/skeletal-mage-attack/04.png",
+          "sha256": "5f0ca5b3fdbc784d8641d92dbae44cb73ca277b141a8d0541b668f600df7c1b6"
+        },
+        {
+          "path": "dist/assets/monsters/source/skeletal-mage-death/00.png",
+          "sha256": "3ed8a173b4f5aa11d2f9f69d824b8cce72517f5fa49bd68d83f6ae4c0b03cf3d"
+        },
+        {
+          "path": "dist/assets/monsters/source/skeletal-mage-death/01.png",
+          "sha256": "701418d4b23b0467613c6b335df60b0a6eaa4ba907aa7d1ef6bca86067a564fb"
+        },
+        {
+          "path": "dist/assets/monsters/source/skeletal-mage-death/02.png",
+          "sha256": "41f0249392bde2e8e2ecdbf41ac44e211722c6d076a1ef52ece64f924cc60406"
+        },
+        {
+          "path": "dist/assets/monsters/source/skeletal-mage-death/03.png",
+          "sha256": "1913688ef0e11192f3f88d5e9d952b6cae4a2fc8e14f875d92c7ff24dab007da"
+        },
+        {
+          "path": "dist/assets/monsters/source/skeletal-mage-death/04.png",
+          "sha256": "f93ea9f0b759ee496b35ee797aadb640547f4e259536449277725f62c3496f66"
+        }
+      ],
+      "atlasSHA256": "3871a5307127533f3080df6f98bb013d2244f5eff6a55cf5c6dbf3070fb57744",
+      "rgbaSHA256": "5953e35f78aaef12578ad7b66bfff7b202adb362672c4fa61fd3d4bc91bc8b8a"
+    },
+    "drowned": {
+      "files": [
+        {
+          "path": "dist/assets/monsters/source/drowned-base.png",
+          "sha256": "ba6c97da4f995732cfa74895ef7499a0a08d7351e2c46b84984f37c990327058"
+        },
+        {
+          "path": "dist/assets/monsters/source/drowned-corpse.png",
+          "sha256": "c8e19c3a151e6035014920b95c5c83047df13876be1939f940b7b0ba435e0811"
+        },
+        {
+          "path": "dist/assets/monsters/source/drowned-idle/00.png",
+          "sha256": "a8f2e7e9a9a1b3e7cb4024be692f579696ec82892244635d937acd510870cd9f"
+        },
+        {
+          "path": "dist/assets/monsters/source/drowned-idle/01.png",
+          "sha256": "c14d6946a87153d9ff10f2cecaf75d99ca679955bceb46accf223018ee2b9bcb"
+        },
+        {
+          "path": "dist/assets/monsters/source/drowned-idle/02.png",
+          "sha256": "832e2c13f4daaef30700b0623c63166ffec77803c803375f6d7cba98ac755ca5"
+        },
+        {
+          "path": "dist/assets/monsters/source/drowned-idle/03.png",
+          "sha256": "99058ab2d85e3d9d3d6b978ea8379a5b7b5773fcbe3869249e62fe6b9029788b"
+        },
+        {
+          "path": "dist/assets/monsters/source/drowned-idle/04.png",
+          "sha256": "7f47fa97e33e448ac5390d3becf1e0544c4d762742f3373e19d5ffacb77184f7"
+        },
+        {
+          "path": "dist/assets/monsters/source/drowned-walk/00.png",
+          "sha256": "ee70b904fa2e7d18b20e5baa112752083b59b59c854b5fe3fefe0d3c93f113fa"
+        },
+        {
+          "path": "dist/assets/monsters/source/drowned-walk/01.png",
+          "sha256": "2577ed6ecd00ca72dae6b6ee7260648537a5b67aa5be41bb33cb7c388e12255d"
+        },
+        {
+          "path": "dist/assets/monsters/source/drowned-walk/02.png",
+          "sha256": "0552370a903d7c352a64bcda0930eff1f8b427d8090f9d1f2f92180862d7e26e"
+        },
+        {
+          "path": "dist/assets/monsters/source/drowned-walk/03.png",
+          "sha256": "b4a7e892beb38671fb536b329f5490d2ff87b01aeb7f0c57c76ae7a93884ad26"
+        },
+        {
+          "path": "dist/assets/monsters/source/drowned-walk/04.png",
+          "sha256": "91bef2a850cd01a45b8d495a17a11dfa0d75ef6cab9674083fab6e726e1a72a9"
+        },
+        {
+          "path": "dist/assets/monsters/source/drowned-attack/00.png",
+          "sha256": "89f18b404e7dcbec3c5e28a79a41ee31efa18908d1e9b2e6e3c559b739a76864"
+        },
+        {
+          "path": "dist/assets/monsters/source/drowned-attack/01.png",
+          "sha256": "ce6a74f57e3fbe5b2de2a6bd3a6c745ed9e91bb024c44771614bef8cb2964895"
+        },
+        {
+          "path": "dist/assets/monsters/source/drowned-attack/02.png",
+          "sha256": "b5effbbf7267b7803c83aada4c3f1c18361caf064e50b77bdcd69ad88437f024"
+        },
+        {
+          "path": "dist/assets/monsters/source/drowned-attack/03.png",
+          "sha256": "fe3e63db73d8d87718be865abca58de93e9c4001696cfa2aecbc51528f9ca06b"
+        },
+        {
+          "path": "dist/assets/monsters/source/drowned-attack/04.png",
+          "sha256": "58603e68382718080cb4ac0d42516cba45144fe4ebcd802896c0e5af4fd89938"
+        },
+        {
+          "path": "dist/assets/monsters/source/drowned-death/00.png",
+          "sha256": "fcf0c52006d691cde12102d2db8fbf43ba73011171d8a8f8bd135e6877d6ff22"
+        },
+        {
+          "path": "dist/assets/monsters/source/drowned-death/01.png",
+          "sha256": "a451f0c1728614e669946e188477fb2277d8ddc699680027cb0a201974c168f2"
+        },
+        {
+          "path": "dist/assets/monsters/source/drowned-death/02.png",
+          "sha256": "e4976d0f21adb7cd20fdb03769eac6acc1949a8400e6c365c0bb2f7934a5bde2"
+        },
+        {
+          "path": "dist/assets/monsters/source/drowned-death/03.png",
+          "sha256": "13ed8309011a639b4f66179db9e36c8db024d7cefaf852dea39690567e836f3a"
+        },
+        {
+          "path": "dist/assets/monsters/source/drowned-death/04.png",
+          "sha256": "1ba4c814e1416dcfe7ce82573139a70e81bfb241876e644568e26aec32732857"
+        }
+      ],
+      "atlasSHA256": "e59e78d81830737cc963ffbdcf3896095ebdee6ec925624bffc228d2df12c17a",
+      "rgbaSHA256": "43eeb56d2dc4f953992774662496638629863b34a27b7bb9077aad0bf8f263b6"
+    }
+  }
+}

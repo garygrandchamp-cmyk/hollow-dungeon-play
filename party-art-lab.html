@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hollow · Party art review</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;background:#17191a;color:#c9c5b8;font:14px/1.4 system-ui,sans-serif}body{padding:16px}header{max-width:1500px;margin:auto}h1{font-size:21px;font-weight:600;margin:0 0 5px}p{margin:5px 0 12px;color:#a7a497}nav{display:flex;gap:16px;flex-wrap:wrap;margin:12px 0}fieldset{border:0;padding:0;margin:0;display:flex;gap:5px;align-items:center}legend{float:left;margin-right:8px;color:#a7a497}button,select{border:1px solid #565447;background:#26292a;color:#d8d1bd;padding:7px 13px;border-radius:2px;font:inherit;cursor:pointer}button[aria-pressed=true]{background:#4b4432;border-color:#9b8960;color:#f0e4c6}button:focus-visible,select:focus-visible{outline:2px solid #c5af7d;outline-offset:2px}#stage{position:relative;height:max(600px,calc(100vh - 190px));max-width:1500px;margin:auto;overflow:hidden;background:#202426}canvas{position:absolute;left:0;top:0;image-rendering:pixelated;image-rendering:crisp-edges}#labels{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);pointer-events:none}.card{border:1px solid #49483f;padding:9px 13px;display:flex;flex-direction:column;justify-content:space-between}.name{font-size:16px;color:#d5c7a8;letter-spacing:.04em}.readout{color:#aaa898;font-size:12px;background:#17191ac9;align-self:start;padding:2px 5px}#status{font-size:12px;color:#a7a497}#error{white-space:pre-wrap;color:#e0a288}@media(max-width:750px){body{padding:8px}#stage{height:760px}nav{gap:9px}button,select{padding:5px 9px}.card{padding:7px}.name{font-size:13px}.readout{font-size:10px}}
+</style>
+<header>
+<h1>Hollow · Party art review</h1>
+<p>Live class sprites beside the same 3D healing shrine. Camera buttons move the view around actors whose heading stays fixed.</p>
+<nav aria-label="Art review controls">
+<fieldset id="views"><legend>Camera</legend><button data-view="front" aria-pressed="true">Front</button><button data-view="side" aria-pressed="false">Side</button><button data-view="back" aria-pressed="false">Back</button><button data-view="opposite" aria-pressed="false">Opposite views</button></fieldset>
+<fieldset id="poses"><legend>Animation</legend><button data-pose="idle" aria-pressed="true">Idle</button><button data-pose="walk" aria-pressed="false">Walk</button><button data-pose="attack" aria-pressed="false">Attack</button><button data-pose="hurt" aria-pressed="false">Hurt</button></fieldset>
+<label>Pixel scale <select id="scale"><option value="2" selected>2×</option><option value="3">3×</option><option value="4">4×</option></select></label>
+<button id="pause" aria-pressed="false">Pause</button><button id="restart">Restart pose</button>
+</nav>
+<p id="status">Loading six class atlases…</p><div id="error" role="alert"></div>
+</header>
+<main id="stage" aria-label="Six live class review viewports"><div id="labels"></div></main>
+<script type="module">
+import * as THREE from './vendor/three.module.js';
+import {makePlayerSprite,PLAYER_SPRITE_CLASSES} from './player-sprites.js';
+import {makeSolidProp} from './solid-props.js';
+import {createRetroTextures} from './retro-textures.js';
+import {applyWorldMaterialDensity} from './pixel-density.js';
+
+const stage=document.querySelector('#stage'),labels=document.querySelector('#labels'),status=document.querySelector('#status');
+let renderer,stopped=false;
+try{
+ renderer=new THREE.WebGLRenderer({antialias:false,alpha:false,powerPreference:'low-power'});
+ renderer.setPixelRatio(1);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.NoToneMapping;renderer.setClearColor(0x202426);
+ stage.prepend(renderer.domElement);
+ const textures=createRetroTextures(THREE);
+ const groundMaterial=applyWorldMaterialDensity(new THREE.MeshStandardMaterial({map:textures.surfaces.flagstone,color:0x8b8c82,roughness:.96,metalness:0}));
+ const records=PLAYER_SPRITE_CLASSES.map((classId,index)=>{
+  const card=document.createElement('section');card.className='card';card.innerHTML=`<span class="name">${classId[0].toUpperCase()+classId.slice(1)}</span><span class="readout">Loading…</span>`;labels.append(card);
+  const scene=new THREE.Scene();scene.background=new THREE.Color(0x202426);scene.fog=new THREE.Fog(0x202426,9,18);
+  scene.add(new THREE.HemisphereLight(0xb4bdc4,0x464034,2));
+  const key=new THREE.DirectionalLight(0xffe2b5,2.2);key.position.set(-3,6,-4);scene.add(key);
+  const ground=new THREE.Mesh(new THREE.PlaneGeometry(16,16),groundMaterial);ground.rotation.x=-Math.PI/2;ground.position.y=-.012;scene.add(ground);
+  const sprite=makePlayerSprite(THREE,{classId,height:1.7,seed:0});scene.add(sprite);
+  const shrine=makeSolidProp(THREE,{kind:'shrine',height:1.2,seed:'party-art-lab'});scene.add(shrine);
+  const camera=new THREE.OrthographicCamera(-2,2,2,-2,.05,30);
+  return {classId,index,card,readout:card.querySelector('.readout'),scene,sprite,shrine,camera};
+ });
+ let view='front',pose='idle',time=0,paused=false,previous=performance.now(),poseStarted=0,pixelScale=2;
+ const press=(group,selected,attribute)=>{for(const button of document.querySelectorAll(group+' button'))button.setAttribute('aria-pressed',String(button.dataset[attribute]===selected));};
+ document.querySelector('#views').addEventListener('click',event=>{if(event.target.dataset.view){view=event.target.dataset.view;press('#views',view,'view');}});
+ document.querySelector('#poses').addEventListener('click',event=>{if(event.target.dataset.pose){pose=event.target.dataset.pose;press('#poses',pose,'pose');restart();}});
+ document.querySelector('#scale').addEventListener('change',event=>{pixelScale=Number(event.target.value);resize();});
+ document.querySelector('#pause').addEventListener('click',event=>{paused=!paused;event.target.textContent=paused?'Resume':'Pause';event.target.setAttribute('aria-pressed',String(paused));});
+ document.querySelector('#restart').addEventListener('click',restart);
+ function restart(){poseStarted=time;for(const r of records)r.sprite.userData.setAnimation(pose,time,true);}
+ function resize(){const width=Math.max(3,Math.floor(stage.clientWidth/pixelScale)),height=Math.max(2,Math.floor(stage.clientHeight/pixelScale));renderer.setSize(width,height,false);renderer.domElement.style.width=width*pixelScale+'px';renderer.domElement.style.height=height*pixelScale+'px';labels.style.width=width*pixelScale+'px';labels.style.height=height*pixelScale+'px';}
+ new ResizeObserver(resize).observe(stage);resize();
+ function render(now){
+  if(stopped)return;requestAnimationFrame(render);
+  const dt=Math.min(.1,Math.max(0,(now-previous)/1000));previous=now;if(!paused)time+=dt;
+  // One-shots repeat deliberately in this review tool so every pose stays inspectable.
+  const duration=pose==='attack'?8/12:pose==='hurt'?4/12:Infinity;
+  if(time-poseStarted>=duration+.65)restart();
+  renderer.setScissorTest(false);renderer.clear();renderer.setScissorTest(true);
+  const width=renderer.domElement.width,height=renderer.domElement.height;
+  for(const r of records){
+   const col=r.index%3,row=Math.floor(r.index/3),x=Math.round(col*width/3),right=Math.round((col+1)*width/3),top=Math.round(row*height/2),bottom=Math.round((row+1)*height/2);
+   const inset=3,labelGap=Math.round(29/pixelScale),footGap=Math.round(24/pixelScale),w=right-x-inset*2,h=bottom-top-labelGap-footGap;
+   const direction=view==='opposite'?(r.index%2?'back':'front'):view;
+   const angle=direction==='front'?Math.PI:direction==='back'?0:Math.PI/2;
+   // Move the comparison shrine along camera-right; camera changes never rotate the actor.
+   const dx=Math.sin(angle),dz=Math.cos(angle),rx=dz,rz=-dx;
+   r.shrine.position.set(rx*1.3,0,rz*1.3);r.shrine.rotation.y=.3;
+   const center=new THREE.Vector3(rx*.52,.89,rz*.52);
+   r.camera.position.set(center.x+dx*7,2.6,center.z+dz*7);r.camera.lookAt(center);
+   const span=Math.max(2.35,3.4*h/w);r.camera.top=span/2;r.camera.bottom=-span/2;r.camera.left=-span*w/h/2;r.camera.right=span*w/h/2;r.camera.updateProjectionMatrix();
+   r.sprite.userData.animate({time,state:pose});r.shrine.userData.animate({time:time*1000});
+   renderer.setViewport(x+inset,height-bottom+footGap,w,h);renderer.setScissor(x+inset,height-bottom+footGap,w,h);
+   renderer.render(r.scene,r.camera); // makePlayerSprite selects facing in onBeforeRender.
+   r.readout.textContent=`${r.sprite.userData.spriteFacing}${r.sprite.userData.spriteMirrored?' · mirrored profile':''} · ${r.sprite.userData.spriteState} ${r.sprite.userData.spriteFrame+1}`;
+  }
+  renderer.setScissorTest(false);status.textContent=`${view==='opposite'?'Alternating front/back cameras in the same render tick':view[0].toUpperCase()+view.slice(1)+' camera'} · ${pose} · shared ${pixelScale}× integer screen pixels · character 1.7 m / shrine 1.2 m · no saved state`;
+ }
+ // Read-only hook for browser review evidence; no application state or persistence.
+ window.partyArtLab={records,renderer,get view(){return view},get pose(){return pose}};
+ restart();requestAnimationFrame(render);
+ window.addEventListener('pagehide',()=>{stopped=true;for(const r of records){r.sprite.userData.disposeMaterials();r.sprite.traverse(o=>{if(o.userData.ownGeometry)o.geometry.dispose();});r.shrine.userData.dispose();}groundMaterial.dispose();renderer.dispose();},{once:true});
+}catch(error){stopped=true;document.querySelector('#error').textContent=error.stack||String(error);status.textContent='Review page failed to initialize.';console.error(error);}
+</script>
+</html>

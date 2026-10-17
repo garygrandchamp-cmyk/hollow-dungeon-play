@@ -1,0 +1,44 @@
+[
+  {
+    "key": "left-shield",
+    "width": 128,
+    "height": 144,
+    "sourceBox": [
+      12,
+      11,
+      646,
+      724
+    ],
+    "gripAnchor": null,
+    "sha256": "5feb1665fe223385d8ab45399b796be921af49a1f564546797b21b775ff74e28"
+  },
+  {
+    "key": "right-hand",
+    "width": 128,
+    "height": 144,
+    "sourceBox": [
+      936,
+      103,
+      1496,
+      724
+    ],
+    "gripAnchor": [
+      0.25,
+      0.27
+    ],
+    "sha256": "d840bb275f2317d85147392fbbde8a7dfcd486ccb009027334d1f77f370128c5"
+  },
+  {
+    "key": "left-hand",
+    "width": 128,
+    "height": 144,
+    "sourceBox": [
+      1536,
+      121,
+      2099,
+      724
+    ],
+    "gripAnchor": null,
+    "sha256": "656ee77598f711c002f95559163d7924e5f3f9e26585bfe5e0f7f89b9c3a63ea"
+  }
+]

@@ -1,0 +1,96 @@
+{
+  "generator": "PixelLab create_image_pixen",
+  "transparent": true,
+  "assets": [
+    {
+      "key": "right-sword",
+      "width": 128,
+      "height": 192,
+      "seed": 461020,
+      "description": "First-person dark Gothic dungeon crawler equipment HUD sprite, ONLY the player's right armored gauntlet and short forearm entering from bottom right, gripping a weathered straight medieval steel longsword held upright diagonally toward upper left. Long sharp silver-gray blade occupies upper half, brass crossguard and dark leather grip near lower right. Player-eye POV, not an inventory icon, no whole person. Crisp 16-bit hand-drawn pixel art, strong dark outline, chunky deliberate pixel clusters, muted slate steel, old gold accents, brown leather, tiny warm highlights, gritty classic dungeon RPG aesthetic. Isolated cutout on transparent background, no scenery, no text, no ground shadow.",
+      "model": "PixelLab Pixen",
+      "jobId": "3e7b2766-39bf-4239-9d33-145f380269dc",
+      "assetId": "4af3368d-a6cc-5473-8ef0-eded28f3c442",
+      "file": "right-sword.png",
+      "pngSHA256": "c6025ef683ee352fe3844e4235970ed3df9c3c2c21b1f1599ffb1119063884e0",
+      "rgbaSHA256": "6a7dafe3bd5e144274fb03cdc35ac27b12ac67b30c43e2a369e4f3f95e90beab",
+      "colors": 64,
+      "transparentPixels": 18853,
+      "visiblePixels": 5723
+    },
+    {
+      "key": "left-shield",
+      "width": 192,
+      "height": 192,
+      "seed": 461031,
+      "description": "First-person player-eye POV equipment sprite of the INSIDE BACK INTERIOR of a medieval round wooden shield held in the LEFT ARM. We are the player looking at the INNER surface toward our own left hand: plain rough brown wooden planks, two clearly visible dark leather arm straps and an inside horizontal handgrip. The armored LEFT FOREARM enters from bottom left and passes THROUGH the broad leather forearm strap. The left gloved FIST wraps firmly AROUND the internal handle in the center, attached naturally to that forearm. The shield is raised defensively in front of the player, foreshortened slightly, thick iron rim around its outside edge. The outward shield boss points AWAY from camera and MUST NOT be visible: NO exterior central metal boss, NO crest, NO decorative outward face, NO hand touching the outside. Crisp gritty 16-bit dark fantasy dungeon RPG pixel art, muted slate steel gauntlet, aged dark oak and brown leather, strong dark outlines and deliberate pixel clusters. Isolated transparent background, no body, no scenery, no ground shadow, no text.",
+      "model": "PixelLab Pixen",
+      "jobId": "658eeeaf-429c-401e-a31e-c5d66f12eca8",
+      "assetId": "d7b5d856-db83-59e5-a008-62610a76033b",
+      "file": "left-shield.png",
+      "pngSHA256": "abc5b46cf382ba83b042acc95c996aa16bf3f4065c951935339db3bcdc2a2565",
+      "rgbaSHA256": "51006ddc54bfbbdfa13fa1603cb62a8fe22ccb8fc0fed594bb99e91bc1378b22",
+      "colors": 57,
+      "transparentPixels": 8791,
+      "visiblePixels": 28073,
+      "supersedes": {
+        "jobId": "dd06dc9d-046f-4474-928a-1f32148ec982",
+        "assetId": "6a10952c-1aef-5091-a4e7-761fc09937de",
+        "reason": "Prior outward shield face was incorrect for first-person view."
+      },
+      "review": "Visually reviewed: interior oak back, leather forearm support and gloved fist wrapped around inside transverse handle; no outward central boss; forearm extends to bottom canvas edge."
+    },
+    {
+      "description": "First-person dark realistic medieval dungeon equipment sprite: ONLY the player's LEFT HAND and forearm entering continuously from the bottom-left canvas edge. Dark steel fingerless gauntlet and worn brown leather wrist wrap; palm turned upward, fingers relaxed and gently curled as if ready to hold an object, open space above the fingers. Absolutely EMPTY hand and transparent air: NO flame, NO glowing orb, NO magic, NO particles, NO colored light, NO floating item. Full large foreshortened hand at lower center, realistic finger anatomy and natural relaxed pose, rugged desaturated iron and leather with painterly gritty 1990s dark-fantasy pixel shading, small crisp native pixel clusters, subtle highlights, no cartoon outlines or cute proportions. Transparent background, no body, no scenery or text; forearm reaches bottom edge so it can be cropped by a first-person viewport.",
+      "width": 384,
+      "height": 192,
+      "seed": 461061,
+      "key": "left-hand",
+      "model": "PixelLab Pixen",
+      "jobId": "57fb2992-4814-4b37-aa30-5b0e40e8b900",
+      "assetId": "40e86c7f-3e97-57f2-8160-77f059feac19",
+      "frameCount": 2,
+      "nativeFrame": [
+        192,
+        192
+      ],
+      "animation": {
+        "tool": "PixelLab animate_image",
+        "jobId": "4cbc5320-fa70-406a-b807-4eb6767cec58",
+        "assetId": "93b9e7bf-8f62-5d5c-965d-3400530d1e99",
+        "seed": 461062,
+        "usedFrameIndices": [
+          0,
+          1
+        ],
+        "note": "Only the two restrained poses selected; larger finger-extension poses omitted for subtle idle movement."
+      },
+      "assembly": "Two native frames laid out horizontally without resizing; no magic artwork exists in either hand frame.",
+      "file": "left-hand.png",
+      "pngSHA256": "8a9a93be10b285ef99659d95eeb51e187866c06493e5a885b73ddfc0fc16478b",
+      "rgbaSHA256": "bc4496111cd6ccb68c9f7f8c87edbf843ec84cf6e1199d4e79eacf7d478263cb",
+      "colors": 73,
+      "transparentPixels": 53660,
+      "visiblePixels": 20068
+    }
+  ],
+  "archives": [
+    {
+      "key": "left-magic",
+      "width": 192,
+      "height": 192,
+      "seed": 461022,
+      "description": "First-person dark Gothic dungeon crawler equipment HUD sprite, ONLY the player's left dark steel and brown leather gauntlet and short forearm entering from bottom left, palm turned upward and fingers curled, conjuring a floating bright blue and violet arcane flame orb above the open hand. The hand is large and foreshortened toward the player, magic stays above fingers with a few crisp cyan sparks. Player-eye POV, not an inventory icon, no whole person. Crisp 16-bit hand-drawn pixel art, strong dark outline, chunky deliberate pixel clusters, muted slate steel and aged leather with blue magic reflected on knuckles, gritty classic dungeon RPG aesthetic. Isolated cutout on transparent background, no scenery, no text, no ground shadow.",
+      "model": "PixelLab Pixen",
+      "jobId": "be6bb55d-2c26-4619-8bc1-9e82da0e3833",
+      "assetId": "8f128da2-9b34-5f1a-bbfd-96de6d7deb45",
+      "file": "left-magic.png",
+      "pngSHA256": "b84284f3643f8a01106378b7ff4e6e4a8763ee0772b5a7d4376165de42ba5d5d",
+      "rgbaSHA256": "4af23a6cccfce0fb98b2b3eb4e8e415221466bc1f260b92d1b2921c477bad460",
+      "colors": 73,
+      "transparentPixels": 26246,
+      "visiblePixels": 10618
+    }
+  ],
+  "modularMagic": "Plain PixelLab hand + independent procedural fire/ice/poison/arcane effect sprite. Legacy baked blue hand is archived and not packed."
+}

@@ -1,0 +1,27 @@
+{
+  "description": "First-person dark realistic medieval dungeon equipment sprite: ONLY the player's LEFT HAND and forearm entering continuously from the bottom-left canvas edge. Dark steel fingerless gauntlet and worn brown leather wrist wrap; palm turned upward, fingers relaxed and gently curled as if ready to hold an object, open space above the fingers. Absolutely EMPTY hand and transparent air: NO flame, NO glowing orb, NO magic, NO particles, NO colored light, NO floating item. Full large foreshortened hand at lower center, realistic finger anatomy and natural relaxed pose, rugged desaturated iron and leather with painterly gritty 1990s dark-fantasy pixel shading, small crisp native pixel clusters, subtle highlights, no cartoon outlines or cute proportions. Transparent background, no body, no scenery or text; forearm reaches bottom edge so it can be cropped by a first-person viewport.",
+  "width": 192,
+  "height": 192,
+  "seed": 461061,
+  "key": "left-hand",
+  "model": "PixelLab Pixen",
+  "jobId": "57fb2992-4814-4b37-aa30-5b0e40e8b900",
+  "assetId": "40e86c7f-3e97-57f2-8160-77f059feac19",
+  "frameCount": 2,
+  "nativeFrame": [
+    192,
+    192
+  ],
+  "animation": {
+    "tool": "PixelLab animate_image",
+    "jobId": "4cbc5320-fa70-406a-b807-4eb6767cec58",
+    "assetId": "93b9e7bf-8f62-5d5c-965d-3400530d1e99",
+    "seed": 461062,
+    "usedFrameIndices": [
+      0,
+      1
+    ],
+    "note": "Only the two restrained poses selected; larger finger-extension poses omitted for subtle idle movement."
+  },
+  "assembly": "Two native frames laid out horizontally without resizing; no magic artwork exists in either hand frame."
+}

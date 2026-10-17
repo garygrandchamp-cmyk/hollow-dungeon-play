@@ -1,0 +1,19 @@
+{
+  "provider": "PixelLab",
+  "skeleton": {
+    "base": "bf0480c6-1ae0-4c30-bb41-9a775668b8b0",
+    "idle": "bfbef22a-e61b-461e-87ce-4999fff9965e",
+    "walk": "4b5efdc2-1d9c-43e1-926d-e61fa908e111",
+    "attack": "96d65af3-cf77-4522-96e0-268a54548420",
+    "hurt": "de345cfe-e2e8-4556-8ff7-7bd3e5bf5d3f",
+    "death": "1c8a0ec4-bfb6-4705-8378-1f2ef2185198"
+  },
+  "goblin": {
+    "base": "05243168-f6e7-4d42-850f-2d37f733ae7c",
+    "idle": "9ff64130-4761-41d0-b521-7f43ce26b967",
+    "walk": "e43afb90-d67e-4a84-af0b-ad361e4fedf7",
+    "attack": "37d4241a-34a3-468b-89e8-6f802a6a6416",
+    "hurt": "5b027e8f-a4dd-46a2-935d-91c97d50f9d2",
+    "death": "58872f41-ad96-4980-9125-ace6ebf20bd9"
+  }
+}

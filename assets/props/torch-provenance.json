@@ -1,0 +1,24 @@
+{
+  "description": "A grim medieval WALL-MOUNTED BURNING TORCH for a first-person dark-fantasy dungeon game, straight-on view, entire narrow tall wrought-iron mounting plate and bent iron support bracket visible under an iron fuel basket. Ancient rusted black iron, pitted rough metal, irregular rivets, scored edges, soot-encrusted bowl, charred wood and tightly wrapped old cloth. Long asymmetric ragged flame with shredded tongues of dark orange and smoky red, small pale-yellow hot core, a few tiny rising embers. Realistic gritty hand-pixeled 1990s dark fantasy dungeon texture style, nuanced dithered metal shading, distressed material details and sharp native pixels. Aged muted iron and brown rust dominate. Flame is irregular, thin and turbulent, not a smooth cartoon flame or glowing icon. No bold black contour, no cute or clean vector shapes, no ornamental gold, no wall/background, no surrounding halo, no text. Isolated tall torch fixture on transparent alpha. All mounting hardware in frame.",
+  "width": 128,
+  "height": 192,
+  "seed": 461041,
+  "tool": "PixelLab create_image_pixen",
+  "jobId": "18b50556-a5a8-4f03-b177-d8080f5e2250",
+  "assetId": "bd2d9e9b-2d43-5bd4-9981-7f794643e635",
+  "animation": {
+    "tool": "PixelLab animate_image",
+    "jobId": "0502acc4-0939-4856-a927-b10a076ab128",
+    "assetId": "2e86a3c1-91f4-56db-9342-6b1c80c07b10",
+    "seed": 461042,
+    "requestedFrames": 4,
+    "usedFrameIndices": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "note": "Frame0 is unchanged generated source; frames1-3 are PixelLab flame animation outputs. No resampling or hand retouching."
+  },
+  "review": "Visually reviewed: detailed rusted and soot-darkened iron basket/plate/bracket; narrow ragged orange flame with a small hot core; no heavy black icon outline. Fixture geometry remains stable through the selected loop."
+}

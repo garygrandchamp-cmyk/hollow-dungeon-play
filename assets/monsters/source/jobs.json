@@ -1,0 +1,75 @@
+{
+  "provider": "PixelLab",
+  "wraith": {
+    "corpse": "bb38a3c8-ea63-41f4-b7b0-e9c3087d5f53",
+    "base": "3706cebe-3073-4616-9b37-d82160de8839",
+    "idle": "3c344f84-f341-408e-bc3b-97aeb7ad2255",
+    "walk": "38016ae1-8d08-418e-b7f1-f75de67a5ccb",
+    "attack": "932a7544-f81b-44f7-9a2e-8560348af311",
+    "death": "f1220287-5c0d-4ffb-91d8-442119a2578e"
+  },
+  "spider": {
+    "corpse": "ae77587c-7315-49d4-8f57-b38dc582fe71",
+    "base": "148cde80-bccc-4049-8d8d-9771fa3c52c2",
+    "idle": "875773ee-73c1-4f17-be25-57163be6fa30",
+    "walk": "8a36f559-2426-4bcc-bfc8-90c48cf58a8c",
+    "attack": "727eb287-7066-4461-8040-251bcc95cabd",
+    "death": "c2695816-1e73-4852-87bc-641743d6c5c5"
+  },
+  "slime": {
+    "corpse": "bbf63306-3441-402a-9c28-a5c51c5713c6",
+    "base": "59964df2-cc62-4603-a96e-b4227f6a944b",
+    "idle": "7e9fb66a-ccfe-4eb8-95a8-8976c9261c08",
+    "walk": "163b2882-94d0-4699-9078-776ceacf6a0b",
+    "attack": "c124bbdf-5893-4b4a-9597-3395ea87b04b",
+    "death": "f8dfbe9d-6be5-46ee-a7c9-5cad2476346f"
+  },
+  "supersededSlime": {
+    "corpse": "bbf63306-3441-402a-9c28-a5c51c5713c6",
+    "base": "3d66e355-f0d2-412d-810f-3cfd843f2c18",
+    "idle": "69586feb-f6e9-451f-bd1e-32578cfa9c53",
+    "walk": "b0b9a86f-e292-4c09-9f5d-c5690199b3c8",
+    "attack": "df26145d-da7b-4459-973a-f3a49161b4e5",
+    "death": "80e4b7f5-4e29-45cf-b108-20b5df8c458f"
+  },
+  "rat": {
+    "base": "6550ac7d-9f57-4d50-b05d-c28db6761cd7",
+    "corpse": "250147e7-4d81-4b7c-b769-9453fb2a9506",
+    "idle": "b5b6a18f-b130-4e85-82af-28f752397f26",
+    "walk": "e571a6f6-e189-4c03-8478-b5db13c41c94",
+    "attack": "24144055-93d1-4318-be26-29ea50dd4fbc",
+    "death": "31fbef76-7ce9-489d-abe8-c122fc0c6ada"
+  },
+  "bat": {
+    "base": "768ef498-1266-4cc6-a6b4-b657588c7851",
+    "corpse": "70e177de-5618-432f-aa33-6a62284c7491",
+    "idle": "c6499144-8985-4d5b-b7c0-ec52d7c28027",
+    "walk": "8a930421-0ca6-42eb-b03b-b66c288a7b87",
+    "attack": "fd9eeee1-114f-4cf2-bc95-826c13eba3f4",
+    "death": "092bbf49-a4de-40dd-a9da-62a0ba2cff97"
+  },
+  "crawler": {
+    "base": "312387ca-279a-486c-9aeb-eb6bd3d3bcdd",
+    "corpse": "f9372cbe-a07c-4250-b5e7-f7c8a55a01a5",
+    "idle": "6082838c-5c62-4ca3-a9c3-aa34d112e027",
+    "walk": "ec764458-1bb4-4e94-91ec-f35f84cd23ec",
+    "attack": "672966a9-78cd-4340-b0fd-227314089b78",
+    "death": "680f4e89-c21f-43a3-b3d6-658544425969"
+  },
+  "skeletal-mage": {
+    "base": "fb07c670-ca5b-4ac7-b427-da7ec58ca7d4",
+    "idle": "8494329f-f886-4549-aea2-75975fabdcac",
+    "walk": "11a94c75-7821-43d4-9ccd-490e32d4164c",
+    "attack": "29bc4bab-b54e-4aeb-9c86-c1a1cbf75d85",
+    "corpse": "5e65a598-f0e8-4732-a53f-00a4503c4cc2",
+    "death": "99178a13-dd92-49e0-bc3d-3c823312878c"
+  },
+  "drowned": {
+    "base": "ea39740d-396a-4032-8e75-ab86b87f00eb",
+    "idle": "1466d971-96a6-4b05-855f-3208fa9936f3",
+    "walk": "563935e8-7527-4a05-9886-a523098a79ad",
+    "attack": "ec13773d-5862-4e96-9cd9-15a457af2dcc",
+    "corpse": "3e341c67-4354-4fc8-a892-56a695a50b6b",
+    "death": "d51c830d-b706-47fa-bf34-2bf780c5fc8c"
+  }
+}

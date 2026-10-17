@@ -1,0 +1,328 @@
+/* Load after style.css. Local fonts only; artwork/world remains in the canvas.
+   Party canvas + overlay share the area below the fixed 64px toolbar.
+   Open DM tools with body.dm-open, .dm-drawer-open, or #dmPalette.open.
+   Panes are transparent input overlays: canvas routing uses their rectangles. */
+:root {
+  --retro-toolbar: 64px;
+  --retro-ink: #ded6c2;
+  --retro-muted: #a29d91;
+  --retro-bg: #0b0d12;
+  --retro-panel: #171b24;
+  --retro-recess: #0e1118;
+  --retro-stone: #727477;
+  --retro-bronze: #a18a60;
+  --retro-rust: #9c5549;
+  --muted: var(--retro-muted);
+  --amber: var(--retro-bronze);
+  --line: #45464a;
+  color-scheme: dark;
+}
+body {
+  background: var(--retro-bg);
+  color: var(--retro-ink);
+  font: 12px/1.4 "Lucida Console", "Courier New", monospace;
+  letter-spacing: 0;
+}
+body :is(button,input,select,textarea,summary,kbd,h1,h2,h3,label,output),
+body :is(#hollow-tile-lab,#playerForge,#playerSpriteLab) {
+  font-family: "Lucida Console", "Courier New", monospace !important;
+}
+body :is(button,input,select,textarea,details,dialog),
+body :is(.panel,.architecture-panel,.party-pane) { border-radius: 0 !important; }
+[hidden] { display: none !important; }
+body .vignette { display: none; }
+body header {
+  height: var(--retro-toolbar);
+  padding: 10px 14px;
+  background: #151923;
+  border-bottom: 3px double var(--retro-stone);
+}
+body .brand { font-size: 17px; letter-spacing: 2px; gap: 8px; }
+body .brand .sigil { font-size: 24px; color: var(--retro-bronze); }
+body .brand small { font-size: 10px; line-height: 1.2; padding-left: 10px; color: var(--retro-muted); }
+body .edition { font-size: 9px; letter-spacing: 0; }
+body .edition b { margin-left: 10px; color: var(--retro-bronze); }
+body aside {
+  position: fixed;
+  top: 74px; left: 10px;
+  width: 286px;
+  max-height: calc(100dvh - 108px);
+  padding: 10px;
+  border: 3px double #7b7466;
+  background: #151923;
+  box-shadow: 3px 3px 0 #020306;
+  scrollbar-color: #6f6757 #10131a;
+  z-index: 45;
+}
+body aside > :is(h1,.intro,.eyebrow) { display: none; }
+body :is(.panel,.architecture-panel,#editorPanel,#surfaceOptions,#adventureOptions,#audioOptions) {
+  background: var(--retro-panel);
+  border: 3px double #5e6065;
+  padding: 10px;
+  margin: 8px 0;
+  box-shadow: 1px 1px 0 #020306;
+}
+body .section-title { margin: 0 0 9px; font-size: 10px; letter-spacing: 1px; color: var(--retro-bronze); }
+body .section-title span { font-size: 9px; letter-spacing: 0; color: var(--retro-muted); }
+body :is(label,output,.editor-help,details p,#structureStats) { font-size: 11px; line-height: 1.45; }
+body :is(label small,label>span) { font-size: 9px; color: #98998e; letter-spacing: 0; }
+body label { color: #c8c6ba; }
+body :is(h1,h2,h3) { color: #d0b686; font-size: 15px; font-weight: bold; line-height: 1.2; letter-spacing: 0; }
+body button,
+body :is(.floor-tabs,.tool-grid,.recipe-row,#adventureHud) button {
+  min-height: 29px;
+  padding: 5px 9px;
+  background: #292e39;
+  color: var(--retro-ink);
+  border: 2px solid;
+  border-color: #8b887d #090c13 #090c13 #8b887d;
+  box-shadow: 1px 1px 0 #020306;
+  font-size: 11px;
+  font-weight: normal;
+  transition: none;
+}
+body button:hover { background: #363b46; filter: none; }
+body button:active,
+body button[aria-pressed=true] {
+  background: #161a24;
+  border-color: #080b12 #95846b #95846b #080b12;
+  box-shadow: none;
+}
+body button:disabled { color: #76797e; background: #1c2029; cursor: default; filter: none; }
+body :is(button,input,select,textarea,summary):focus-visible { outline: 2px solid #c9b58e; outline-offset: 2px; }
+body button.primary { background: #63513b; color: #f1e1bc; border-color: #b29a70 #1a1410 #1a1410 #b29a70; }
+body .secondary { width: 100%; margin-top: 6px; }
+body :is(.floor-tabs,.tool-grid,.recipe-row,.tabs) { gap: 5px; margin: 8px 0; }
+body .tabs { padding-bottom: 7px; border-color: #4a4c51; }
+body :is(.floor-tabs,.tool-grid,.tabs) button.active { color: #e0c28b; background: #41392e; border-color: #b89b65 #15120c #15120c #b89b65; }
+body :is(input:not([type]),input[type=text],input[type=number],select,textarea),
+body :is(#editorPanel,#surfaceOptions,#adventureOptions) select {
+  padding: 6px;
+  color: #e2d9c7;
+  background: var(--retro-recess);
+  border: 2px solid;
+  border-color: #07090e #64656a #64656a #07090e;
+  font-size: 11px;
+  min-width: 0;
+}
+body :is(#editorPanel,#surfaceOptions,#adventureOptions) select { margin: 5px 0 8px; }
+body :is(#surfaceOptions,#adventureOptions,#audioOptions) label { margin-top: 9px; }
+body input[type=range] { height: 5px; margin: 10px 0; accent-color: #a18a60; }
+body input[type=checkbox] { width: 16px; height: 16px; accent-color: #a18a60; }
+body .split { margin-top: 8px; }
+body .toggle-row { margin: 10px 0; }
+body .seed-row { gap: 5px; margin: 5px 0 10px; }
+body .seed-row button { width: 32px; font-size: 18px; padding: 1px; }
+body details { padding-top: 9px; margin-top: 8px; border-color: #4b4e54; color: var(--retro-muted); }
+body summary { color: #c9b385; font-size: 11px; }
+body summary::before { content: "+ "; color: #a18a60; }
+body details[open] > summary::before { content: "- "; }
+body .legend { gap: 12px; margin: 8px 0; font-size: 9px; }
+body kbd { background: #11151f; border: 1px solid #73716a; padding: 2px 4px; border-radius: 0; }
+body #world-label { top: 77px; right: 12px; }
+body #world-label>div { font: 12px/1.4 "Lucida Console", "Courier New", monospace; margin-top: 4px; }
+body #playbar,
+body #adventureHud,
+body #toast,
+body #interactionContext,
+body #buildUpdate {
+  color: var(--retro-ink);
+  background: #151923;
+  border: 3px double #8b7a5e;
+  border-radius: 0;
+  box-shadow: 2px 2px 0 #020306;
+  font-size: 11px;
+}
+body #playbar { bottom: 30px; right: 12px; left: 310px; padding: 7px 9px; }
+body #adventureHud { right: 12px; bottom: 90px; gap: 9px; padding: 7px 9px; max-width: calc(100vw - 325px); }
+body #toast { max-width: min(600px,calc(100vw - 24px)); white-space: normal; padding: 7px 10px; bottom: 136px; }
+body #interactionContext { padding: 5px 9px; }
+body footer { height: 23px; bottom: 0; left: 12px; right: 12px; background: #0b0e15; border-color: #575b63; font-size: 9px; letter-spacing: 0; }
+body #viewMode { right: 12px; top: 133px; padding: 5px 9px; background: #2b2c32; }
+body #buildUpdate { right: 12px; top: 180px; width: 265px; padding: 10px; z-index: 150; }
+body #buildUpdate span { color: #bbb5a6; font-size: 10px; }
+body.first-person #viewMode { top: 75px; }
+body.first-person #adventureHud { top: 74px; left: 12px; right: auto; bottom: auto; max-width: calc(100vw - 200px); }
+body.first-person #playbar { bottom: 43px; left: 50%; right: auto; padding: 7px 10px; }
+body.first-person #fpHint { background: #10141e; padding: 5px 8px; font-size: 10px; bottom: 8px; }
+body.first-person #toast { bottom: 112px; }
+body dialog,
+body :is(#hollow-tile-lab,#playerForge,#playerSpriteLab) {
+  background: #171b24 !important;
+  color: var(--retro-ink);
+  border: 3px double #a18a60 !important;
+  border-radius: 0 !important;
+  box-shadow: 4px 4px 0 #000 !important;
+}
+body dialog::backdrop { background: #020409c9; }
+body dialog :is(h2,h3,p,label,button,input,select) { font-family: "Lucida Console", "Courier New", monospace !important; }
+body dialog :is(h2,h3) { font-size: 17px !important; }
+body dialog button { border-radius: 0 !important; }
+
+/* Split-screen contract: DM, P1, P2, P3 in DOM order; no opaque pane fill. */
+#partyShell {
+  position: fixed;
+  inset: var(--retro-toolbar) 0 0;
+  display: grid;
+  grid-template: repeat(2,minmax(0,1fr)) / repeat(2,minmax(0,1fr));
+  gap: 2px;
+  z-index: 5;
+  pointer-events: none;
+}
+.party-pane {
+  position: relative;
+  min-width: 0; min-height: 0;
+  overflow: hidden;
+  background: transparent;
+  border: 1px solid #636260;
+  box-shadow: inset 0 0 0 1px #090c12;
+  pointer-events: none;
+}
+.party-pane :is(button,select,input,a), .party-label { pointer-events: auto; }
+.party-pane:is(.active,.focused,.is-focused,[data-focused=true]) { border-color: #c5a76d; box-shadow: inset 0 0 0 2px #8e754e; }
+.party-label {
+  position: absolute;
+  left: 7px; top: 7px;
+  max-width: calc(100% - 14px);
+  padding: 4px 8px;
+  border: 3px double #7b776c;
+  background: #11151e;
+  color: #d7c49c;
+  font-size: 11px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.party-pane:is(.dead,[data-alive=false]) .party-label { color: #d29c91; border-color: #8c534b; }
+.party-pane:is(.escaped,[data-escaped=true]) .party-label { color: #b9c4a0; border-color: #7b8665; }
+.party-hud, .party-stats {
+  position: absolute;
+  left: 7px; right: 7px; bottom: 7px;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 5px 12px;
+  width: fit-content; max-width: calc(100% - 14px);
+  padding: 5px 8px;
+  color: var(--retro-ink); background: #11151e;
+  border: 3px double #68686b;
+  font-size: 11px;
+}
+.party-hud .health, .party-stats .health { color: #cf9484; }
+.party-hud .mana, .party-stats .mana { color: #8eafca; }
+.party-hud .gold, .party-stats .gold { color: #ceb174; }
+#partyToolbar {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: var(--retro-toolbar);
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 10px;
+  color: var(--retro-ink); background: #151923;
+  border-bottom: 3px double #8e7a5b;
+  z-index: 110;
+  overflow-x: auto; overflow-y: hidden;
+  scrollbar-width: thin;
+}
+#partyToolbar > * { flex: 0 0 auto; }
+#partyToolbar :is(h1,h2,.party-title) { font-size: 14px; margin: 0 10px 0 0; color: #d1b682; letter-spacing: 1px; }
+#partyToolbar button { min-height: 31px; font-size: 11px; white-space: nowrap; }
+#partyToolbar :is(label,span,output) { font-size: 10px; }
+#partyInventory, #dmPalette {
+  position: fixed; top: 73px; left: 9px;
+  width: min(350px,calc(100vw - 18px));
+  max-height: calc(100dvh - 85px);
+  overflow: auto;
+  background: #151923;
+  border: 3px double #998060;
+  padding: 10px;
+  box-shadow: 3px 3px 0 #020306;
+  z-index: 80;
+  scrollbar-color: #80725d #11151e;
+}
+#partyInventory { left: auto; right: 9px; }
+#partyInventory :is(ul,ol) { margin: 8px 0; padding-left: 19px; }
+#partyInventory :is(li,.inventory-row) { margin: 0; padding: 6px 3px; border-bottom: 1px solid #3f424a; font-size: 11px; }
+#partyInventory :is(img,canvas) { image-rendering: pixelated; }
+#dmPalette { display: none; }
+#dmPalette:is(.open,.is-open,[data-open=true],[aria-hidden=false]),
+body:is(.dm-open,.dm-drawer-open) #dmPalette { display: block; }
+#dmPalette :is(.panel,.architecture-panel,#editorPanel,#surfaceOptions,#adventureOptions,#audioOptions) { margin: 6px 0; }
+#partyResult {
+  position: fixed; left: 50%; top: 50%; transform: translate(-50%,-50%);
+  width: min(540px,calc(100vw - 30px));
+  max-height: calc(100dvh - 90px); overflow: auto;
+  background: #151923; color: var(--retro-ink);
+  border: 5px double #a18a60;
+  padding: 18px;
+  box-shadow: 5px 5px 0 #020306;
+  z-index: 180;
+}
+#partyResult :is(h1,h2,h3) { margin: 0 0 12px; font-size: 19px; color: #d7b87e; }
+#partyResult :is(p,li) { font-size: 12px; line-height: 1.5; }
+#partyResult :is(table,.result-rows) { width: 100%; border-collapse: collapse; margin: 12px 0; }
+#partyResult :is(th,td) { padding: 6px; text-align: left; border-bottom: 1px solid #4d4b46; font-size: 11px; }
+#partyResult:is(.dm-victory,[data-result=dmVictory]) { border-color: #a96e60; }
+body.party-active #scene { position: fixed; inset: var(--retro-toolbar) 0 0; }
+body.party-active #scene canvas { width: 100% !important; height: 100% !important; }
+body.party-active > :is(header,.vignette,#viewMode,#world-label,#playbar,#adventureHud,#fpHint,#crosshair,#interactionContext,footer,#soundQuick) { display: none !important; }
+body.party-active aside { display: none; top: 73px; left: 9px; max-height: calc(100dvh - 85px); z-index: 80; }
+body.party-active:is(.dm-open,.dm-drawer-open) aside,
+body.party-active aside:is(.open,.is-open,[data-open=true],[aria-hidden=false]) { display: block; }
+body.party-active #toast { left: 50%; bottom: 12px; transform: translateX(-50%); max-width: min(620px,calc(100vw - 24px)); z-index: 160; }
+body.party-active #buildUpdate { top: 73px; right: 9px; }
+body.party-active :is(#partyShell,#partyToolbar,#partyInventory,#dmPalette,#partyResult) { font-family: "Lucida Console", "Courier New", monospace; }
+@media (max-width:760px) {
+  body .edition { display: none; }
+  body aside { width: 260px; }
+  #partyToolbar { gap: 4px; padding: 7px 6px; }
+  #partyToolbar :is(h1,h2,.party-title) { font-size: 12px; margin-right: 5px; }
+  #partyToolbar button { font-size: 10px; padding: 4px 6px; }
+  .party-label { left: 4px; top: 4px; font-size: 10px; padding: 3px 5px; }
+  .party-hud,.party-stats { left: 4px; right: 4px; bottom: 4px; gap: 3px 7px; font-size: 10px; padding: 3px 5px; }
+}
+@media (max-height:580px) {
+  #partyToolbar { padding-top: 4px; padding-bottom: 4px; }
+  .party-label { top: 3px; }
+  .party-hud,.party-stats { bottom: 3px; padding: 2px 5px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  body * { transition: none !important; scroll-behavior: auto !important; }
+}
+
+body #soundQuick {position:fixed;top:74px;right:12px;bottom:auto;z-index:46;}
+body.first-person #soundQuick {top:74px;}
+
+body #inventoryQuick {top:108px;right:12px;z-index:48;}
+body.first-person #soundQuick {top:110px;}
+body.first-person #inventoryQuick {top:145px;}
+
+body #mainMenuButton {position:fixed;top:74px;right:120px;z-index:49;}body.party-active #mainMenuButton {display:none;}
+
+body .hollow-start {background:#080b10;font:13px/1.5 "Lucida Console","Courier New",monospace;}
+body .hollow-start .hs-card {border:5px double #97815e;background:#151923;box-shadow:7px 7px 0 #000;padding:26px;max-width:650px;}
+body .hollow-start h1 {font:36px "Lucida Console",monospace;letter-spacing:8px;color:#c7b17f;}
+body .hollow-start h2 {font:18px "Lucida Console",monospace;color:#c7b17f;}
+body .hollow-start .hs-kicker {font:10px monospace;letter-spacing:1px;}
+body .hollow-start button {font:12px monospace;border:3px outset #6b6b67;background:#292e39;padding:8px 12px;}
+body .hollow-start .hs-primary {background:#433d30;border-color:#8b7955;}
+body.peer-guest #inventoryQuick {display:none;}
+
+/* One dedicated DM drawer: grouped tools and persistent placement context. */
+body.party-active.dm-open aside {display:none;}
+#dmPalette {width:min(340px,calc(100vw - 18px));font-size:11px;}
+#dmPalette .dm-placement-guide {position:sticky;top:-10px;z-index:2;background:#171b20;border-bottom:2px solid #8e7a5b;padding:10px 3px;}
+#dmPalette .dm-placement-guide p {margin:6px 0;line-height:1.5;}
+#dmToolStatus {color:#d5bc86;}
+#dmTileStatus {color:#bdc8b8;}
+#dmPlacementStatus {color:#d2cab8;}
+#dmPalette .dm-tool-group {border-top:1px solid #4d4b46;margin-top:8px;padding-top:6px;}
+#dmPalette summary {cursor:pointer;color:#d1b682;padding:7px 0;}
+#dmPalette .dm-tool-grid {display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:6px 0;}
+#dmPalette .dm-tool-grid button {font-size:10px;white-space:normal;min-height:38px;text-align:left;line-height:1.5;}
+#dmPalette button[aria-pressed=true] {background:#494333;border-color:#ddc18c;color:#fff0cb;box-shadow:inset 3px 0 #ddc18c;}
+body #scene canvas {image-rendering:pixelated;}
+
+/* Keep the held shield and hands visible in small local panes. */
+body.party-active #inventoryQuick {display:none;}
+.party-pane[data-actor] .party-hud {left:auto;right:7px;bottom:5px;padding:3px 6px;font-size:10px;gap:5px;}
+.party-pane .party-control-hint {display:none;}
+.party-pane[data-actor] .party-hud button {font-size:10px;min-height:24px;padding:3px 6px;}
+
+.tileset-lab-link{display:block;padding:10px;margin:8px 0;border:3px double #6a757a;background:#171c22;color:#c4d3d2;font:11px monospace;text-decoration:none}

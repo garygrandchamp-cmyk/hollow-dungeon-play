@@ -1,0 +1,30 @@
+{
+  "frameWidth": 128,
+  "frameHeight": 128,
+  "columns": 8,
+  "rows": 5,
+  "footRow": 120,
+  "standingPixels": 104,
+  "clips": {
+    "idle": {
+      "row": 0,
+      "frames": 4
+    },
+    "walk": {
+      "row": 1,
+      "frames": 8
+    },
+    "attack": {
+      "row": 2,
+      "frames": 8
+    },
+    "hurt": {
+      "row": 3,
+      "frames": 4
+    },
+    "death": {
+      "row": 4,
+      "frames": 8
+    }
+  }
+}

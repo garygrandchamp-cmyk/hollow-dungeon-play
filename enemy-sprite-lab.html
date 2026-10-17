@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dungeon enemy sprite lab</title>
+<style>
+  :root{color-scheme:dark;font:15px/1.5 system-ui,sans-serif;background:#151719;color:#dbd9cc}
+  *{box-sizing:border-box}body{margin:0 auto;padding:28px 22px;max-width:1050px}
+  h1{font-size:24px;margin:0 0 5px}p{color:#a3aaa5;margin:0 0 22px}
+  main{display:grid;grid-template-columns:260px 1fr;gap:22px;align-items:start}
+  section,aside{background:#202426;border:1px solid #39413e;border-radius:12px;padding:20px}
+  label{display:block;margin:0 0 16px}select,input[type=range]{display:block;width:100%;margin-top:6px}
+  button,select{background:#303a36;color:#e6e4d8;border:1px solid #526058;border-radius:6px;padding:9px;font:inherit}
+  button{cursor:pointer}button:hover{background:#3e5046}.buttons{display:flex;gap:8px;margin-bottom:18px}
+  .toggle{display:flex;align-items:center;gap:8px}input[type=checkbox]{accent-color:#9ab48c}
+  .stage{overflow:auto;display:grid;justify-items:center;min-height:280px;padding:16px;background:#292d30;border-radius:7px}
+  .stage.checker{background-color:#292d30;background-image:linear-gradient(45deg,#33393a 25%,transparent 25%),linear-gradient(-45deg,#33393a 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#33393a 75%),linear-gradient(-45deg,transparent 75%,#33393a 75%);background-size:24px 24px;background-position:0 0,0 12px,12px -12px,-12px 0}
+  canvas{image-rendering:pixelated;image-rendering:crisp-edges;display:block;max-width:none}
+  output{font-variant-numeric:tabular-nums;color:#b9ceaa}small{display:block;color:#9ca8a1;margin-top:12px}
+  footer{margin-top:20px;color:#9ca8a1;font-size:13px}a{color:#b4cda4}
+  @media(max-width:700px){main{grid-template-columns:1fr}body{padding:18px 12px}.stage{justify-items:start}}
+</style>
+<h1>Dungeon enemy sprite lab</h1>
+<p>Inspect the final pixel art and animation frames without loading the dungeon.</p>
+<main>
+  <aside aria-label="Sprite controls">
+    <label>Enemy<select id="kind"><option value="skeleton">Skeleton swordsman</option><option value="goblin">Crypt goblin</option></select></label>
+    <label>Animation<select id="clip"><option>idle</option><option>walk</option><option>attack</option><option>hurt</option><option>death</option></select></label>
+    <div class="buttons"><button id="play" type="button">Pause</button><button id="restart" type="button">Restart</button></div>
+    <label>Frame <output id="frameLabel">1 / 4</output><input id="frame" aria-label="Animation frame" type="range" min="0" max="3" step="1" value="0"></label>
+    <label>Preview scale <output id="scaleLabel">4×</output><input id="scale" type="range" min="2" max="6" step="1" value="4"></label>
+    <label>Playback speed <output id="speedLabel">1×</output><input id="speed" type="range" min="0.25" max="2" step="0.25" value="1"></label>
+    <label class="toggle"><input id="loop" type="checkbox" checked>Loop preview</label>
+    <label class="toggle"><input id="checker" type="checkbox" checked>Show transparency grid</label>
+    <label class="toggle"><input id="ground" type="checkbox" checked>Show foot baseline</label>
+    <small>Space: play/pause. Arrow keys: step frames. Looping death here is a preview option; the game holds its final frame.</small>
+  </aside>
+  <section aria-label="Pixel art preview">
+    <div class="stage checker" id="stage"><canvas id="preview" width="128" height="128" aria-label="Animated enemy sprite"></canvas></div>
+    <small id="status" role="status">Loading local sprite atlas…</small>
+  </section>
+</main>
+<footer>PixelLab artwork • 128 × 128 cells • nearest-neighbor pixels • binary transparency<br>
+<a href="assets/enemies/enemy-contact-sheet.png" target="_blank" rel="noopener">All animation frames</a> · <a id="atlasLink" href="assets/enemies/skeleton-atlas.png" target="_blank" rel="noopener">Current transparent atlas</a></footer>
+<script>
+  const $ = id => document.getElementById(id);
+  const clips = {idle:{row:0,frames:4,fps:4},walk:{row:1,frames:8,fps:10},attack:{row:2,frames:8,fps:12},hurt:{row:3,frames:4,fps:12},death:{row:4,frames:8,fps:10}};
+  const canvas=$('preview'),ctx=canvas.getContext('2d'),images={};
+  let playing=true,elapsed=0,last=0,index=0;
+  for(const kind of ['skeleton','goblin']){
+    const image=new Image();images[kind]=image;
+    image.onload=()=>draw();
+    image.onerror=()=>{$('status').textContent='Could not load local atlas. Open this page from the dungeon server.';};
+    image.src=`assets/enemies/${kind}-atlas.png`;
+  }
+  function draw(){
+    const clip=clips[$('clip').value],image=images[$('kind').value];
+    const scale=+$('scale').value;
+    canvas.style.width=canvas.style.height=`${128*scale}px`;
+    ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,128,128);
+    if($('ground').checked){ctx.fillStyle='rgba(160,190,140,.65)';ctx.fillRect(0,120,128,1);}
+    if(image.complete&&image.naturalWidth)ctx.drawImage(image,index*128,clip.row*128,128,128,0,0,128,128);
+    $('frame').value=index;$('frame').max=clip.frames-1;
+    $('frameLabel').textContent=`${index+1} / ${clip.frames}`;
+    $('scaleLabel').textContent=`${scale}×`;$('speedLabel').textContent=`${$('speed').value}×`;
+    $('play').textContent=playing?'Pause':'Play';
+    $('atlasLink').href=`assets/enemies/${$('kind').value}-atlas.png`;
+    if(image.complete&&image.naturalWidth)$('status').textContent=`${$('kind').value} · ${$('clip').value} · ${clip.fps} fps · frame ${index+1}/${clip.frames}`;
+  }
+  function restart(){elapsed=0;index=0;draw();}
+  $('play').onclick=()=>{playing=!playing;draw();};$('restart').onclick=restart;
+  $('clip').onchange=restart;$('kind').onchange=restart;
+  $('frame').oninput=()=>{playing=false;index=+$('frame').value;elapsed=index/clips[$('clip').value].fps;draw();};
+  for(const id of ['scale','speed','ground'])$(id).oninput=draw;
+  $('checker').onchange=()=>{$('stage').classList.toggle('checker',$('checker').checked);};
+  document.addEventListener('keydown',event=>{
+    if(['SELECT','INPUT','BUTTON'].includes(document.activeElement.tagName))return;
+    if(event.code==='Space'){event.preventDefault();$('play').click();}
+    if(event.key==='ArrowRight'||event.key==='ArrowLeft'){
+      event.preventDefault();playing=false;const clip=clips[$('clip').value];
+      index=(index+(event.key==='ArrowRight'?1:-1)+clip.frames)%clip.frames;
+      elapsed=index/clip.fps;draw();
+    }
+  });
+  function tick(now){
+    const delta=last?Math.min(.1,(now-last)/1000):0;last=now;
+    if(playing){elapsed+=delta*+$('speed').value;const clip=clips[$('clip').value];
+      index=$('loop').checked?Math.floor(elapsed*clip.fps)%clip.frames:Math.min(clip.frames-1,Math.floor(elapsed*clip.fps));draw();}
+    requestAnimationFrame(tick);
+  }
+  draw();requestAnimationFrame(tick);
+</script>
+</html>

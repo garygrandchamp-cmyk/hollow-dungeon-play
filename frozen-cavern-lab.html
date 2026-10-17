@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hollow — Frozen Cavern Tile Lab</title>
+<style>
+:root{color-scheme:dark;font:14px/1.5 "Courier New",monospace;color:#c3ccca;background:#080c10}*{box-sizing:border-box}body{margin:0}header{padding:18px 24px;border-bottom:3px double #53636a;background:#10171c}h1{font-size:21px;letter-spacing:3px;margin:0;color:#d0dad7}header p{color:#8d9fa5;margin:5px 0 0}main{display:grid;grid-template-columns:290px 1fr;height:calc(100vh - 100px);min-height:560px}aside{overflow:auto;padding:20px;border-right:3px double #53636a;background:#11181e}label{display:block;margin-bottom:14px}select,input,button{font:inherit;color:#d2d9d2;background:#1c262d;border:1px solid #64737a;padding:8px;width:100%;border-radius:0}select,input{margin-top:5px}button{cursor:pointer;box-shadow:inset 1px 1px #89969a,inset -2px -2px #030608}button:hover{background:#2a3841}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #bbd8d9;outline-offset:2px}label.check{display:flex;gap:9px;align-items:center}input[type=checkbox]{width:auto;margin:0;accent-color:#89a7b0}#stage{position:relative;min-height:560px;overflow:hidden;background:#080c10}canvas{display:block;width:100%;height:100%;image-rendering:pixelated;touch-action:none}#hud{position:absolute;bottom:18px;left:18px;right:18px;padding:10px 12px;pointer-events:none;background:#0b1119e8;border:1px solid #546269;color:#a6b9c1}#hud strong{color:#d7ded5}#status{margin-top:18px;color:#9fb0b5}small{color:#899aa2;display:block;margin-top:7px}.legend{margin-top:20px;border-top:1px solid #3e4e57;padding-top:15px;color:#9facb1}.legend b{color:#c7d4d5}a{color:#adc5cd}.buttons{display:grid;gap:8px;margin-bottom:16px}#message{color:#d1bc93;min-height:22px;margin-top:10px}@media(max-width:720px){main{grid-template-columns:1fr;height:auto}aside{border-right:0;border-bottom:3px double #53636a}#stage{height:65vh;min-height:400px}header{padding:15px}aside{padding:15px}}
+</style>
+<header><h1>HOLLOW / FROZEN CAVERN</h1><p>Original dark fantasy tiles • 4.8 m modules • 64 texels per metre</p></header>
+<main><aside aria-label="Frozen cavern controls">
+<label>Build size<select id="layout" aria-label="Build size"><option value="tile">One modular tile</option><option value="room" selected>Large cavern / 3 × 3 tiles</option></select></label>
+<label>Tile recipe<select id="preset" aria-label="Tile recipe"><option value="chamber">Sheltered cavern</option><option value="crossroads">Open chamber</option><option value="doorway">Carved ice arch</option><option value="canal" selected>Frozen canal crossing</option><option value="bend">Canal bend / no bridge</option></select></label>
+<label>Floor material<select id="variant" aria-label="Floor material"><option value="ice">Fractured ice</option><option value="rock">Exposed slate</option><option value="snow">Dirty packed snow</option></select></label>
+<label>Seed<input id="seed" value="hollow-deep-winter" maxlength="80" spellcheck="false"></label>
+<div class="buttons"><button id="regenerate">Regenerate from seed</button><button id="newSeed">New cavern seed</button><button id="view">Enter first-person preview</button></div>
+<label class="check"><input type="checkbox" id="decor" checked> Icicles & solid crystal clusters</label>
+<label class="check"><input type="checkbox" id="scale" checked> Show 1.7 m scale marker</label>
+<label class="check"><input type="checkbox" id="ceiling" checked> Ceiling in first-person</label>
+<div id="status" role="status"></div><div id="message" role="status"></div>
+<div class="legend"><b>Orbit:</b> drag to turn, wheel to zoom.<br><b>First-person:</b> click the scene, WASD to walk, drag to look. Esc returns to orbit.<br><br><b>Canals:</b> dark frozen water is not walkable. Cross on the broad supported stone-and-ice deck. No bridge is invented for a bend.<br><br><b>Socket order:</b> north / east / south / west.<small>0 = sealed rock, 1 = passage, 2 = canal. The support and blocker queries come from the actual geometry recipe.</small></div>
+</aside><section id="stage" aria-label="Interactive frozen cavern preview"><div id="hud"></div></section></main>
+<script type="module">
+import * as THREE from './vendor/three.module.js';
+import {createFrozenCavernTheme,frozenCanStand,FROZEN_PRESETS,FROZEN_CAVERN} from './frozen-cavern.js';
+const $=id=>document.getElementById(id),stage=$('stage'),renderer=new THREE.WebGLRenderer({antialias:false});renderer.setPixelRatio(1);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;stage.prepend(renderer.domElement);
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x080c10);scene.fog=new THREE.FogExp2(0x080c10,.035);
+const camera=new THREE.PerspectiveCamera(60,1,.06,90);scene.add(new THREE.HemisphereLight(0x93aab1,0x22201e,1.15));const moon=new THREE.DirectionalLight(0xb1c4ce,2);moon.position.set(-4,9,5);scene.add(moon);const warm=new THREE.PointLight(0xb58b58,19,14,2);warm.position.set(3,2.7,3);scene.add(warm);const playerLamp=new THREE.PointLight(0xc4d0c7,8,6,1.7);scene.add(playerLamp);
+let theme,world,tiles=[],marker,walking=false,yaw=0,pitch=0,orbitYaw=.62,orbitPitch=.62,distance=19,drag=null,last=performance.now(),generation=0;const keys=new Set(),position=new THREE.Vector3(0,1.7,0);
+function stand(x,z){return frozenCanStand(tiles.map(tile=>({tile,x:tile.root.position.x,z:tile.root.position.z})),x,z,.22);}
+function rebuild(){
+ keys.clear();if(world)scene.remove(world);theme?.dispose();theme=createFrozenCavernTheme(THREE,{seed:$('seed').value});world=new THREE.Group();scene.add(world);tiles=[];
+ const recipe=FROZEN_PRESETS[$('preset').value],size=$('layout').value==='room'?3:1;
+ for(let z=0;z<size;z++)for(let x=0;x<size;x++){
+  let sockets=[...recipe.sockets],doorway=!!recipe.doorway;
+  if(size===3){sockets=[z===0?0:1,x===2?0:1,z===2?0:1,x===0?0:1];doorway=false;
+   if($('preset').value==='crossroads'){if(z===0&&x===1)sockets[0]=1;if(x===2&&z===1)sockets[1]=1;if(z===2&&x===1)sockets[2]=1;if(x===0&&z===1)sockets[3]=1;}
+   if($('preset').value==='canal'&&x===1){sockets[0]=z===0?0:2;sockets[2]=z===2?0:2;} // Canal terminates in sealed basins at the outer wall.
+   if($('preset').value==='bend'&&z===1&&x>=1){sockets=x===1?[2,2,1,1]:[1,0,1,2];if(x===1)sockets[0]=2;}
+   if($('preset').value==='bend'&&z===0&&x===1)sockets=[0,1,2,1];
+   if(z===2&&x===1&&$ ('preset').value==='doorway'){sockets[2]=1;doorway=true;}
+  }
+  const ox=(x-(size-1)/2)*4.8,oz=(z-(size-1)/2)*4.8,t=theme.buildTile({sockets,variant:$('variant').value,doorway,doorwayDirection:doorway&&size===3?2:null,decor:$('decor').checked,ceiling:walking&&$('ceiling').checked,seed:`${x}:${z}`,uvOrigin:[ox,oz]});t.root.position.set(ox,0,oz);tiles.push(t);world.add(t.root);
+ }
+ // A deliberately plain, dimensioned volume: it is a scale ruler, not a new character sprite.
+ marker=new THREE.Group();const mat=new THREE.MeshBasicMaterial({color:0xb8b5a0,wireframe:true}),geo=new THREE.BoxGeometry(.45,1.7,.32),body=new THREE.Mesh(geo,mat);body.position.y=.85;marker.add(body);marker.position.set(-1.05,0,0);world.add(marker);marker.visible=$('scale').checked&&!walking;world.userData.scaleGeometry=geo;world.userData.scaleMaterial=mat;
+ distance=size===3?20:9;position.set(0,1.7,0);if(!stand(0,0))position.x=-1.05;if(walking)yaw=-Math.max(0,recipe.sockets.findIndex(s=>s===1))*Math.PI/2;
+ const draws=tiles.reduce((n,t)=>n+t.root.children.length,0),count=tiles.reduce((n,t)=>n+t.blockers.filter(b=>b.role==='crystal').length,0);
+ $('status').textContent=`${tiles.length} module${tiles.length===1?'':'s'} · ${draws} batched meshes · ${count} solid crystal clusters`;
+ $('hud').innerHTML=`<strong>${recipe.name} / ${$('variant').selectedOptions[0].textContent}</strong><br>${(size*4.8).toFixed(1)} × ${(size*4.8).toFixed(1)} m · ${FROZEN_CAVERN.wallHeight} m walls · 64 texels/m · ${walking?'WASD walk / drag to look':'Drag to orbit / wheel to zoom'}${!walking&&$('scale').checked?' · wire marker = 1.7 m':''}<span id="coordinates"></span>`;
+ $('message').textContent='';generation++;
+}
+// Marker resources belong to the lab, theme geometry/materials to its factory.
+const rebuildScene=()=>{world?.userData.scaleGeometry?.dispose();world?.userData.scaleMaterial?.dispose();rebuild();};
+for(const id of ['layout','preset','variant','decor','ceiling'])$(id).addEventListener('change',rebuildScene);$('scale').addEventListener('change',()=>marker.visible=$('scale').checked&&!walking);$('regenerate').onclick=rebuildScene;$('newSeed').onclick=()=>{$('seed').value='hollow-winter-'+Math.floor(Math.random()*1000000);rebuildScene();};
+function setWalking(value){walking=value;keys.clear();yaw=0;pitch=0;$('view').textContent=value?'Return to overhead / orbit':'Enter first-person preview';rebuildScene();renderer.domElement.focus();}
+$('view').onclick=()=>setWalking(!walking);renderer.domElement.tabIndex=0;renderer.domElement.setAttribute('aria-label','Frozen cavern 3D view');
+renderer.domElement.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY};renderer.domElement.setPointerCapture(e.pointerId);renderer.domElement.focus();});renderer.domElement.addEventListener('pointerup',()=>drag=null);renderer.domElement.addEventListener('pointercancel',()=>drag=null);
+renderer.domElement.addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag={x:e.clientX,y:e.clientY};if(walking){yaw-=dx*.006;pitch=THREE.MathUtils.clamp(pitch-dy*.006,-1.15,1.15);}else{orbitYaw-=dx*.008;orbitPitch=THREE.MathUtils.clamp(orbitPitch+dy*.006,.12,1.35);}});
+renderer.domElement.addEventListener('wheel',e=>{if(!walking){e.preventDefault();distance=THREE.MathUtils.clamp(distance+e.deltaY*.012,4,38);}},{passive:false});
+window.addEventListener('keydown',e=>{if(e.code==='Escape'&&walking){setWalking(false);return;}if(document.activeElement!==renderer.domElement)return;if(['KeyW','KeyA','KeyS','KeyD'].includes(e.code)){keys.add(e.code);e.preventDefault();}});window.addEventListener('keyup',e=>keys.delete(e.code),true);window.addEventListener('blur',()=>keys.clear());document.addEventListener('visibilitychange',()=>{if(document.hidden)keys.clear();});renderer.domElement.addEventListener('blur',()=>keys.clear());
+function resize(){const r=stage.getBoundingClientRect(),scale=2;renderer.setSize(Math.max(1,Math.floor(r.width/scale)),Math.max(1,Math.floor(r.height/scale)),false);camera.aspect=r.width/r.height;camera.updateProjectionMatrix();}new ResizeObserver(resize).observe(stage);
+rebuild();resize();function frame(now){requestAnimationFrame(frame);const dt=Math.min(.04,(now-last)/1000);last=now;
+ if(walking){let f=Number(keys.has('KeyW'))-Number(keys.has('KeyS')),s=Number(keys.has('KeyD'))-Number(keys.has('KeyA')),l=Math.hypot(f,s)||1;const dx=(-Math.sin(yaw)*f+Math.cos(yaw)*s)/l*dt*2.2,dz=(-Math.cos(yaw)*f-Math.sin(yaw)*s)/l*dt*2.2;
+  if(stand(position.x+dx,position.z))position.x+=dx;if(stand(position.x,position.z+dz))position.z+=dz;camera.position.copy(position);camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0,'YXZ');playerLamp.position.copy(position);$('message').textContent=f||s?'Walking uses the same floor, wall and crystal bounds as the tile.':'';$('coordinates').textContent=` · X ${position.x.toFixed(2)} / Z ${position.z.toFixed(2)} m`;
+ }else{camera.position.set(Math.sin(orbitYaw)*Math.cos(orbitPitch)*distance,Math.sin(orbitPitch)*distance,Math.cos(orbitYaw)*Math.cos(orbitPitch)*distance);camera.lookAt(0,.7,0);playerLamp.position.set(0,2,0);}
+ renderer.render(scene,camera);
+}requestAnimationFrame(frame);
+window.addEventListener('pagehide',()=>{world?.userData.scaleGeometry?.dispose();world?.userData.scaleMaterial?.dispose();theme.dispose();renderer.dispose();},{once:true});
+</script>
+</html>

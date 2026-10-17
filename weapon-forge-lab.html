@@ -1,0 +1,19 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pixel weapon forge</title>
+<style>:root{font:15px/1.5 system-ui;color-scheme:dark;background:#181b20;color:#d7d7c8}body{max-width:900px;margin:25px auto;padding:15px}h1{margin:0}p{color:#a8b09d}main{display:grid;grid-template-columns:260px 1fr;gap:25px}label{display:block;margin:0 0 12px}select,input,button{font:inherit;padding:7px;background:#30372f;color:#e0e1d3;border:1px solid #59634d;border-radius:5px}select,input{display:block;width:100%;box-sizing:border-box}button{cursor:pointer}canvas{width:384px;height:384px;image-rendering:pixelated;background:repeating-conic-gradient(#292c31 0 25%,#34383d 0 50%) 0/20px 20px}section{overflow:auto}pre{white-space:pre-wrap;color:#b9c9a5}small{display:block;color:#b9bea8}@media(max-width:650px){main{grid-template-columns:1fr}canvas{width:288px;height:288px}}</style>
+<h1>Pixel weapon forge</h1><p>Interchange heads and grips, recolor materials, and inspect elemental details.</p><main><aside>
+<label>Class preset<select id="preset"><option value="">Custom</option></select></label><label>Family<select id="kind"></select></label><label>Blade / head / body<select id="blade"></select></label><label>Guard / grip / rim<select id="base"></select></label><label>Element<select id="theme"></select></label><label>Seed<input id="seed" value="crypt-001"></label><label>Custom pigment<input type="color" id="color" value="#8c9ca6"></label><label><input style="display:inline;width:auto" type="checkbox" id="custom">Use custom pigment</label><label>Shield view<select id="view"><option value="inventory">Outward / inventory</option><option value="firstPerson">Inside / first person</option></select></label><button id="shuffle">New seed</button> <button id="save">Save PNG</button></aside>
+<section><canvas id="preview" width="96" height="96" aria-label="Generated weapon sprite"></canvas><pre id="info"></pre><small>32 part combinations per family before themes. Inventory shields show their front; first-person shields show their straps, grip and rear arm.</small></section></main>
+<script type="module">
+import{generateWeapon,WEAPON_CATALOG,WEAPON_THEMES,CLASS_WEAPON_DEFAULTS}from'./weapon-forge.js';
+const $=id=>document.getElementById(id),ctx=$('preview').getContext('2d');let recipe;
+const fill=(id,items)=>{$(id).replaceChildren(...items.map(v=>{const o=document.createElement('option');o.value=o.textContent=v;return o;}));};
+fill('kind',Object.keys(WEAPON_CATALOG));fill('theme',WEAPON_THEMES);
+for(const name of Object.keys(CLASS_WEAPON_DEFAULTS)){const option=document.createElement('option');option.value=option.textContent=name;$('preset').append(option);}
+function parts(){const c=WEAPON_CATALOG[$('kind').value];fill('blade',c.blades);fill('base',c.bases);}
+function draw(){recipe=generateWeapon({kind:$('kind').value,blade:$('blade').value,base:$('base').value,theme:$('theme').value,seed:$('seed').value,color:$('custom').checked?$('color').value:undefined,shieldView:$('view').value});ctx.imageSmoothingEnabled=false;ctx.putImageData(new ImageData(new Uint8ClampedArray(recipe.pixels),96,96),0,0);$('info').textContent=recipe.name+'\n'+recipe.description+'\n\n'+JSON.stringify(recipe.stats,null,2)+'\n\n'+recipe.id;}
+$('kind').onchange=()=>{parts();draw();};$('preset').onchange=()=>{const p=CLASS_WEAPON_DEFAULTS[$('preset').value];if(!p)return;$('kind').value=p.kind;parts();$('blade').value=p.blade;$('base').value=p.base;$('theme').value=p.theme;draw();};
+for(const id of['blade','base','theme','seed','color','custom','view'])$(id).oninput=draw;
+$('shuffle').onclick=()=>{$('seed').value='forge-'+Date.now().toString(36);draw();};
+$('save').onclick=()=>{const a=document.createElement('a');a.href=$('preview').toDataURL('image/png');a.download=recipe.id+'.png';a.click();};
+parts();draw();
+</script></html>
