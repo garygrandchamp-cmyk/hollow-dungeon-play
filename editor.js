@@ -1,10 +1,10 @@
-import {applySightDamagePreset} from './wall-damage.js?v=1908281481c3818581fa62f1b68e946e615fba61';
-import {addWindowTracery} from './gothic-details.js?v=1908281481c3818581fa62f1b68e946e615fba61';
-import {batchStaticGroup} from './mesh-batch.js?v=1908281481c3818581fa62f1b68e946e615fba61';
-import {buildWallGeometry,wallBodyBlocked} from './wall-mesh.js?v=1908281481c3818581fa62f1b68e946e615fba61';
-import {addArchedDoors,doorBlocksBody} from './arched-doors.js?v=1908281481c3818581fa62f1b68e946e615fba61';
-import {buildWallVines} from './vines.js?v=1908281481c3818581fa62f1b68e946e615fba61';
-import {defaults,normalize,wallRecipe,traversable,breached} from './wall-model.js?v=1908281481c3818581fa62f1b68e946e615fba61';
+import {applySightDamagePreset} from './wall-damage.js?v=b8b6cbf7a249f190b877d02f83550c5a29daf9e3';
+import {addWindowTracery} from './gothic-details.js?v=b8b6cbf7a249f190b877d02f83550c5a29daf9e3';
+import {batchStaticGroup} from './mesh-batch.js?v=b8b6cbf7a249f190b877d02f83550c5a29daf9e3';
+import {buildWallGeometry,wallBodyBlocked} from './wall-mesh.js?v=b8b6cbf7a249f190b877d02f83550c5a29daf9e3';
+import {addArchedDoors,doorBlocksBody} from './arched-doors.js?v=b8b6cbf7a249f190b877d02f83550c5a29daf9e3';
+import {buildWallVines} from './vines.js?v=b8b6cbf7a249f190b877d02f83550c5a29daf9e3';
+import {defaults,normalize,wallRecipe,traversable,breached} from './wall-model.js?v=b8b6cbf7a249f190b877d02f83550c5a29daf9e3';
 const editorDefaults={...defaults,masonry:'dressed',vineStyle:'ivy',detail:'plain'};
 function validateEditorBuild(saved,requireSnapshot=false){
  if(!saved||![1,2].includes(saved.version))throw Error('No saved build found.');

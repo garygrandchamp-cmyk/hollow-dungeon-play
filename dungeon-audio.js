@@ -1,4 +1,4 @@
-import {createDungeonSampleBank} from './audio-samples.js?v=1908281481c3818581fa62f1b68e946e615fba61';
+import {createDungeonSampleBank} from './audio-samples.js?v=b8b6cbf7a249f190b877d02f83550c5a29daf9e3';
 // Local CC0 recordings with procedural fallback. Audio starts on a gesture.
 export function createDungeonAudio(){
  let samples=null,context=null,master=null,ambience=null,music=null,enabled=false,volume=.35,lastStep=0,nextDrip=0,nextNote=0,noteIndex=0,noise=null,eventBus=null;
@@ -52,7 +52,9 @@ export function createDungeonAudio(){
  function playWindup(name){
   // Telegraphs have their own identity/cooldown rather than reusing awareness.
   // Short, quiet preparations fit inside each attack's existing warning window.
-  if(name==='rat-windup'){tone(175,.11,.017,'triangle',0,112);hiss(.045,.012,1250,0,'bandpass');tone(215,.07,.011,'triangle',.12,150);}
+  if(name==='skeleton-windup'){hiss(.22,.018,1350,0,'bandpass');tone(310,.16,.017,'triangle',0,225);tone(455,.11,.011,'triangle',.18,320);}
+  else if(name==='goblin-windup'){hiss(.17,.018,570,0,'bandpass');tone(142,.16,.02,'triangle',0,98);tone(205,.09,.011,'triangle',.1,145);}
+  else if(name==='rat-windup'){tone(175,.11,.017,'triangle',0,112);hiss(.045,.012,1250,0,'bandpass');tone(215,.07,.011,'triangle',.12,150);}
   else if(name==='crawler-windup'){hiss(.36,.024,850,0,'bandpass');tone(185,.18,.016,'triangle',0,110);tone(245,.12,.012,'triangle',.2,170);}
   else if(name==='drowned-windup'){tone(62,.5,.027,'triangle',0,82);hiss(.48,.023,380);tone(128,.18,.013,'triangle',.32,96);}
   else return false;

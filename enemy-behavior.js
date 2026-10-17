@@ -1,6 +1,8 @@
 // Small deterministic host state machines. Timers use simulation dt, never wall
 // clock deadlines, so menus, rebuilding and guest rendering cannot finish a hit.
 export const ENEMY_BEHAVIORS=Object.freeze({
+ skeleton:Object.freeze({name:'measured strike',trigger:1.4,reach:1.55,windup:.75,recovery:1.65,damage:8,arc:Math.PI*.58,radius:.28}),
+ goblin:Object.freeze({name:'quick stab',trigger:1.35,reach:1.5,windup:.45,recovery:.95,damage:8,arc:Math.PI*.48,radius:.25}),
  rat:Object.freeze({name:'skirmisher',trigger:1.05,reach:1.12,windup:.45,recovery:1.65,damage:5,arc:Math.PI*.7,retreat:.65,retreatSpeed:2.4,radius:.18}),
  drowned:Object.freeze({name:'heavy sweep',trigger:2.15,reach:2.2,windup:1.1,recovery:2.35,damage:16,arc:Math.PI*.58,radius:.34}),
  crawler:Object.freeze({name:'committed lunge',trigger:3,reach:.94,windup:.8,lunge:.45,lungeSpeed:5.2,recovery:1.9,damage:8,arc:Math.PI*.34,radius:.26}),
@@ -18,7 +20,7 @@ export function parseEnemyIntent(value,type){
  if(value.phase==='lunge'&&type!=='crawler'||Math.hypot(value.aim.x-value.origin.x,value.aim.z-value.origin.z)>4||Math.abs(value.aim.y-value.origin.y)>.5)throw TypeError('Invalid enemy attack path.');
  return serializeEnemyIntent(value);
 }
-export function interruptEnemyIntent(enemy){const p=ENEMY_BEHAVIORS[enemy.type],intent=enemy.intent;if(!p||!intent)return;intent.phase='recover';intent.remaining=Math.max(.55,p.recovery*.5);intent.hit=true;}
+export function interruptEnemyIntent(enemy){const p=ENEMY_BEHAVIORS[enemy.type],intent=enemy.intent;if(!p||!intent||!['windup','lunge'].includes(intent.phase))return;intent.phase='recover';intent.remaining=Math.max(.55,p.recovery*.5);intent.hit=true;}
 const gap=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z);
 // Shared by movement and its floor warning; the captured aim never follows a dodge.
 export const enemyLungeTravel=intent=>Math.max(0,Math.min(2.35,gap(intent.origin,intent.aim)-.38));

@@ -5,6 +5,7 @@ const point=id=>{const [floor,index]=String(id).split(':').map(Number);return {f
 // Movement arrival and route advancement must agree; a wider movement stop
 // radius leaves a permanent dead zone before the route cursor can advance.
 const ARRIVAL_RADIUS=.55;
+const CAST_RANGE=Object.freeze({min:3,preferred:4.5,max:6.5}),BOW_RANGE=Object.freeze({min:3.5,preferred:5,max:7.5});
 
 export function findBotPath(start,goal,neighbors,limit=1024){
   if(start===goal)return [start];
@@ -50,10 +51,18 @@ export function findBotWalkPath(start,goal,canStand,{step=.6,margin=1.8,limit=19
 // query (including capsule/support/edge/prop checks), returning a boolean. It
 // enables cached local detours and reachable centre alternatives;
 // every resulting move still goes through the ordinary movement adapter.
+// Optional adapter.combatRange(bot,enemy): {min,preferred,max} metres, bounded
+// to .5..14 and ordered, or null for melee. Undefined uses class defaults.
+// The attack callback still owns visibility, reach, cooldown and resource costs.
 export function createLocalAutoplay(adapter){
   let mode='manual',paused=false,humanId='hero-1',route=[],cursor=0,signature='',prepared='',think=0,dmTime=0;
   let inputs={},botIds=[],status='Manual party';const cooldowns=new Map(),steering=new Map(),paths=new Map();let pathClock=0;
-  const waypoints=new Map(),walkPaths=new Map();
+  const waypoints=new Map(),walkPaths=new Map(),combatGoals=new Map();
+  function combatRange(bot,enemy){
+    let range;try{range=adapter.combatRange?.(bot,enemy);}catch{return null;}
+    if(range===undefined){const hand=bot.offhand??bot.leftHand??bot.equipment?.offhand?.id;range=['mage','warlock'].includes(bot.classId)&&bot.mana>=20&&(hand===undefined||hand==='magic')?CAST_RANGE:bot.classId==='archer'?BOW_RANGE:null;}
+    return range&&[range.min,range.preferred,range.max].every(Number.isFinite)&&range.min>=.5&&range.max<=14&&range.min<=range.preferred&&range.preferred<=range.max?range:null;
+  }
   const navigates=()=>typeof adapter.canTraverse==='function'||typeof adapter.canStand==='function';
   const traverse=(bot,a,b)=>{try{return adapter.canTraverse(bot,a,b)===true;}catch{return false;}};
   const stand=(bot,p)=>{if(typeof adapter.canTraverse==='function')return traverse(bot,p,p);try{return adapter.canStand(bot,p)===true;}catch{return false;}};
@@ -77,8 +86,8 @@ export function createLocalAutoplay(adapter){
     if(cached?.key!==key||pathClock>=cached.until){const route=findBotWalkPath({x:bot.position.x,y:bot.position.y??0,z:bot.position.z},target,p=>stand(bot,p),{canTraverse:typeof adapter.canTraverse==='function'?(a,b)=>traverse(bot,a,b):undefined});cached={key,route,cursor:1,until:pathClock+(route?1:.5)};walkPaths.set(bot.id,cached);}
     if(!cached.route)return null;while(cached.cursor<cached.route.length-1&&distance(bot.position,cached.route[cached.cursor])<.18)cached.cursor++;return cached.route[cached.cursor];
   }
-  function setMode(value){if(!LOCAL_TEST_MODES.includes(value))throw RangeError('Unknown local test mode');mode=value;paused=false;route=[];cursor=0;signature='';prepared='';inputs={};cooldowns.clear();dmTime=0;}
-  function resetRoute(path=[]){route=path.map(point);cursor=0;inputs={};cooldowns.clear();steering.clear();paths.clear();waypoints.clear();walkPaths.clear();pathClock=0;dmTime=0;think=0;}
+  function setMode(value){if(!LOCAL_TEST_MODES.includes(value))throw RangeError('Unknown local test mode');mode=value;paused=false;route=[];cursor=0;signature='';prepared='';inputs={};cooldowns.clear();combatGoals.clear();dmTime=0;}
+  function resetRoute(path=[]){route=path.map(point);cursor=0;inputs={};cooldowns.clear();steering.clear();paths.clear();waypoints.clear();walkPaths.clear();combatGoals.clear();pathClock=0;dmTime=0;think=0;}
   function tick(dt){
     const s=adapter.state();dt=Number.isFinite(dt)?Math.min(.1,Math.max(0,dt)):0;
     inputs={};botIds=[];pathClock+=dt;
@@ -112,13 +121,30 @@ export function createLocalAutoplay(adapter){
     for(const bot of bots){
       const ready=(cooldowns.get(bot.id)??0)<=0;
       const enemy=adapter.enemy?.(bot);
+      const range=enemy?combatRange(bot,enemy):null;
       let goal=follow?{floor:s.floor,index:follow.index}:destination;
       if(bot!==leader&&!follow&&distance(bot.position,leader.position)>1.3)goal={floor:s.floor,index:leader.index};
       if(enemy){
         adapter.face(bot,enemy.position);
-        if(ready&&decide&&adapter.attack?.(bot,enemy)){cooldowns.set(bot.id,.85);continue;}
+        const gap=distance(bot.position,enemy.position);
+        if(ready&&decide&&enemy.visible!==false&&(!range||gap<=range.max)&&adapter.attack?.(bot,enemy)){cooldowns.set(bot.id,.85);continue;}
+        if(range&&enemy.visible!==false){
+          const key=s.floor+':'+(enemy.id??enemy.index)+':'+Math.round(enemy.position.x*2)+':'+Math.round(enemy.position.z*2)+':'+range.preferred,cached=combatGoals.get(bot.id);
+          const retreat=gap<range.min||cached?.key===key&&gap<range.preferred-.25;
+          if(retreat){
+            let target=cached?.key===key&&pathClock<cached.until?cached.target:null;
+            if(!target){const dx=bot.position.x-enemy.position.x,dz=bot.position.z-enemy.position.z,length=Math.hypot(dx,dz);target={x:enemy.position.x+(length?dx/length:1)*range.preferred,y:bot.position.y??0,z:enemy.position.z+(length?dz/length:0)*range.preferred};combatGoals.set(bot.id,{key,target,until:pathClock+.6});}
+            const aim=walkAim(bot,target,s.floor);if(!aim){blocked=true;continue;}
+            // Keep facing the threat while backing/side-stepping along the same
+            // sampled physical detours used for ordinary route navigation.
+            if(gap<.001)adapter.face(bot,{x:enemy.position.x-1,y:enemy.position.y??0,z:enemy.position.z});
+            const dx=aim.x-bot.position.x,dz=aim.z-bot.position.z,length=Math.hypot(dx,dz),towardX=gap<.001?-1:(enemy.position.x-bot.position.x)/gap,towardZ=gap<.001?0:(enemy.position.z-bot.position.z)/gap,speed=Math.min(1,length/.5),denominator=Math.max(.001,length);
+            inputs[bot.id]={forward:speed*(dx*towardX+dz*towardZ)/denominator,side:speed*(-dx*towardZ+dz*towardX)/denominator};continue;
+          }
+          combatGoals.delete(bot.id);if(gap<=range.max)continue;
+        }else combatGoals.delete(bot.id);
         if(enemy.distance>1.5)goal={floor:s.floor,index:enemy.index};else continue;
-      }
+      }else combatGoals.delete(bot.id);
       if(!goal)continue;
       if(goal.floor!==s.floor){
         const stairs=adapter.stairs();goal={floor:s.floor,index:stairs};
@@ -142,7 +168,7 @@ export function createLocalAutoplay(adapter){
       }
       // Human companions stop nearby instead of constantly pushing the player.
       if(follow&&!enemy&&distance(bot.position,follow.position)<1.6)continue;
-      let targetPoint=waypoint(bot,next,s.floor)?.position;if(enemy&&next===bot.index){const gap=distance(bot.position,enemy.position),fraction=Math.max(0,gap-1.4)/Math.max(.001,gap);targetPoint={x:bot.position.x+(enemy.position.x-bot.position.x)*fraction,y:bot.position.y??0,z:bot.position.z+(enemy.position.z-bot.position.z)*fraction};}
+      let targetPoint=waypoint(bot,next,s.floor)?.position;if(enemy&&next===bot.index){const gap=distance(bot.position,enemy.position),fraction=Math.max(0,gap-(range?.preferred??1.4))/Math.max(.001,gap);targetPoint={x:bot.position.x+(enemy.position.x-bot.position.x)*fraction,y:bot.position.y??0,z:bot.position.z+(enemy.position.z-bot.position.z)*fraction};}
       const aim=targetPoint&&walkAim(bot,targetPoint,s.floor);if(!aim){blocked=true;continue;}adapter.face(bot,aim);
       const previous=steering.get(bot.id),stuck=previous&&distance(previous,bot.position)<.002?previous.stuck+dt:0;
       steering.set(bot.id,{x:bot.position.x,z:bot.position.z,stuck});

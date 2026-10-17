@@ -1,4 +1,4 @@
-export const ACTION_COSTS=Object.freeze({attack:4,cast:6,guard:3,search:8,disarm:7,door:2,walk:0,run:0});
+export const ACTION_COSTS=Object.freeze({attack:0,cast:0,guard:0,search:8,disarm:7,door:2,walk:0,run:0});
 export function createActionBudget({actor={stamina:100,maxStamina:100,fainted:false},random=Math.random,onResult=()=>{}}={}){
  function attempt(kind,{dc,modifier=0,silent=false}={}){
   if(!Object.hasOwn(ACTION_COSTS,kind))throw RangeError('Unknown action');
@@ -12,7 +12,7 @@ export function createActionBudget({actor={stamina:100,maxStamina:100,fainted:fa
 }
 
 export function createAdventureActions({notify=()=>{},sound=()=>{}}={}){
- const hud=document.createElement('div');hud.id='staminaHud';hud.innerHTML='<span>STAMINA <b>100 / 100</b></span><small>Strike 4 · Cast 6 · Search 8 · Disarm 7</small>';document.body.appendChild(hud);
+ const hud=document.createElement('div');hud.id='staminaHud';hud.innerHTML='<span>STAMINA <b>100 / 100</b></span><small>Combat free · Spells use mana · Search 8 · Disarm 7</small>';document.body.appendChild(hud);
  const dice=document.createElement('div');dice.id='actionDice';dice.setAttribute('role','status');dice.hidden=true;document.body.appendChild(dice);
  const style=document.createElement('style');style.textContent='#staminaHud{display:none;position:fixed;left:12px;bottom:95px;background:#171b24;border:3px double #807357;padding:7px 10px;color:#a8b68c;z-index:50;font:11px monospace}body.first-person #staminaHud{display:block}#staminaHud small{display:block;font-size:9px;color:#96998b;margin-top:3px}#staminaHud.exhausted{color:#c17d65}#actionDice{position:fixed;left:50%;top:34%;transform:translate(-50%,-50%);padding:12px 20px;background:#141820;border:4px double #a28a60;color:#d2c7a9;font:13px monospace;z-index:140;text-align:center;pointer-events:none}#actionDice strong{display:block;font-size:38px;color:#d0b173}#actionDice small{display:block;margin-top:6px}.dice-pulse{animation:dice-settle .3s steps(4)}@keyframes dice-settle{from{transform:translate(-50%,-50%) scale(.8) rotate(-10deg)}to{transform:translate(-50%,-50%) scale(1)}}';document.head.appendChild(style);
  let hideTimer,rollTimer;

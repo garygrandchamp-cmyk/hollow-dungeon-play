@@ -1,7 +1,8 @@
-import {createDMEntranceOverlay} from './dm-entrance-overlay.js?v=1908281481c3818581fa62f1b68e946e615fba61';
-import {CLASSES} from './party-campaign.js?v=1908281481c3818581fa62f1b68e946e615fba61';
-import {createHeldInput} from './held-input.js?v=1908281481c3818581fa62f1b68e946e615fba61';
-import {MONSTER_KINDS} from './monster-sprites.js?v=1908281481c3818581fa62f1b68e946e615fba61';
+import {combatTiming} from './combat-timing.js?v=b8b6cbf7a249f190b877d02f83550c5a29daf9e3';
+import {createDMEntranceOverlay} from './dm-entrance-overlay.js?v=b8b6cbf7a249f190b877d02f83550c5a29daf9e3';
+import {CLASSES} from './party-campaign.js?v=b8b6cbf7a249f190b877d02f83550c5a29daf9e3';
+import {createHeldInput} from './held-input.js?v=b8b6cbf7a249f190b877d02f83550c5a29daf9e3';
+import {MONSTER_KINDS} from './monster-sprites.js?v=b8b6cbf7a249f190b877d02f83550c5a29daf9e3';
 
 const HERO_IDS = ['hero-1', 'hero-2', 'hero-3'];
 const MOVEMENT = new Set(['w', 'a', 's', 'd', 'arrowup', 'arrowleft', 'arrowdown', 'arrowright']);
@@ -88,9 +89,12 @@ export function createPartyView(options = {}) {
   function emit(a, kind) {
     if (!playable(a) || typeof onAction !== 'function') return false;
     try {
+      const r = records.get(a.id),offense=kind==='attack'||kind==='guard'&&hand(a)==='magic';
+      if(remoteId()&&r&&(offense||kind==='guard')&&now<(r.recoveryUntil??-Infinity))return false;
+      if(remoteId()&&kind==='attack'&&(a.guarding||[...guards.values()].includes(a.id)))return false;
       const accepted = onAction(a, kind); accepted?.catch?.(report);
       if (accepted === false) return false;
-      const r = records.get(a.id);
+      if(remoteId()&&r&&offense)r.recoveryUntil=now+combatTiming(kind==='attack'?world().weaponKinds?.[a.id]??CLASSES[a.classId]?.defaultWeapon:'magic').recoveryMs;
       if (r && kind === 'attack') r.attackUntil = now + 280;
       if (r && kind === 'guard' && hand(a) === 'magic') r.castUntil = now + 380;
       return true;
