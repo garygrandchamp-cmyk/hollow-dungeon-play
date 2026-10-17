@@ -2,6 +2,6 @@
 
 [Play Hollow](https://garygrandchamp-cmyk.github.io/hollow-dungeon-play/)
 
-Generated from private development revision 3f0ffbf381cf1b61530dcf3d344db19a8e832b7d.
+Generated from private development revision f4bcc730badf79307b1957673289498c327a4214.
 This repository contains only the public browser game and assets.
 Publish updates from the development repository with npm run publish:play.

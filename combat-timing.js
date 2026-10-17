@@ -26,3 +26,14 @@ export function combatTiming(kind){
  const key=typeof kind==='string'?kind.trim().toLowerCase():'';
  return Object.hasOwn(catalog,key)?catalog[key]:sword;
 }
+
+/** A raised shield covers a 120-degree horizontal arc in front of its owner.
+ * Unknown/overlapping origins cannot establish a block direction. */
+export function shieldCovers({guarding,position,yaw,forward,source}={}){
+ if(!guarding||![position?.x,position?.z,source?.x,source?.z].every(Number.isFinite))return false;
+ const dx=source.x-position.x,dz=source.z-position.z,length=Math.hypot(dx,dz);
+ if(length<.05)return false;
+ let fx,fz;if(Number.isFinite(yaw)){fx=-Math.sin(yaw);fz=-Math.cos(yaw);}else{fx=forward?.x;fz=forward?.z;}
+ if(![fx,fz].every(Number.isFinite))return false;const heading=Math.hypot(fx,fz);if(heading<.001)return false;
+ return (dx*fx+dz*fz)/(length*heading)>=.5-1e-9;
+}

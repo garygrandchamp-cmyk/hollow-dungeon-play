@@ -1,5 +1,5 @@
-import {solve,DIRS,tiles,random} from './wfc.js?v=3f0ffbf381cf1b61530dcf3d344db19a8e832b7d';
-import {roomContainsTile,roomCells as enumerateRoomCells,roomPerimeter,roomCenterTile,makeRoomFootprint,ROOM_SHAPES} from './room-footprint.js?v=3f0ffbf381cf1b61530dcf3d344db19a8e832b7d';
+import {solve,DIRS,tiles,random} from './wfc.js?v=f4bcc730badf79307b1957673289498c327a4214';
+import {roomContainsTile,roomCells as enumerateRoomCells,roomPerimeter,roomCenterTile,makeRoomFootprint,ROOM_SHAPES} from './room-footprint.js?v=f4bcc730badf79307b1957673289498c327a4214';
 function legacyPlan(size,scale='mixed'){
  const main=Math.min(size-5,scale==='intimate'?3:scale==='grand'?8:Math.max(3,Math.min(6,Math.floor(size*.38)))),entry=Math.max(3,Math.min(scale==='grand'?5:scale==='intimate'?3:4,size-main-3));
  const rooms=[{x:1,z:1,w:entry,h:entry,name:'Entry hall'},{x:size-main-1,z:size-main-1,w:main,h:main,name:'Grand reliquary'}],pins=new Map(),doors=[],route=[];
