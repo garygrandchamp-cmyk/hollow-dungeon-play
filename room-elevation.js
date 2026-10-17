@@ -1,4 +1,4 @@
-import {batchStaticGroup} from './mesh-batch.js';
+import {batchStaticGroup} from './mesh-batch.js?v=f414c9209e497cfc5d04552110a70457733840b0';
 
 /** Two central tile cells in each axis are lowered. Four stepped ring sides
  * stay inside those tiles, so existing room doors/perimeter remain at0m.

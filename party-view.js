@@ -1,6 +1,6 @@
-import {CLASSES} from './party-campaign.js';
-import {createHeldInput} from './held-input.js';
-import {MONSTER_KINDS} from './monster-sprites.js';
+import {CLASSES} from './party-campaign.js?v=f414c9209e497cfc5d04552110a70457733840b0';
+import {createHeldInput} from './held-input.js?v=f414c9209e497cfc5d04552110a70457733840b0';
+import {MONSTER_KINDS} from './monster-sprites.js?v=f414c9209e497cfc5d04552110a70457733840b0';
 
 const HERO_IDS = ['hero-1', 'hero-2', 'hero-3'];
 const MOVEMENT = new Set(['w', 'a', 's', 'd', 'arrowup', 'arrowleft', 'arrowdown', 'arrowright']);

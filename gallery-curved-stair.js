@@ -1,4 +1,4 @@
-import { batchStaticGroup } from './mesh-batch.js';
+import { batchStaticGroup } from './mesh-batch.js?v=f414c9209e497cfc5d04552110a70457733840b0';
 
 const HALF_PI = Math.PI / 2;
 const finite = (value, fallback) => Number.isFinite(value) ? value : fallback;

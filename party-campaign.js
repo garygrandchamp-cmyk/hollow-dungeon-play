@@ -1,4 +1,4 @@
-import {WEAPON_CATALOG} from './weapon-forge.js';
+import {WEAPON_CATALOG} from './weapon-forge.js?v=f414c9209e497cfc5d04552110a70457733840b0';
 export const CAMPAIGN_STORAGE_KEY = 'hollow:party-campaign:v1';
 export const INVENTORY_LIMIT = 16;
 const MAX_GOLD = 1_000_000_000, MAX_OBJECTIVES = 1024;
