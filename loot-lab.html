@@ -7,10 +7,10 @@ body{background:#10100f;color:#d0c4ac;font:14px monospace;max-width:1100px;margi
 <section><h2>CURSED EQUIPMENT</h2><p>Power comes with a cost. These three test items use the real inventory and stat rules. Nothing here changes your saved adventurers.</p><button id="curseInventory">Inspect and try cursed gear</button><p class="info" id="curseRules"></p><output id="curseState"></output></section>
 <p><a href="./">Back to dungeon</a> · <a href="assets/loot/atlas.json">Atlas layout metadata</a></p>
 <script type="module">
-import {drawLootIcon,ARMOR_ART_TYPES,composeLootArt} from './loot-art.js?v=6f522cb686c558f4c908d1aec66f280bb4b8a20c';
-import {WEAPON_CATALOG} from './weapon-forge.js?v=6f522cb686c558f4c908d1aec66f280bb4b8a20c';
-import {curseDescription} from './cursed-equipment.js?v=6f522cb686c558f4c908d1aec66f280bb4b8a20c';
-import {createInventory,generateInventoryLoot} from './adventurer-inventory.js?v=6f522cb686c558f4c908d1aec66f280bb4b8a20c';
+import {drawLootIcon,ARMOR_ART_TYPES,composeLootArt} from './loot-art.js?v=b7b8538579c745f26bca5629102f407c3b7f1f39';
+import {WEAPON_CATALOG} from './weapon-forge.js?v=b7b8538579c745f26bca5629102f407c3b7f1f39';
+import {curseDescription} from './cursed-equipment.js?v=b7b8538579c745f26bca5629102f407c3b7f1f39';
+import {createInventory,generateInventoryLoot} from './adventurer-inventory.js?v=b7b8538579c745f26bca5629102f407c3b7f1f39';
 const $=id=>document.getElementById(id);let serial=1,epoch=0;
 function fill(select,values){select.replaceChildren(...values.map(v=>{const o=document.createElement('option');o.value=o.textContent=v;return o;}));}
 fill($('family'),ARMOR_ART_TYPES);

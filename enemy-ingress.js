@@ -1,8 +1,8 @@
 // Pure entrance planning and host-owned reinforcement queue. Static-host safe:
 // no THREE, DOM, clocks, storage, network, asset imports, or implicit spawning.
-import {roomContainsTile} from './room-footprint.js?v=6f522cb686c558f4c908d1aec66f280bb4b8a20c';
+import {roomContainsTile} from './room-footprint.js?v=b7b8538579c745f26bca5629102f407c3b7f1f39';
 export const ENEMY_INGRESS_KINDS=Object.freeze(['hatch','grate','ceiling']);
-export const ENEMY_INGRESS_MONSTERS=Object.freeze(['skeleton','goblin','wraith','spider','slime','rat','bat','crawler','skeletal-mage','drowned','listener','boss']);
+export const ENEMY_INGRESS_MONSTERS=Object.freeze(['ceiling-widow','skeleton','goblin','wraith','spider','slime','rat','bat','crawler','skeletal-mage','drowned','listener','boss']);
 export const ENEMY_INGRESS_WARNING_SECONDS=Object.freeze({hatch:1.8,grate:1.8,ceiling:2});
 export const ENEMY_INGRESS_LIMITS=Object.freeze({entrances:64,pending:16,recentRequests:256,generated:6,blockedSeconds:6});
 const DIRS=[[0,-1],[1,0],[0,1],[-1,0]];
@@ -124,7 +124,7 @@ export function validateEnemyIngressSnapshot(value,context={}){
  const ids=new Set(),entrances=new Set(),recent=new Set(value.recentRequestIds),pending=[];
  for(const r of value.pending){
   if(!object(r)||!identifier(r.id)||ids.has(r.id)||!recent.has(r.id)||!identifier(r.entranceId)||entrances.has(r.entranceId)||!ENEMY_INGRESS_MONSTERS.includes(r.monsterType)||!['warning','blocked'].includes(r.phase)||!finite(r.remaining,2)||r.remaining<0)return fail();
-  const entrance=shapeEntrance(r.entrance,{floor:value.floor,size:context.size});if(!entrance||r.entranceId!==entrance.id||r.floor!==entrance.floor||r.type!==r.monsterType||r.warningSeconds!==ENEMY_INGRESS_WARNING_SECONDS[entrance.kind]||r.duration!==r.warningSeconds||r.remaining>r.warningSeconds||!finite(r.progress,1)||Math.abs(r.progress-(1-r.remaining/r.warningSeconds))>1e-7||!finite(r.blockedFor,ENEMY_INGRESS_LIMITS.blockedSeconds)||r.blockedFor<0||r.phase==='warning'&&r.blockedFor!==0||r.phase==='blocked'&&r.remaining!==0)return fail();
+  const entrance=shapeEntrance(r.entrance,{floor:value.floor,size:context.size});if(!entrance||r.monsterType==='ceiling-widow'&&entrance.kind!=='ceiling'||r.entranceId!==entrance.id||r.floor!==entrance.floor||r.type!==r.monsterType||r.warningSeconds!==ENEMY_INGRESS_WARNING_SECONDS[entrance.kind]||r.duration!==r.warningSeconds||r.remaining>r.warningSeconds||!finite(r.progress,1)||Math.abs(r.progress-(1-r.remaining/r.warningSeconds))>1e-7||!finite(r.blockedFor,ENEMY_INGRESS_LIMITS.blockedSeconds)||r.blockedFor<0||r.phase==='warning'&&r.blockedFor!==0||r.phase==='blocked'&&r.remaining!==0)return fail();
   if(context.entrances!==undefined){if(!Array.isArray(context.entrances)||context.entrances.length>ENEMY_INGRESS_LIMITS.entrances)return fail();const known=context.entrances.find(e=>e.id===entrance.id);if(!known||!shapeEntrance(known,{floor:value.floor,size:context.size})||!sameEntrance(entrance,known))return fail();}
   ids.add(r.id);entrances.add(r.entranceId);pending.push(plainRecord({...r,entrance}));
  }
@@ -170,6 +170,7 @@ export function createEnemyIngress({state,spawn,canAfford,spend,notify=()=>{},so
   if(pending.size>=ENEMY_INGRESS_LIMITS.pending)return reject('capacity','Too many pending reinforcements.');
   inCallback=true;
   try{
+   if(monsterType==='ceiling-widow'&&entrance.kind!=='ceiling')return reject('entrance','Ceiling Widows require a ceiling opening.');
    if(!open(s,entrance,monsterType))return reject('blocked','The entrance exit is blocked.');
    const id=value.requestId??'ingress-request:'+String(++serial);if(recent.has(id))return reject('duplicate','That reinforcement request was already accepted.');
    const warningSeconds=ENEMY_INGRESS_WARNING_SECONDS[entrance.kind],record={id,entranceId:entrance.id,monsterType,entrance,phase:'warning',remaining:warningSeconds,warningSeconds,blockedFor:0,retry:0};

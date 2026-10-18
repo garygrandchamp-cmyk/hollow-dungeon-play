@@ -3,8 +3,8 @@
 <style>body{background:#10100f;color:#d2c6ae;font:15px monospace;max-width:850px;margin:30px auto;padding:20px}h1{color:#bca477}button{background:#29251e;border:2px outset #70624d;color:#d4cbb9;padding:12px;font:inherit;cursor:pointer}button:disabled{opacity:.5}#cues{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:9px;margin:24px 0}details{border:1px solid #645743;padding:15px}label{display:block;margin:12px 0}a{color:#bea57a}#soundQuick{position:fixed;right:20px;top:20px}#status{white-space:pre-line;line-height:1.7}</style></head>
 <body><h1>HOLLOW / SOUND LAB</h1><p>Local CC0 recordings with procedural fallback. Enable sound to load the mapped effects, then click a cue to audition it. No dungeon or saved loot is changed.</p><aside></aside><p id="status" aria-live="polite">Sound disabled.</p><div id="cues"></div><p><a href="assets/audio/CREDITS.md">Pack credits and sources</a> · <a href="./">Back to dungeon</a></p>
 <script type="module">
-import {createDungeonAudio} from './dungeon-audio.js?v=6f522cb686c558f4c908d1aec66f280bb4b8a20c';
-import {SAMPLE_CUES} from './audio-samples.js?v=6f522cb686c558f4c908d1aec66f280bb4b8a20c';
+import {createDungeonAudio} from './dungeon-audio.js?v=b7b8538579c745f26bca5629102f407c3b7f1f39';
+import {SAMPLE_CUES} from './audio-samples.js?v=b7b8538579c745f26bca5629102f407c3b7f1f39';
 const audio=createDungeonAudio(),buttons=[];
 for(const name of [...Object.keys(SAMPLE_CUES),'dice-roll-start','dice-success','dice-failure','drip']){const button=document.createElement('button');button.textContent=name;button.onclick=()=>audio.play(name,{pan:0});document.getElementById('cues').appendChild(button);buttons.push(button);}
 setInterval(()=>{const s=audio.sampleStatus;document.getElementById('status').textContent=audio.enabled?`${s.ready}/${s.total} recordings decoded · ${s.failed} unavailable\n${s.active} active sample voices · All playback stays on the master volume bus.`:'Sound disabled.';buttons.forEach(b=>b.disabled=!audio.enabled);},200);

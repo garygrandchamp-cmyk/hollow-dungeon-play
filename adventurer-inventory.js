@@ -1,7 +1,7 @@
-import {EQUIPMENT_CURSES,compatibleCurse,curseEffects,curseDescription} from './cursed-equipment.js?v=6f522cb686c558f4c908d1aec66f280bb4b8a20c';
-import {random} from './wfc.js?v=6f522cb686c558f4c908d1aec66f280bb4b8a20c';
-import {CLASSES} from './party-campaign.js?v=6f522cb686c558f4c908d1aec66f280bb4b8a20c';
-import {WEAPON_CATALOG} from './weapon-forge.js?v=6f522cb686c558f4c908d1aec66f280bb4b8a20c';
+import {EQUIPMENT_CURSES,compatibleCurse,curseEffects,curseDescription} from './cursed-equipment.js?v=b7b8538579c745f26bca5629102f407c3b7f1f39';
+import {random} from './wfc.js?v=b7b8538579c745f26bca5629102f407c3b7f1f39';
+import {CLASSES} from './party-campaign.js?v=b7b8538579c745f26bca5629102f407c3b7f1f39';
+import {WEAPON_CATALOG} from './weapon-forge.js?v=b7b8538579c745f26bca5629102f407c3b7f1f39';
 
 export const INVENTORY_STORAGE_KEY = 'hollow:adventurer-inventory:v1';
 export const GEAR_SLOTS = Object.freeze(['helm', 'chest', 'arms', 'legs', 'weapon', 'offhand']);
@@ -111,7 +111,7 @@ function restore(payload) {
  * actor.equipment, health or class maxima. Host supplies baseStats when needed,
  * consumes stats() for combat/max HP, and bridges campaign carry explicitly.
  * The fallback solo actor is used only when getActor is not provided. */
-export function createInventoryModel({getActor, storage} = {}) {
+export function createInventoryModel({getActor, storage, canChangeGear=()=>true} = {}) {
   if (getActor !== undefined && typeof getActor !== 'function') throw new TypeError('getActor must be a function.');
   const solo = {id: 'solo-hero', name: 'Adventurer', classId: 'adventurer', health: 100, maxHealth: 100, alive: true};
   let records = new Map(), persistenceError = null;
@@ -166,13 +166,13 @@ export function createInventoryModel({getActor, storage} = {}) {
   }
   function equip(id) {
     const a = actor(), r = record(), item = r?.items.find(item => item.id === id);
-    if (!a || a.alive === false || !item) return false;
+    if (!a || a.alive === false || !item || canChangeGear(a)!==true) return false;
     if (r.equipped[item.slot] === id) return true;
     r.equipped[item.slot] = id; changed(); return true;
   }
   function unequip(slot) {
     const a = actor(), r = record();
-    if (!a || a.alive === false || !r || !GEAR_SLOTS.includes(slot) || !r.equipped[slot]) return false;
+    if (!a || a.alive === false || canChangeGear(a)!==true || !r || !GEAR_SLOTS.includes(slot) || !r.equipped[slot]) return false;
     r.equipped[slot] = null; changed(); return true;
   }
   function reset({keepLoot = false} = {}) {
@@ -222,7 +222,7 @@ export function createInventory(options = {}) {
   let opened = false, destroyed = false, renderedKey = '', render = () => {}, element = null, launcher = null, staminaLabel = null, keydown = null, unsubscribe = () => {};
   const viewKey = () => {const a = api.actor; return JSON.stringify([a?.id, a?.name, a?.classId, a?.alive, api.stats()]);};
   function close() {if (destroyed) return; opened = false; if (element) {if (element.open && element.close) element.close(); element.hidden = true;} launcher?.setAttribute('aria-expanded', 'false');}
-  function open() {if (destroyed) return false; opened = true; render(); if (element) {element.hidden = false; if (!element.open) element.showModal?.();} launcher?.setAttribute('aria-expanded', 'true'); return true;}
+  function open() {if (destroyed || options.canOpen&&options.canOpen(api.actor)!==true) return false; opened = true; render(); if (element) {element.hidden = false; if (!element.open) element.showModal?.();} launcher?.setAttribute('aria-expanded', 'true'); return true;}
   function toggle() {if (opened) close(); else open(); return opened;}
   if (options.ui !== false && document?.createElement && document.body && document.head) {
     inventoryStyle(document);

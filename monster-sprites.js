@@ -1,6 +1,6 @@
-import { decodeListenerAtlas } from './listener-atlas-data.js?v=6f522cb686c558f4c908d1aec66f280bb4b8a20c';
-import { decodeMonsterAtlas } from './monster-atlas-data.js?v=6f522cb686c558f4c908d1aec66f280bb4b8a20c';
-import { makeEnemySprite } from './enemy-sprites.js?v=6f522cb686c558f4c908d1aec66f280bb4b8a20c';
+import { decodeListenerAtlas } from './listener-atlas-data.js?v=b7b8538579c745f26bca5629102f407c3b7f1f39';
+import { decodeMonsterAtlas } from './monster-atlas-data.js?v=b7b8538579c745f26bca5629102f407c3b7f1f39';
+import { makeEnemySprite } from './enemy-sprites.js?v=b7b8538579c745f26bca5629102f407c3b7f1f39';
 
 export const MONSTER_SPRITE_CLIPS = Object.freeze({
   idle: { row: 0, frames: 4, fps: 4, loop: true },
@@ -14,6 +14,7 @@ export const MONSTER_CATALOG = Object.freeze({
   skeleton: {name:'Skeleton',height:1.7,hp:2,speed:1.1,damage:8},
   goblin: {name:'Crypt goblin',height:1.7,hp:3,speed:1.6,damage:8},
   wraith: {name:'Wraith',height:1.9,hp:4,speed:1.4,damage:11},
+  'ceiling-widow': {name:'Ceiling Widow',height:.85,hp:4,speed:0,damage:0,hover:2.8},
   spider: {name:'Giant spider',height:.85,hp:3,speed:2,damage:7},
   slime: {name:'Sewer slime',height:.75,hp:5,speed:.65,damage:6},
   rat: {name:'Giant rat',height:.4,hp:2,speed:2.1,damage:5},
@@ -31,7 +32,7 @@ function acquire(THREE, kind) {
   if (!cache) { cache = new Map(); caches.set(THREE, cache); }
   let entry = cache.get(kind);
   if (!entry) {
-    const { data, width, height, standingPixels } = kind==='listener'?decodeListenerAtlas():decodeMonsterAtlas(kind);
+    const { data, width, height, standingPixels } = kind==='listener'?decodeListenerAtlas():decodeMonsterAtlas(kind==='ceiling-widow'?'spider':kind);
     // Explicit bottom-up rows avoid relying on browser unpack-flip behavior
     // for typed-array textures. The packed PNG/data decoder uses top-down rows.
     const bottomUp = new Uint8Array(data.length), stride = width * 4;
@@ -66,7 +67,7 @@ function acquire(THREE, kind) {
  */
 export function makeMonsterSprite(THREE, { kind = 'wraith', height, seed = 0 } = {}) {
   if (kind === 'skeleton' || kind === 'goblin') return makeEnemySprite(THREE, { kind, height: height ?? 1.7, seed });
-  kind = ['wraith','spider','slime','rat','bat','crawler','skeletal-mage','drowned','listener'].includes(kind) ? kind : 'wraith';
+  kind = ['ceiling-widow','wraith','spider','slime','rat','bat','crawler','skeletal-mage','drowned','listener'].includes(kind) ? kind : 'wraith';
   height = height ?? MONSTER_CATALOG[kind].height;
   height = Number.isFinite(height) ? Math.max(0.1, Math.min(8, height)) : 1.7;
   const root = new THREE.Group();
@@ -83,6 +84,7 @@ export function makeMonsterSprite(THREE, { kind = 'wraith', height, seed = 0 } =
   geometry.translate(0, planeHeight * (120 / 128 - 0.5), 0);
   const mesh = new THREE.Mesh(geometry, material);
   mesh.name = 'enemy-sprite-cutout';
+  if(kind==='ceiling-widow'){mesh.rotation.z=Math.PI;mesh.position.y=height;}
   mesh.userData.ownGeometry = true;
   mesh.castShadow = false;
   mesh.receiveShadow = false;

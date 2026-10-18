@@ -2,8 +2,8 @@
 <style>body{background:#090b10;color:#d8d0bb;font:15px monospace;padding:32px}button{background:#232a34;border:3px ridge #8d7958;color:#e0cfaa;padding:14px;font:inherit;margin:8px}main{max-width:700px;margin:auto}output{display:block;line-height:2}</style>
 <main><h1>Search interaction lab</h1><p>Uses the game's real search screen and action budget. These test containers and items do not affect a dungeon save.</p><button id="success">Search chest · success fixture</button><button id="failure">Search cabinet · failure fixture</button><button id="empty">Search empty drawer</button><output id="items">Test inventory: empty</output><output id="stamina">Stamina: 100</output></main>
 <script type="module">
-import {createContainerSearch} from './container-search.js?v=6f522cb686c558f4c908d1aec66f280bb4b8a20c';
-import {createActionBudget} from './adventure-actions.js?v=6f522cb686c558f4c908d1aec66f280bb4b8a20c';
+import {createContainerSearch} from './container-search.js?v=b7b8538579c745f26bca5629102f407c3b7f1f39';
+import {createActionBudget} from './adventure-actions.js?v=b7b8538579c745f26bca5629102f407c3b7f1f39';
 let face=17;const items=[],actor={stamina:100,maxStamina:100,alive:true};
 const actions=createActionBudget({actor,random:()=>(face-.5)/20,onResult:r=>document.querySelector('#stamina').textContent='Stamina: '+r.remaining});
 const panel=createContainerSearch({actions,makeLoot:id=>id==='empty'?[]:[{id:id+'-blade',kind:'sword',name:'Frostbitten iron sword',slot:'weapon',theme:'ice',rarity:'rare',stats:{melee:8}},{id:id+'-gold',kind:'gold',amount:37}],grantLoot:item=>{items.push(item.name);refresh();return true;},grantGold:n=>{items.push(n+' gold');refresh();}});

@@ -1,4 +1,4 @@
-import {validateDungeon} from './progression-validator.js?v=6f522cb686c558f4c908d1aec66f280bb4b8a20c';
+import {validateDungeon} from './progression-validator.js?v=b7b8538579c745f26bca5629102f407c3b7f1f39';
 const dirs=[[0,-1],[1,0],[0,1],[-1,0]];
 /** Snapshot the navigation recipe, not scene meshes or enemy positions. */
 export function dungeonProgression({levels,size,tiles,locks=[],edgeAt=()=>null,extraKeys=[],blockedCells=[[],[]]}={}){
@@ -8,7 +8,8 @@ export function dungeonProgression({levels,size,tiles,locks=[],edgeAt=()=>null,e
   const level=levels[floor],grid=level.result.grid;
   for(let i=0;i<grid.length;i++)if(!blockedCells[floor]?.includes(i)&&tiles[grid[i]]&&!tiles[grid[i]].s.every(s=>s===0))nodeIds.add(nodeId(floor,i));
  }
- for(const [key,l]of lockByEdge)doors.push({id:key,kind:l.kind==='silver'?'silver':'named',keyId:l.kind,open:!!l.unlocked});
+ // Runtime unlocks spend one matching token for named seals as well as silver.
+ for(const [key,l]of lockByEdge)doors.push({id:key,kind:l.kind==='silver'?'silver':'named',keyId:l.kind,consumable:true,open:!!l.unlocked});
  for(let floor=0;floor<levels.length;floor++){
   const level=levels[floor],grid=level.result.grid,arch=level.result.architecture;
   for(let i=0;i<grid.length;i++){

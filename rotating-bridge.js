@@ -1,6 +1,6 @@
-import {roomContainsTile} from './room-footprint.js?v=6f522cb686c558f4c908d1aec66f280bb4b8a20c';
-import {dungeonProgression} from './dungeon-progression.js?v=6f522cb686c558f4c908d1aec66f280bb4b8a20c';
-import {validateDungeon} from './progression-validator.js?v=6f522cb686c558f4c908d1aec66f280bb4b8a20c';
+import {roomContainsTile} from './room-footprint.js?v=b7b8538579c745f26bca5629102f407c3b7f1f39';
+import {dungeonProgression} from './dungeon-progression.js?v=b7b8538579c745f26bca5629102f407c3b7f1f39';
+import {validateDungeon} from './progression-validator.js?v=b7b8538579c745f26bca5629102f407c3b7f1f39';
 
 export const BRIDGE_TURN_SECONDS=2.4;
 export const BRIDGE_DM_COST=8;
@@ -54,12 +54,27 @@ export function validateBridgeSnapshot(value,seed,plans){
 /** Prove key-before-lock progression with the entire court removed, then make
  * sure no living hero or crank lies outside that permanent connected route. */
 export function validateBridgeRoutes({plans,actors=[],floor=0,...options}){
- const graph=dungeonProgression({...options,blockedCells:plans.map(p=>p?.cells??[])}),proof=validateDungeon(graph);if(!proof.valid)return proof;
+ const graph=dungeonProgression({...options,blockedCells:plans.map(p=>p?.cells??[])});
  const byId=new Map(graph.nodes.map(n=>[n.id,n])),seen=new Set([graph.start]),queue=[graph.start];
  for(let k=0;k<queue.length;k++)for(const edge of byId.get(queue[k])?.neighbors??[])if(!seen.has(edge.to)){seen.add(edge.to);queue.push(edge.to);}
  for(const actor of actors.filter(living))if(!seen.has(floor+':'+actor.index))return {valid:false,reason:'a living adventurer has no dry route back.'};
  for(const [f,p]of plans.entries())if(p?.controls.some(c=>!seen.has(f+':'+c.index)))return {valid:false,reason:'a bank crank is cut off.'};
- return proof;
+ // A completed relic route leaves its paid doors permanently open. Controls
+ // reachable through those doors can be visited from the exit without spending
+ // another key. Only the remaining locations need extra search goals, avoiding
+ // an exponential set of independent control-visit bits on ordinary layouts.
+ const locations=[...new Set([...actors.filter(living).map(a=>floor+':'+a.index),...plans.flatMap((p,f)=>(p?.controls??[]).map(c=>f+':'+c.index))])],requiredObjectives=new Set(graph.requiredObjectives);
+ for(let attempt=0;attempt<=locations.length;attempt++){
+  const proof=validateDungeon({...graph,requiredObjectives:[...requiredObjectives]});if(!proof.valid)return proof;
+  const opened=new Set(graph.doors.filter(d=>d.open||d.kind==='free').map(d=>d.id));for(const action of proof.actions)if(action.type==='unlock')opened.add(action.doorId);
+  const reachable=new Set([graph.start]),pending=[graph.start];
+  for(let k=0;k<pending.length;k++)for(const edge of byId.get(pending[k])?.neighbors??[])if((edge.doorId===undefined||opened.has(edge.doorId))&&!reachable.has(edge.to)){reachable.add(edge.to);pending.push(edge.to);}
+  const reverse=new Map(graph.nodes.map(n=>[n.id,[]]));for(const node of graph.nodes)for(const edge of node.neighbors)if(edge.doorId===undefined||opened.has(edge.doorId))reverse.get(edge.to)?.push(node.id);
+  const returns=new Set([graph.start]),back=[graph.start];for(let k=0;k<back.length;k++)for(const id of reverse.get(back[k])??[])if(!returns.has(id)){returns.add(id);back.push(id);}
+  const missing=locations.filter(id=>!reachable.has(id)||!returns.has(id));if(!missing.length)return proof;
+  for(const id of missing)requiredObjectives.add(id);
+ }
+ return {valid:false,reason:'a bank control or living adventurer has no key-safe dry route back.'};
 }
 export function createRotatingBridge({state,notify=()=>{},charge=()=>false,spendDM=()=>false,checkRoutes=()=>({valid:false}),sweepClear=()=>false,sound=()=>{}}={}){
  let seed='',floors=[fresh(),fresh()];
