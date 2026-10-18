@@ -1,6 +1,6 @@
-import { decodeListenerAtlas } from './listener-atlas-data.js?v=9cd9b6e86f47bfdd3f9c26579aa4d1f076ab67a6';
-import { decodeMonsterAtlas } from './monster-atlas-data.js?v=9cd9b6e86f47bfdd3f9c26579aa4d1f076ab67a6';
-import { makeEnemySprite } from './enemy-sprites.js?v=9cd9b6e86f47bfdd3f9c26579aa4d1f076ab67a6';
+import { decodeListenerAtlas } from './listener-atlas-data.js?v=b23c6bd9298aecfc45e3134840a59c28c03c1dce';
+import { decodeMonsterAtlas } from './monster-atlas-data.js?v=b23c6bd9298aecfc45e3134840a59c28c03c1dce';
+import { makeEnemySprite } from './enemy-sprites.js?v=b23c6bd9298aecfc45e3134840a59c28c03c1dce';
 
 export const MONSTER_SPRITE_CLIPS = Object.freeze({
   idle: { row: 0, frames: 4, fps: 4, loop: true },
@@ -74,6 +74,7 @@ export function makeMonsterSprite(THREE, { kind = 'wraith', height, seed = 0 } =
   const billboard = new THREE.Group();
   billboard.name = 'enemy-billboard';
   root.add(billboard);
+  const hover=(MONSTER_CATALOG[kind].hover??0)*height/MONSTER_CATALOG[kind].height;billboard.position.y=hover;
   const { map, release, standingPixels } = acquire(THREE, kind);
   const material = new THREE.MeshBasicMaterial({ map, alphaTest: 0.5, transparent: false,
     depthTest: true, depthWrite: true, fog: true, side: THREE.DoubleSide, toneMapped: false });
@@ -140,6 +141,7 @@ export function makeMonsterSprite(THREE, { kind = 'wraith', height, seed = 0 } =
     if (clip.loop) index = (index + (state === 'idle' ? idlePhase : 0)) % clip.frames;
     else if (index >= clip.frames && state !== 'death') { setAnimation(moving ? 'walk' : 'idle', time); index = 0; }
     frame(state, index);
+    if(hover)billboard.position.y=state==='death'?hover*Math.max(0,1-(time-started)/.5):hover;
     if (camera) faceCamera(camera);
   };
   root.userData.disposeMaterials = () => {

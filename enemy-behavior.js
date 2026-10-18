@@ -1,6 +1,7 @@
 // Small deterministic host state machines. Timers use simulation dt, never wall
 // clock deadlines, so menus, rebuilding and guest rendering cannot finish a hit.
 export const ENEMY_BEHAVIORS=Object.freeze({
+ bat:Object.freeze({name:'diving pass',trigger:3,reach:.85,windup:.65,lunge:.55,lungeSpeed:6.2,maxTravel:3.4,overrun:.8,recovery:1.7,retreat:.7,retreatSpeed:2.5,peel:true,damage:5,punish:1.35,arc:Math.PI*.38,radius:.18}),
  slime:Object.freeze({name:'swelling burst',trigger:2.35,reach:2.4,windup:1.3,recovery:2.6,damage:10,punish:1.65,arc:Math.PI*2,radius:.38,radial:true}),
  listener:Object.freeze({name:'blind claw sweep',trigger:2,reach:2.05,windup:1.05,recovery:2.1,damage:14,punish:1.6,arc:Math.PI*.5,radius:.3}),
  skeleton:Object.freeze({name:'measured strike',trigger:1.4,reach:1.55,windup:.75,recovery:1.65,damage:8,arc:Math.PI*.58,radius:.28}),
@@ -19,13 +20,13 @@ export function parseEnemyIntent(value,type){
  if(!ENEMY_BEHAVIORS[type]||!value||!['windup','lunge','recover'].includes(value.phase)||!finite(value.remaining,4)||value.remaining<0||!vector(value.origin)||!vector(value.aim)||!identity(value.targetId)||typeof value.hit!=='boolean')throw TypeError('Invalid enemy intent.');
  const profile=ENEMY_BEHAVIORS[type],duration=value.phase==='windup'?profile.windup:value.phase==='lunge'?profile.lunge:profile.recovery;
  if(!duration||value.remaining>duration+1e-8)throw TypeError('Invalid enemy intent duration.');
- if(value.phase==='lunge'&&type!=='crawler'||Math.hypot(value.aim.x-value.origin.x,value.aim.z-value.origin.z)>4||Math.abs(value.aim.y-value.origin.y)>.5)throw TypeError('Invalid enemy attack path.');
+ if(value.phase==='lunge'&&!profile.lunge||Math.hypot(value.aim.x-value.origin.x,value.aim.z-value.origin.z)>4||Math.abs(value.aim.y-value.origin.y)>.5)throw TypeError('Invalid enemy attack path.');
  return serializeEnemyIntent(value);
 }
 export function interruptEnemyIntent(enemy){const p=ENEMY_BEHAVIORS[enemy.type],intent=enemy.intent;if(!p||!intent||!['windup','lunge'].includes(intent.phase))return;intent.phase='recover';intent.remaining=Math.max(.55,p.recovery*.5);intent.hit=true;}
 const gap=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z);
 // Shared by movement and its floor warning; the captured aim never follows a dodge.
-export const enemyLungeTravel=intent=>Math.max(0,Math.min(2.35,gap(intent.origin,intent.aim)-.38));
+export const enemyLungeTravel=(intent,profile={})=>Math.max(0,Math.min(profile.maxTravel??2.35,gap(intent.origin,intent.aim)+(profile.overrun??-.38)));
 function aimDirection(intent){const x=intent.aim.x-intent.origin.x,z=intent.aim.z-intent.origin.z,length=Math.hypot(x,z);return length>.001?{x:x/length,z:z/length}:{x:0,z:-1};}
 function inSwing(intent,position,target,profile){
  if(Math.abs(target.y-position.y)>.45||gap(position,target)>profile.reach)return false;
@@ -44,8 +45,8 @@ export function tickEnemyBehavior(enemy,{dt,position,target,visible,canStrike,ta
   if(intent.phase!=='recover'&&(!target||target.id!==intent.targetId||target.alive===false||target.escaped||target.health===0)){interruptEnemyIntent(enemy);intent=enemy.intent;}
   const direction=aimDirection(intent);
   if(intent.phase==='recover'){
-   // The rat yields a real punish window, backing along its committed heading.
-   if(profile.retreat&&intent.remaining>profile.recovery-profile.retreat)move(-direction.x*profile.retreatSpeed*dt,-direction.z*profile.retreatSpeed*dt);
+   // Rats back off; bats peel sideways from their captured line. Neither homes.
+   if(profile.retreat&&intent.remaining>profile.recovery-profile.retreat){const side=Math.floor(intent.origin.x+intent.origin.z)%2===0?1:-1;move((profile.peel?-direction.z*side:-direction.x)*profile.retreatSpeed*dt,(profile.peel?direction.x*side:-direction.z)*profile.retreatSpeed*dt);}
    intent.remaining=Math.max(0,intent.remaining-dt);if(intent.remaining===0)enemy.intent=null;return true;
   }
   intent.remaining=Math.max(0,intent.remaining-dt);
@@ -61,9 +62,9 @@ export function tickEnemyBehavior(enemy,{dt,position,target,visible,canStrike,ta
    intent.phase='recover';intent.remaining=profile.recovery;return true;
   }
   if(intent.phase==='lunge'){
-   // Aim is captured once. A sidestep never bends the crawler's path after you.
+   // Aim is captured once. A sidestep never bends a charge after the target.
    const traveled=(position.x-intent.origin.x)*direction.x+(position.z-intent.origin.z)*direction.z;
-   const available=Math.max(0,enemyLungeTravel(intent)-traveled),distance=Math.min(available,profile.lungeSpeed*dt);
+   const available=Math.max(0,enemyLungeTravel(intent,profile)-traveled),distance=Math.min(available,profile.lungeSpeed*dt);
    if(distance>0)move(direction.x*distance,direction.z*distance);
    if(!intent.hit&&target&&visible&&(typeof canStrike==='function'?canStrike():canStrike)&&inSwing(intent,position,target.position,profile)){intent.hit=true;strike(profile.damage,intent.targetId);}
    if(intent.remaining===0){intent.phase='recover';intent.remaining=profile.recovery;}return true;

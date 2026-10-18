@@ -10,7 +10,7 @@ function progress(pending,value){
 }
 function getWorker(){
  if(worker)return worker;
- const instance=new Worker(new URL('./generation-worker.js?v=9cd9b6e86f47bfdd3f9c26579aa4d1f076ab67a6',import.meta.url),{type:'module',name:'dungeon-generation'});
+ const instance=new Worker(new URL('./generation-worker.js?v=b23c6bd9298aecfc45e3134840a59c28c03c1dce',import.meta.url),{type:'module',name:'dungeon-generation'});
  worker=instance;
  instance.addEventListener('message',({data})=>{
   if(worker!==instance||!active||data?.requestId!==active.id)return;
@@ -28,7 +28,7 @@ async function fallback(pending,options){
   // Yield before importing/solving so a loading state can paint first. A worker
   // is required for responsiveness during each individual synchronous solve.
   await yieldToPage();if(active!==pending)return;
-  const {normalizeGenerationOptions,solveGenerationFloor}=await import('./generation-worker.js?v=9cd9b6e86f47bfdd3f9c26579aa4d1f076ab67a6');
+  const {normalizeGenerationOptions,solveGenerationFloor}=await import('./generation-worker.js?v=b23c6bd9298aecfc45e3134840a59c28c03c1dce');
   if(active!==pending)return;
   const normalized=normalizeGenerationOptions(options),results=[],start=performance.now();
   for(let floor=0;floor<2;floor++){

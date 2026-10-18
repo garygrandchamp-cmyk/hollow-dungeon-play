@@ -1,4 +1,4 @@
-import {createDungeonSampleBank} from './audio-samples.js?v=9cd9b6e86f47bfdd3f9c26579aa4d1f076ab67a6';
+import {createDungeonSampleBank} from './audio-samples.js?v=b23c6bd9298aecfc45e3134840a59c28c03c1dce';
 // Local CC0 recordings with procedural fallback. Audio starts on a gesture.
 export function createDungeonAudio(){
  let samples=null,context=null,master=null,ambience=null,music=null,enabled=false,volume=.35,lastStep=0,nextDrip=0,nextNote=0,noteIndex=0,noise=null,eventBus=null;
@@ -55,6 +55,7 @@ export function createDungeonAudio(){
   if(name==='skeleton-windup'){hiss(.22,.018,1350,0,'bandpass');tone(310,.16,.017,'triangle',0,225);tone(455,.11,.011,'triangle',.18,320);}
   else if(name==='goblin-windup'){hiss(.17,.018,570,0,'bandpass');tone(142,.16,.02,'triangle',0,98);tone(205,.09,.011,'triangle',.1,145);}
   else if(name==='slime-windup'){for(const delay of [0,.19,.4]){tone(72,.16,.023,'sine',delay,115);hiss(.1,.015,260,delay,'lowpass');}hiss(.26,.018,480,.65,'lowpass');}
+  else if(name==='bat-windup'){hiss(.13,.018,1800,0,'bandpass');hiss(.13,.022,1200,.17,'bandpass');tone(640,.16,.012,'triangle',.31,310);}
   else if(name==='rat-windup'){tone(175,.11,.017,'triangle',0,112);hiss(.045,.012,1250,0,'bandpass');tone(215,.07,.011,'triangle',.12,150);}
   else if(name==='crawler-windup'){hiss(.36,.024,850,0,'bandpass');tone(185,.18,.016,'triangle',0,110);tone(245,.12,.012,'triangle',.2,170);}
   else if(name==='listener-windup'){for(const delay of [0,.13,.26]){hiss(.055,.024,1900,delay,'bandpass');tone(182,.09,.018,'triangle',delay,110);}hiss(.4,.016,420,.3);}
