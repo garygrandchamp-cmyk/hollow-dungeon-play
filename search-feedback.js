@@ -1,4 +1,4 @@
-import {curseDescription} from './cursed-equipment.js?v=0c65da45f24943a5281d437aefafb2de4949edc9';
+import {curseDescription} from './cursed-equipment.js?v=d86935ebe9b35869980631b03fc74da6045ceda8';
 /** Shared wording for local and host-authoritative search rolls. */
 export function searchFeedback({roll,total=roll,dc,success,fainted=false}){
  if(fainted)return `EXHAUSTED — you fainted. Contents remain sealed.`;

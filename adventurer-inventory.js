@@ -1,7 +1,7 @@
-import {EQUIPMENT_CURSES,compatibleCurse,curseEffects,curseDescription} from './cursed-equipment.js?v=0c65da45f24943a5281d437aefafb2de4949edc9';
-import {random} from './wfc.js?v=0c65da45f24943a5281d437aefafb2de4949edc9';
-import {CLASSES} from './party-campaign.js?v=0c65da45f24943a5281d437aefafb2de4949edc9';
-import {WEAPON_CATALOG} from './weapon-forge.js?v=0c65da45f24943a5281d437aefafb2de4949edc9';
+import {EQUIPMENT_CURSES,compatibleCurse,curseEffects,curseDescription} from './cursed-equipment.js?v=d86935ebe9b35869980631b03fc74da6045ceda8';
+import {random} from './wfc.js?v=d86935ebe9b35869980631b03fc74da6045ceda8';
+import {CLASSES} from './party-campaign.js?v=d86935ebe9b35869980631b03fc74da6045ceda8';
+import {WEAPON_CATALOG} from './weapon-forge.js?v=d86935ebe9b35869980631b03fc74da6045ceda8';
 
 export const INVENTORY_STORAGE_KEY = 'hollow:adventurer-inventory:v1';
 export const GEAR_SLOTS = Object.freeze(['helm', 'chest', 'arms', 'legs', 'weapon', 'offhand']);

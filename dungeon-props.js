@@ -1,5 +1,5 @@
-import {makePropSprite} from './prop-sprites.js?v=0c65da45f24943a5281d437aefafb2de4949edc9';
-import {makeSolidProp,SOLID_PROP_KINDS} from './solid-props.js?v=0c65da45f24943a5281d437aefafb2de4949edc9';
+import {makePropSprite} from './prop-sprites.js?v=d86935ebe9b35869980631b03fc74da6045ceda8';
+import {makeSolidProp,SOLID_PROP_KINDS} from './solid-props.js?v=d86935ebe9b35869980631b03fc74da6045ceda8';
 // Furnishings (including the healing shrine/pedestal) have volume; cutouts are
 // reserved for effects and small art. Keep kind names unchanged for interaction.
 export function makeDungeonProp(THREE,options={}){
