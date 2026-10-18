@@ -1,5 +1,5 @@
-import {openingHeightAt,openingTopPoints} from './wall-mesh.js?v=d86935ebe9b35869980631b03fc74da6045ceda8';
-import {batchStaticGroup} from './mesh-batch.js?v=d86935ebe9b35869980631b03fc74da6045ceda8';
+import {openingHeightAt,openingTopPoints} from './wall-mesh.js?v=b91d921906b17f837908fbc4821fb42dd44188f9';
+import {batchStaticGroup} from './mesh-batch.js?v=b91d921906b17f837908fbc4821fb42dd44188f9';
 
 // Root wall X scaling is cancelled for hinges, then baked into leaf widths so
 // doors retain their real width as they rotate rather than squashing in depth.

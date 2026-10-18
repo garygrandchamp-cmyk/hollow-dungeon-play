@@ -1,4 +1,4 @@
-import {enemyLungeTravel} from './enemy-behavior.js?v=d86935ebe9b35869980631b03fc74da6045ceda8';
+import {enemyLungeTravel} from './enemy-behavior.js?v=b91d921906b17f837908fbc4821fb42dd44188f9';
 // Restrained floor outlines. Sweeps keep their arc; a charge gets straight rails.
 export function makeEnemyTelegraph(THREE,profile){
  const geometry=profile.lunge?new THREE.BufferGeometry():new THREE.RingGeometry(Math.max(.1,profile.reach-.055),profile.reach,12,1,Math.PI/2-profile.arc/2,profile.arc);

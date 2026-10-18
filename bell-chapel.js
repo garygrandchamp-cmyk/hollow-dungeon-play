@@ -1,4 +1,4 @@
-import {roomCells,roomContainsTile} from './room-footprint.js?v=d86935ebe9b35869980631b03fc74da6045ceda8';
+import {roomCells,roomContainsTile} from './room-footprint.js?v=b91d921906b17f837908fbc4821fb42dd44188f9';
 export const CHAPEL_ACTIONS=Object.freeze(['chapel-bell','chapel-valve','chapel-winch','chapel-treasury','chapel-bargain','chapel-drop']);
 export const CHAPEL_DM_COSTS=Object.freeze({'chapel-decoy':6,'chapel-rummage':8,'chapel-flood':12,'chapel-ring':8});
 const live=a=>a&&a.alive!==false&&!a.fainted&&!a.escaped&&a.health>0;

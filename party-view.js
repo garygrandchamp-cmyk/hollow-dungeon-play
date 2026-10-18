@@ -1,8 +1,8 @@
-import {combatTiming} from './combat-timing.js?v=d86935ebe9b35869980631b03fc74da6045ceda8';
-import {createDMEntranceOverlay} from './dm-entrance-overlay.js?v=d86935ebe9b35869980631b03fc74da6045ceda8';
-import {CLASSES} from './party-campaign.js?v=d86935ebe9b35869980631b03fc74da6045ceda8';
-import {createHeldInput} from './held-input.js?v=d86935ebe9b35869980631b03fc74da6045ceda8';
-import {MONSTER_KINDS} from './monster-sprites.js?v=d86935ebe9b35869980631b03fc74da6045ceda8';
+import {combatTiming} from './combat-timing.js?v=b91d921906b17f837908fbc4821fb42dd44188f9';
+import {createDMEntranceOverlay} from './dm-entrance-overlay.js?v=b91d921906b17f837908fbc4821fb42dd44188f9';
+import {CLASSES} from './party-campaign.js?v=b91d921906b17f837908fbc4821fb42dd44188f9';
+import {createHeldInput} from './held-input.js?v=b91d921906b17f837908fbc4821fb42dd44188f9';
+import {MONSTER_KINDS} from './monster-sprites.js?v=b91d921906b17f837908fbc4821fb42dd44188f9';
 
 const HERO_IDS = ['hero-1', 'hero-2', 'hero-3'];
 const MOVEMENT = new Set(['w', 'a', 's', 'd', 'arrowup', 'arrowleft', 'arrowdown', 'arrowright']);
@@ -288,16 +288,17 @@ export function createPartyView(options = {}) {
     for (const [kind, capability] of [['summonBoss', 'canSummonBoss'], ['possessBoss', 'canPossessBoss']]) {
       const button = toolbar.querySelector?.('[data-action="' + kind + '"]'); if (!button) continue;
       setUI(button, 'hidden', !!remote||!active);const available = w[capability] === true; setUI(button, 'disabled', !active || busy() || !available || typeof onAction !== 'function');
-      const cost=w.placementCosts?.[kind==='summonBoss'?'monster:boss':'action:possess-boss'];setUI(button,'textContent',(kind==='summonBoss'?'Choose boss':'Possess boss')+(Number.isFinite(cost)?' · '+cost+' STA':''));setUI(button,'title',kind==='summonBoss'?'Select the boss without spending stamina. Choose an entrance, then Send.':'Control an existing emerged boss when the last-resort conditions are met.');
+      const cost=w.placementCosts?.[kind==='summonBoss'?'monster:boss':'action:possess-boss'];setUI(button,'textContent',(kind==='summonBoss'?'Choose boss':'Possess boss')+(Number.isFinite(cost)?' · '+cost+' STA':''));setUI(button,'title',kind==='summonBoss'?(w.bossOptions?.summonReason||'Select without spending. Send through an entrance for 55 STA. Killing an ordinary boss does not end the expedition.'):(w.bossOptions?.possessionReason||'Possess an emerged boss for 35 STA. If this body dies, the adventurers win immediately.'));
     }
+    if(bossHelp){setUI(bossHelp,'hidden',!!remote||!active);setUI(bossHelp,'textContent',w.bossOptions?w.bossOptions.stakes+' '+(w.bossOptions.committed?'':w.bossOptions.possessionReason||'Possession available now · 35 STA · defeat loses the run.'):'Ordinary bosses do not end the expedition when defeated. Possession is a last resort: if the possessed body dies, the adventurers win.');}
     if (result) {
       const ending = ['partyVictory', 'dmVictory'].includes(phase());
-      const key = JSON.stringify([remote, phase(), campaign.runNumber, campaign.actors.map(a => [a.alive, a.escaped, a.gold, a.inventory?.length])]);
+      const key = JSON.stringify([remote, phase(), campaign.state.endReason, campaign.runNumber, campaign.actors.map(a => [a.alive, a.escaped, a.gold, a.inventory?.length])]);
       setUI(result, 'hidden', !enabled || !ending || dismissedResultKey === key);
       if (!ending) dismissedResultKey = '';
       if (ending && key !== resultKey) {
         resultKey = key; result.replaceChildren();
-        result.appendChild(make('h2', phase() === 'partyVictory' ? 'PARTY VICTORY' : 'DM VICTORY'));
+        result.appendChild(make('h2', phase() === 'partyVictory' ? 'PARTY VICTORY' : 'DM VICTORY'));result.appendChild(make('p',phase()==='partyVictory'?(campaign.state.endReason==='bossDefeated'?"The DM's last-resort body was slain. Relic extraction is no longer required.":'The surviving party recovered the relics and escaped.'):'Every adventurer was killed or exhausted.'));
         for (const a of campaign.actors.filter(a => !remote || a.id === remote)) result.appendChild(make('p', `${a.id}: ${a.alive ? 'survived · ' + (a.gold ?? 0) + ' gold / ' + (w.inventoryCounts?.[a.id] ?? a.inventory?.length ?? 0) + ' items carry forward' : 'dead · starts next run empty'}`));
         const next = make('button', remote ? 'Close result' : 'Return to DM setup'); listen(next, 'click', () => {dismissedResultKey = key; setUI(result, 'hidden', true); focus(remoteId() ?? 'dm'); setDMOpen(true);}); result.appendChild(next);
       }
@@ -306,7 +307,7 @@ export function createPartyView(options = {}) {
   function make(tag, text) {const node = document.createElement(tag); if (text !== undefined) node.textContent = text; return node;}
   function button(text, action) {const node = make('button', text); node.type = 'button'; listen(node, 'click', action); return node;}
   function select(values, action) {const node = make('select'); for (const [value, label] of values) {const option = make('option', label); option.value = value; node.appendChild(option);} listen(node, 'change', () => action(node.value)); return node;}
-  let partySetup=null;
+  let partySetup=null,bossHelp=null;
   function tileDescription(tile){return `Floor ${tile.floor ?? '?'} · tile ${tile.column ?? '?'}, ${tile.row ?? '?'} (ID ${tile.index}) · ${tile.contents?.length?tile.contents.join(', '):'No placed objects'}`;}
   function targetTile(position){const w=world();if(typeof w.describeDMTile==='function')return w.describeDMTile(position);const m=w.moduleSize??4.8,size=w.size??16,col=Math.floor(position.x/m+size/2),row=Math.floor(position.z/m+size/2);return col<0||row<0||col>=size||row>=size?null:{index:row*size+col,column:col+1,row:row+1,floor:(w.floor??0)+1,x:(col-(size-1)/2)*m,z:(row-(size-1)/2)*m,height:position.y,moduleSize:m,contents:[]};}
   function entranceAt(tile){return (world().ingressEntrances??[]).find(p=>p.index===tile?.index);}
@@ -327,7 +328,7 @@ export function createPartyView(options = {}) {
     validationLabel = make('span'); toolbar.appendChild(validationLabel); resourceLabel = make('span'); toolbar.appendChild(resourceLabel); hostControls.push(validationLabel, resourceLabel);toolbar.appendChild(soloButton);soloButton.title='Advanced dungeon generation and geometry editor. Available between expeditions.';newDungeonButton.title='Replace both floors with a fresh seed and reset setup placements.';document.body.appendChild(toolbar);
     shell = make('div'); shell.id = 'partyShell'; shell.hidden = true; shell.style.gap = '0';
     dmPane = make('section'); dmPane.className = 'party-pane'; dmLabel = button('0 · DM · overhead / edit', () => focus('dm')); dmLabel.className = 'party-label'; dmPane.appendChild(dmLabel);dmHint=make('span');dmHint.className='party-hud';dmPane.appendChild(dmHint);shell.appendChild(dmPane);
-    palette = make('section'); palette.id = 'dmPalette'; palette.hidden = true; palette.appendChild(make('h2', 'Dungeon master'));
+    palette = make('section'); palette.id = 'dmPalette'; palette.hidden = true; palette.appendChild(make('h2', 'Dungeon master'));bossHelp=make('p');bossHelp.id='dmBossStakes';bossHelp.setAttribute('role','status');palette.appendChild(bossHelp);
     const guide=make('div');guide.className='dm-placement-guide';workflowStatus=make('p');workflowStatus.id='dmWorkflowStatus';guide.appendChild(workflowStatus);const floorLabel=make('label','Edit floor ');floorSelect=select([['0','Floor I · Entry halls'],['1','Floor II · Lower archive']],value=>{if(phase()!=='lobby'||remoteId()||busy()||typeof onFloor!=='function')return;tool='select';drag=null;selectedTile=null;hoverTile=null;tileMarker.visible=false;placementRevision++;setUI(tileStatus,'textContent','Floor '+(Number(value)+1)+' selected. Tap a tile to inspect.');onFloor(Number(value));updateUI();});floorSelect.setAttribute('aria-label','Dungeon floor to edit');floorLabel.appendChild(floorSelect);guide.appendChild(floorLabel);workflowNext=make('p');workflowNext.id='dmNextStep';guide.appendChild(workflowNext);guideAction=make('b','Choose a tool → tap a highlighted tile');guide.appendChild(guideAction);const placementHelp=make('details');placementHelp.appendChild(make('summary','Placement & resources explained'));placementHelp.appendChild(make('p','Setup and traps: tap once to place. Live monsters: select an entrance, then Send. Drag to orbit; pinch or scroll to zoom. Gold marks the target tile; red means invalid for the selected tool. Esc returns to Inspect. Setup budget is spent before the run; live stamina pays for changes during play. Keys must be reachable before their locks.'));toolStatus=make('p');toolStatus.id='dmToolStatus';guide.appendChild(toolStatus);cancelPlacement=button('Cancel placement',()=>{tool='select';drag=null;placementRevision++;tileMarker.visible=false;setUI(placementStatus,'textContent','Placement canceled. Tap a tile to inspect.');updateUI();});cancelPlacement.hidden=true;guide.appendChild(cancelPlacement);tileStatus=make('p','No tile selected. Tap the map to inspect.');tileStatus.id='dmTileStatus';guide.appendChild(tileStatus);placementStatus=make('p','Ready to inspect.');placementStatus.id='dmPlacementStatus';placementStatus.setAttribute('role','status');guide.appendChild(placementStatus);palette.appendChild(guide);
     partySetup=make('details');partySetup.className='dm-setup-group';partySetup.appendChild(make('summary','Adventurers & loadouts'));palette.appendChild(partySetup);
     for (const a of campaign.actors) {
