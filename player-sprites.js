@@ -1,6 +1,6 @@
-import { decodePlayerAtlas } from './player-atlas-data.js?v=4bd264fda816e55230532703e5373771ce7389ce';
-import { decodeClassAtlas } from './class-atlas-data.js?v=4bd264fda816e55230532703e5373771ce7389ce';
-import { decodeClassDirectionAtlas } from './class-direction-data.js?v=4bd264fda816e55230532703e5373771ce7389ce';
+import { decodePlayerAtlas } from './player-atlas-data.js?v=3665e91a0e184a349eedd75bc32a0b791a123787';
+import { decodeClassAtlas } from './class-atlas-data.js?v=3665e91a0e184a349eedd75bc32a0b791a123787';
+import { decodeClassDirectionAtlas } from './class-direction-data.js?v=3665e91a0e184a349eedd75bc32a0b791a123787';
 
 export const PLAYER_SPRITE_CLIPS = Object.freeze({
   idle: { row: 0, frames: 4, fps: 4, loop: true },

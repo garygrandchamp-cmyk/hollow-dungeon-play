@@ -1,5 +1,5 @@
-import {batchStaticGroup} from './mesh-batch.js?v=4bd264fda816e55230532703e5373771ce7389ce';
-import {createCurvedStair,curvedStairHeight,buildCurvedStair} from './gallery-curved-stair.js?v=4bd264fda816e55230532703e5373771ce7389ce';
+import {batchStaticGroup} from './mesh-batch.js?v=3665e91a0e184a349eedd75bc32a0b791a123787';
+import {createCurvedStair,curvedStairHeight,buildCurvedStair} from './gallery-curved-stair.js?v=3665e91a0e184a349eedd75bc32a0b791a123787';
 
 // A room-local upper floor, independent of the dungeon's discrete floor index.
 export function galleryPlan(room,size,module=4.8,enabled=true,stairStyle='straight'){

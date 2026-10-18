@@ -1,4 +1,4 @@
-import {DIRS,tiles as defaultTiles} from './wfc.js?v=4bd264fda816e55230532703e5373771ce7389ce';
+import {DIRS,tiles as defaultTiles} from './wfc.js?v=3665e91a0e184a349eedd75bc32a0b791a123787';
 
 const object=x=>x!==null&&typeof x==='object'&&!Array.isArray(x);
 const hash=value=>{let h=2166136261;for(const c of String(value))h=Math.imul(h^c.charCodeAt(0),16777619);return h>>>0;};
