@@ -1,8 +1,8 @@
-import {impactPose} from './combat-impact.js?v=befddde92486212af07f25756204766ad2950b0a';
-import {EQUIPMENT_SPRITE_DATA} from './equipment-sprite-data.js?v=befddde92486212af07f25756204766ad2950b0a';
-import {createMagicLayer} from './equipment-magic.js?v=befddde92486212af07f25756204766ad2950b0a';
+import {impactPose} from './combat-impact.js?v=b2b82afd5d9ff6581de2d605a6f4ce5bcd2a78fe';
+import {EQUIPMENT_SPRITE_DATA} from './equipment-sprite-data.js?v=b2b82afd5d9ff6581de2d605a6f4ce5bcd2a78fe';
+import {createMagicLayer} from './equipment-magic.js?v=b2b82afd5d9ff6581de2d605a6f4ce5bcd2a78fe';
 // Optional while the replacement art is produced; a reload picks up the new pack.
-const heldArtModule=await import('./held-art-data.js?v=befddde92486212af07f25756204766ad2950b0a').catch(()=>null);
+const heldArtModule=await import('./held-art-data.js?v=b2b82afd5d9ff6581de2d605a6f4ce5bcd2a78fe').catch(()=>null);
 const defaultHeldArtDecoder=heldArtModule?.decodeHeldArt??null;
 const uvPoint=value=>{const x=Array.isArray(value)?value[0]:value?.x,y=Array.isArray(value)?value[1]:value?.y;return Number.isFinite(x)&&Number.isFinite(y)&&x>=0&&x<=1&&y>=0&&y<=1?{x,y}:null;};
 
