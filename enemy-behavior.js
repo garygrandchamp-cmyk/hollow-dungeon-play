@@ -1,6 +1,7 @@
 // Small deterministic host state machines. Timers use simulation dt, never wall
 // clock deadlines, so menus, rebuilding and guest rendering cannot finish a hit.
 export const ENEMY_BEHAVIORS=Object.freeze({
+ spider:Object.freeze({name:'stalking pounce',trigger:2.2,reach:.78,windup:.9,lunge:.4,lungeSpeed:5,maxTravel:1.85,recovery:2.15,damage:7,punish:1.5,arc:Math.PI*.42,radius:.3,stalkRadius:5,stalkSpeed:2}),
  bat:Object.freeze({name:'diving pass',trigger:3,reach:.85,windup:.65,lunge:.55,lungeSpeed:6.2,maxTravel:3.4,overrun:.8,recovery:1.7,retreat:.7,retreatSpeed:2.5,peel:true,damage:5,punish:1.35,arc:Math.PI*.38,radius:.18}),
  slime:Object.freeze({name:'swelling burst',trigger:2.35,reach:2.4,windup:1.3,recovery:2.6,damage:10,punish:1.65,arc:Math.PI*2,radius:.38,radial:true}),
  listener:Object.freeze({name:'blind claw sweep',trigger:2,reach:2.05,windup:1.05,recovery:2.1,damage:14,punish:1.6,arc:Math.PI*.5,radius:.3}),
@@ -71,7 +72,18 @@ export function tickEnemyBehavior(enemy,{dt,position,target,visible,canStrike,ta
   }
  }
  if(!target||!visible||Math.abs(target.position.y-position.y)>.45)return true;
- if(gap(position,target.position)>profile.trigger)return false;
+ const distance=gap(position,target.position);
+ if(distance>profile.trigger){
+  if(profile.stalkRadius&&distance<=profile.stalkRadius){
+   // Each spider hooks around one side while still closing distance. A blocked
+   // hook falls back to a direct swept step instead of orbiting into a wall.
+   const side=[...String(enemy.id??'spider')].reduce((n,c)=>n+c.charCodeAt(0),0)%2?1:-1;
+   const dx=(target.position.x-position.x)/distance,dz=(target.position.z-position.z)/distance,step=profile.stalkSpeed*dt;
+   if(!move((dx*.8-dz*.6*side)*step,(dz*.8+dx*.6*side)*step))move(dx*step,dz*step);
+   return true;
+  }
+  return false;
+ }
  enemy.intent={phase:'windup',remaining:profile.windup,origin:point(position),aim:point(target.position),targetId:target.id,hit:false};
  telegraph(profile);return true;
 }

@@ -1,5 +1,5 @@
 // One opaque extruded shell. Damage is sampled; authored apertures are analytic.
-import {jaggedViewingHole} from './wall-damage.js?v=3a935cc6f4441f417ac4e7ea28a8fd66890685b1';
+import {jaggedViewingHole} from './wall-damage.js?v=3bb31c2b0119d0819fb38cd81c6202ed8ba2819a';
 export function openingHeightAt(p, x) {
   const u = Math.max(-1, Math.min(1, (x - p.offset) / (p.width / 2)));
   if (p.opening === 'arch') return p.sill + p.openingHeight - (1 - Math.sqrt(Math.max(0, 1-u*u))) * p.width * .35;
