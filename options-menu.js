@@ -11,6 +11,7 @@ export function createOptionsMenu({notify=()=>{},audioControl=null,diagnosticsCo
   'WASD move · mouse / drag look · Space strike · E use doors, stairs and nearby containers.',
   'Q off hand · R swap shield / magic / torch · F search this tile for traps · I bag · M map · Esc menu.',
   'Face the attacker while guarding: shields cover a forward arc, leaving your sides and back exposed. Release guard to attack; missed swings still need recovery. Combat uses no stamina; spells use mana.',
+  'Cursed equipment trades power for lower maximum health or stamina. Read its CURSED benefit and drawback before equipping. The curse stays on the item between dungeons, applies only while worn, and can be removed by unequipping. Equipping never heals or restores spent stamina.',
   'Crawlers collect nearby humanoid corpses when adventurers are away, dragging them toward their den. They drop the body when struck or when you approach. A distracted collector cannot lunge; watch and listen for dragging remains.',
   'Rat scavengers can snatch up to 12 gold with an unblocked bite. They flee briefly, then hide with the purse. Defeat the thief to recover it for its owner. A frontal shield block protects your gold; chasing noisily can attract other enemies.',
   'The Hollow Listener is blind. Its cupped ears and dry clicks warn you nearby. It follows loud actions and swings toward the last sound. Walk quietly to slip away; sidestep its windup for a counterattack.',

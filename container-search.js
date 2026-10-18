@@ -1,4 +1,4 @@
-import {searchFeedback,searchRollStyles,lootDetails,appendSearchComparison} from './search-feedback.js?v=b2b82afd5d9ff6581de2d605a6f4ce5bcd2a78fe';
+import {searchFeedback,searchRollStyles,lootDetails,appendSearchComparison} from './search-feedback.js?v=679a6ce35ac41f2f93de327ed557392db4b515fe';
 export function containerIdentity(seed,id){let hash=2166136261;for(const c of seed+':'+id)hash=Math.imul(hash^c.charCodeAt(0),16777619);return 'container-'+(hash>>>0).toString(16);}
 /** Hidden contents stay out of the DOM until a successful search check. */
 export function createContainerSearch({actions,makeLoot,grantLoot,grantGold,cache=new Map(),notify=()=>{},sound=()=>{},drawIcon=null}){

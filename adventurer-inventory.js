@@ -1,6 +1,7 @@
-import {random} from './wfc.js?v=b2b82afd5d9ff6581de2d605a6f4ce5bcd2a78fe';
-import {CLASSES} from './party-campaign.js?v=b2b82afd5d9ff6581de2d605a6f4ce5bcd2a78fe';
-import {WEAPON_CATALOG} from './weapon-forge.js?v=b2b82afd5d9ff6581de2d605a6f4ce5bcd2a78fe';
+import {EQUIPMENT_CURSES,compatibleCurse,curseEffects,curseDescription} from './cursed-equipment.js?v=679a6ce35ac41f2f93de327ed557392db4b515fe';
+import {random} from './wfc.js?v=679a6ce35ac41f2f93de327ed557392db4b515fe';
+import {CLASSES} from './party-campaign.js?v=679a6ce35ac41f2f93de327ed557392db4b515fe';
+import {WEAPON_CATALOG} from './weapon-forge.js?v=679a6ce35ac41f2f93de327ed557392db4b515fe';
 
 export const INVENTORY_STORAGE_KEY = 'hollow:adventurer-inventory:v1';
 export const GEAR_SLOTS = Object.freeze(['helm', 'chest', 'arms', 'legs', 'weapon', 'offhand']);
@@ -26,7 +27,7 @@ function lootParts(seed,slot,kind,theme){const catalog=partCatalog(kind);if(!cat
 
 /** Deterministic metadata, never pixels. Seed includes the drop/actor id at the
  * host boundary if distinct rolls are wanted; duplicate ids cannot be farmed. */
-export function generateInventoryLoot({seed = 'loot', slot, level = 1, kind, theme} = {}) {
+export function generateInventoryLoot({seed = 'loot', slot, level = 1, kind, theme, curse} = {}) {
   seed = String(seed);
   if (!seedText(seed) || !integer(level, 1, 50) || slot !== undefined && !GEAR_SLOTS.includes(slot)) throw new TypeError('Invalid loot options.');
   const choice = random(seed), pick = values => values[Math.floor(choice() * values.length)];
@@ -44,8 +45,10 @@ export function generateInventoryLoot({seed = 'loot', slot, level = 1, kind, the
   if (slot === 'legs') {stats.hp = 4 + level * 2 + bonus; stats.armor = 1 + Math.floor(level / 3) + tier; stats.stamina = 2 + Math.floor(level / 2);}
   if (slot === 'weapon') stats[kind === 'staff' || kind === 'wand' ? 'magic' : 'melee'] = 2 + level + tier * 3 + bonus;
   if (slot === 'offhand') {if (kind === 'magic') stats.magic = 3 + level + bonus; else stats.armor = 2 + Math.floor(level / 2) + tier;}
+  if(curse===undefined&&random(seed+':equipment-curse:v1')()<.15)curse=Object.keys(EQUIPMENT_CURSES).find(id=>compatibleCurse({slot,kind},id));
+  if(curse!==undefined&&curse!==null&&!compatibleCurse({slot,kind},curse))throw new TypeError('Invalid equipment curse.');
   const name = (tier === 2 ? 'Runed ' : tier === 1 ? 'Tempered ' : 'Worn ') + (ARMOUR.includes(slot) ? LABELS[slot] : kind[0].toUpperCase() + kind.slice(1));
-  return {id: 'gear-' + hash(JSON.stringify([seed, slot, level, kind, theme])), name, kind, slot, seed, level, rarity, theme, stats,...(ARMOUR.includes(slot)?armorMetadata(seed,slot):lootParts(seed,slot,kind,theme))};
+  return {id: 'gear-' + hash(JSON.stringify(curse?[seed,slot,level,kind,theme,curse]:[seed, slot, level, kind, theme])), name:curse?EQUIPMENT_CURSES[curse].name+' '+name:name,...(curse?{curse}:{}), kind, slot, seed, level, rarity, theme, stats,...(ARMOUR.includes(slot)?armorMetadata(seed,slot):lootParts(seed,slot,kind,theme))};
 }
 export const generateLoot = generateInventoryLoot;
 
@@ -68,6 +71,7 @@ function normalizeItem(value) {
     if (!text(raw)) return null;
     result[key] = raw;
   }
+  if(value.curse!==undefined){if(!compatibleCurse({slot,kind},value.curse))return null;result.curse=value.curse;}
   const armored=ARMOUR.includes(slot),hasType=Object.hasOwn(value,'armorType'),hasVariant=Object.hasOwn(value,'armorVariant');
   if(!armored&&(hasType||hasVariant))return null;
   if(armored){if(hasType&&!ARMOR_TYPES.includes(value.armorType)||hasVariant&&!integer(value.armorVariant,0,9))return null;Object.assign(result,armorMetadata(seed,slot),hasType?{armorType:value.armorType}:{},hasVariant?{armorVariant:value.armorVariant}:{});}
@@ -140,7 +144,7 @@ export function createInventoryModel({getActor, storage} = {}) {
     if (!baseCache.has(key)) {
       const hp = profile?.maxHealth ?? (Number.isFinite(a.baseMaxHealth) ? a.baseMaxHealth : Number.isFinite(a.maxHealth) ? a.maxHealth : 100);
       const [armor, melee, magic] = Object.hasOwn(CLASS_ATTACK, classId) ? CLASS_ATTACK[classId] : [0, 10, 10];
-      const stamina = Number.isFinite(a.baseMaxStamina) ? a.baseMaxStamina : Number.isFinite(a.maxStamina) ? a.maxStamina : 0;
+      const stamina = Number.isFinite(a.baseMaxStamina) ? a.baseMaxStamina : profile ? 100 : Number.isFinite(a.maxStamina) ? a.maxStamina : 0;
       baseCache.set(key, {hp: Math.max(1, Math.min(10000, hp)), armor, melee, magic, stamina: Math.max(0, Math.min(10000, stamina))});
     }
     const result = {...baseCache.get(key)};
@@ -151,9 +155,9 @@ export function createInventoryModel({getActor, storage} = {}) {
     const a = actor(), r = record(), base = baseStats(a), bonuses = zeros();
     if (r) for (const slot of GEAR_SLOTS) {
       const item = r.items.find(item => item.id === r.equipped[slot]);
-      if (item) for (const stat of STAT_KEYS) bonuses[stat] += item.stats[stat];
+      if (item) {const effects=curseEffects(item);for (const stat of STAT_KEYS) bonuses[stat] += item.stats[stat]+(effects[stat]??0);}
     }
-    return {...Object.fromEntries(STAT_KEYS.map(stat => [stat, base[stat] + bonuses[stat]])), base, bonuses};
+    return {...Object.fromEntries(STAT_KEYS.map(stat => [stat, Math.max(a&&(stat==='hp'||stat==='stamina'&&base.stamina>0)?1:0,base[stat] + bonuses[stat])])), base, bonuses};
   }
   function grantLoot(item) {
     const a = actor(), clean = normalizeItem(item), r = record();
@@ -193,7 +197,7 @@ function inventoryStyle(document) {
  .adventurer-inventory{width:min(760px,calc(100vw - 24px));max-height:calc(100dvh - 80px);overflow:auto;padding:12px;background:#151923;color:#ded6c2;border:4px double #9a835e;border-radius:0;font:12px/1.4 "Lucida Console","Courier New",monospace}
  .adventurer-inventory[hidden]{display:none!important}.adventurer-inventory::backdrop{background:#020409c9}.adventurer-inventory .inventory-head{display:flex;gap:10px;align-items:center;justify-content:space-between;padding-bottom:8px;border-bottom:1px solid #65615a}.adventurer-inventory h2{font:16px monospace;margin:0;color:#d3b780}
  .adventurer-inventory .inventory-stats{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0;padding:7px;background:#0c1018;border:2px inset #64666c}.adventurer-inventory .inventory-slots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin-bottom:12px}.adventurer-inventory .inventory-slot{padding:6px;border:2px inset #68645b;background:#10141c;font-size:11px;min-width:0;overflow-wrap:anywhere}
- .adventurer-inventory button{padding:4px 7px;background:#292e39;border:2px outset #8f8573;border-radius:0;color:#e0d4ba;font:11px monospace}.adventurer-inventory button:disabled{color:#74777c}.adventurer-inventory button:focus-visible{outline:2px solid #d6b778}.adventurer-inventory table{width:100%;border-collapse:collapse;font-size:11px}.adventurer-inventory td,.adventurer-inventory th{padding:5px;text-align:left;border-bottom:1px solid #45464b}.adventurer-inventory canvas{display:inline-block;width:32px;height:32px;image-rendering:pixelated;vertical-align:middle;margin-right:6px}.adventurer-inventory .inventory-note{font-size:10px;color:#a8a493}.adventurer-inventory .inventory-actions{display:flex;gap:6px;align-items:center}
+ .adventurer-inventory button{padding:4px 7px;background:#292e39;border:2px outset #8f8573;border-radius:0;color:#e0d4ba;font:11px monospace}.adventurer-inventory button:disabled{color:#74777c}.adventurer-inventory button:focus-visible{outline:2px solid #d6b778}.adventurer-inventory table{width:100%;border-collapse:collapse;font-size:11px}.adventurer-inventory td,.adventurer-inventory th{padding:5px;text-align:left;border-bottom:1px solid #45464b}.adventurer-inventory canvas{display:inline-block;width:32px;height:32px;image-rendering:pixelated;vertical-align:middle;margin-right:6px}.adventurer-inventory .inventory-curse{display:block;margin-top:5px;color:#c49a9a;font-size:11px;line-height:1.5}.adventurer-inventory .inventory-note{font-size:10px;color:#a8a493}.adventurer-inventory .inventory-actions{display:flex;gap:6px;align-items:center}
  @media(max-width:600px){.adventurer-inventory .inventory-slots{grid-template-columns:repeat(2,minmax(0,1fr))}.adventurer-inventory td,.adventurer-inventory th{padding:4px 2px}.adventurer-inventory canvas{width:24px;height:24px}}`;
   document.head.appendChild(style);
 }
@@ -248,21 +252,21 @@ export function createInventory(options = {}) {
       for (const slot of GEAR_SLOTS) {
         const cell = make('div'); cell.className = 'inventory-slot'; const item = api.getEquipped(slot);
         cell.appendChild(make('b', LABELS[slot]));if(item){const icon=make('canvas');paintIcon(item,icon);cell.appendChild(icon);}cell.appendChild(make('div', item?.name ?? 'Starter gear'));
-        if (item) {const remove = make('button', 'Unequip'); remove.type = 'button'; remove.disabled = actor.alive === false; remove.addEventListener('click', () => {if (api.actor?.id === actorId) api.unequip(slot); else render();}); cell.appendChild(remove);}
+        if (item) {if(item.curse){const warning=make('small',curseDescription(item));warning.className='inventory-curse';cell.appendChild(warning);}const remove = make('button', 'Unequip'); remove.type = 'button'; remove.disabled = actor.alive === false; remove.addEventListener('click', () => {if (api.actor?.id === actorId) api.unequip(slot); else render();}); cell.appendChild(remove);}
         slots.appendChild(cell);
       }
       element.appendChild(slots);
-      const items = api.items, note = make('p', `${items.length}/${INVENTORY_CAPACITY} items · Equipment bonuses apply while worn.`); note.className = 'inventory-note'; element.appendChild(note);
+      const items = api.items, note = make('p', `${items.length}/${INVENTORY_CAPACITY} items · Bonuses and curse tradeoffs apply only while worn. Unequipping restores caps, not spent health or stamina.`); note.className = 'inventory-note'; element.appendChild(note);
       if (!items.length) element.appendChild(make('p', 'No loot yet. Explore and open treasure chests.'));
       else {
         const table = make('table'), thead = make('thead'), labels = make('tr');
-        for (const text of ['Item', 'Bonuses', '']) labels.appendChild(make('th', text)); thead.appendChild(labels); table.appendChild(thead);
+        for (const text of ['Item', 'Bonuses & curses', '']) labels.appendChild(make('th', text)); thead.appendChild(labels); table.appendChild(thead);
         const tbody = make('tbody');
         for (const item of items) {
           const row = make('tr'), name = make('td'), icon = make('canvas');
           paintIcon(item,icon);
-          name.appendChild(icon); name.appendChild(make('span', item.name + ' [' + LABELS[item.slot] + ']')); row.appendChild(name); row.appendChild(make('td', bonusText(item.stats)));
-          const actions = make('td'), button = make('button', api.equipped[item.slot] === item.id ? 'Equipped' : 'Equip'); button.type = 'button'; button.disabled = actor.alive === false || api.equipped[item.slot] === item.id;
+          name.appendChild(icon); name.appendChild(make('span', item.name + ' [' + LABELS[item.slot] + ']')); row.appendChild(name);const detail=make('td',bonusText(item.stats));if(item.curse){const warning=make('small',curseDescription(item));warning.className='inventory-curse';detail.appendChild(warning);}row.appendChild(detail);
+          const actions = make('td'), button = make('button', api.equipped[item.slot] === item.id ? 'Equipped' : item.curse?'Equip cursed':'Equip'); button.type = 'button'; button.disabled = actor.alive === false || api.equipped[item.slot] === item.id;
           button.addEventListener('click', () => {if (api.actor?.id === actorId) api.equip(item.id); else render();}); actions.appendChild(button); row.appendChild(actions); tbody.appendChild(row);
         }
         table.appendChild(tbody); element.appendChild(table);

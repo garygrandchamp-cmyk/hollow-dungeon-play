@@ -1,3 +1,4 @@
+import {curseDescription} from './cursed-equipment.js?v=679a6ce35ac41f2f93de327ed557392db4b515fe';
 /** Shared wording for local and host-authoritative search rolls. */
 export function searchFeedback({roll,total=roll,dc,success,fainted=false}){
  if(fainted)return `EXHAUSTED — you fainted. Contents remain sealed.`;
@@ -13,7 +14,7 @@ export function lootDetails(item){
  const labels={hp:'Max HP',armor:'Armor',melee:'Melee',magic:'Magic',stamina:'Stamina'};
  const details=['rarity','theme','slot'].map(k=>item[k]).filter(v=>typeof v==='string'&&v.length<=40);
  for(const [key,label]of Object.entries(labels)){const value=item.stats?.[key];if(Number.isFinite(value)&&value!==0&&Math.abs(value)<=10000)details.push(`${label} ${value>0?'+':''}${value}`);}
- return details.join(' · ');
+ const curse=curseDescription(item);if(curse)details.push(curse);return details.join(' · ');
 }
 
 export const searchRollStyles=`

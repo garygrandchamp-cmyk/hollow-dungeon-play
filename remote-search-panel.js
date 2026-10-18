@@ -1,4 +1,5 @@
-import {searchFeedback,searchRollStyles,lootDetails,appendSearchComparison} from './search-feedback.js?v=b2b82afd5d9ff6581de2d605a6f4ce5bcd2a78fe';
+import {compatibleCurse} from './cursed-equipment.js?v=679a6ce35ac41f2f93de327ed557392db4b515fe';
+import {searchFeedback,searchRollStyles,lootDetails,appendSearchComparison} from './search-feedback.js?v=679a6ce35ac41f2f93de327ed557392db4b515fe';
 // Presentation only. Host snapshots own outcomes, stamina and loot grants.
 export function createRemoteSearchPanel({sendAction,sound=()=>{},drawIcon=null,document:doc=globalThis.document,now=()=>globalThis.performance?.now?.()??Date.now(),setInterval:startInterval=globalThis.setInterval,clearInterval:stopInterval=globalThis.clearInterval,setTimeout:startTimeout=globalThis.setTimeout,clearTimeout:stopTimeout=globalThis.clearTimeout}={}) {
   if(typeof sendAction!=='function'||!doc)throw Error('Remote search requires sendAction and a document.');
@@ -16,7 +17,7 @@ export function createRemoteSearchPanel({sendAction,sound=()=>{},drawIcon=null,d
     // Never inspect or retain contents for an unrevealed search, even if supplied.
     if(snapshot.status==='success'){
       result.contents=[];const ids=new Set();
-      for(const item of Array.isArray(snapshot.contents)?snapshot.contents.slice(0,128):[]){if(!item||!idOK(item.id)||ids.has(item.id))continue;ids.add(item.id);const entry={id:item.id,name:text(item.name,'Unknown item'),kind:text(item.kind,'item',40)};if(entry.kind==='gold'&&Number.isSafeInteger(item.amount)&&item.amount>=0&&item.amount<=1e9)entry.amount=item.amount;for(const key of ['slot','theme','rarity','seed','blade','base','armorType','color'])if(typeof item[key]==='string'&&item[key].length<=(key==='seed'?128:40))entry[key]=item[key];if(Number.isInteger(item.armorVariant)&&item.armorVariant>=0&&item.armorVariant<10)entry.armorVariant=item.armorVariant;entry.stats={};for(const key of ['hp','armor','melee','magic','stamina'])if(Number.isFinite(item.stats?.[key])&&Math.abs(item.stats[key])<=10000)entry.stats[key]=item.stats[key];result.contents.push(entry);}
+      for(const item of Array.isArray(snapshot.contents)?snapshot.contents.slice(0,128):[]){if(!item||!idOK(item.id)||ids.has(item.id))continue;ids.add(item.id);const entry={id:item.id,name:text(item.name,'Unknown item'),kind:text(item.kind,'item',40)};if(entry.kind==='gold'&&Number.isSafeInteger(item.amount)&&item.amount>=0&&item.amount<=1e9)entry.amount=item.amount;for(const key of ['slot','theme','rarity','seed','blade','base','armorType','color'])if(typeof item[key]==='string'&&item[key].length<=(key==='seed'?128:40))entry[key]=item[key];if(Number.isInteger(item.armorVariant)&&item.armorVariant>=0&&item.armorVariant<10)entry.armorVariant=item.armorVariant;entry.stats={};for(const key of ['hp','armor','melee','magic','stamina'])if(Number.isFinite(item.stats?.[key])&&Math.abs(item.stats[key])<=10000)entry.stats[key]=item.stats[key];if(compatibleCurse(entry,item.curse))entry.curse=item.curse;result.contents.push(entry);}
     }
     return result;
   }
