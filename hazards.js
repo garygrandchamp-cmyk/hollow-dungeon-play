@@ -1,7 +1,7 @@
-import {roomContainsTile} from './room-footprint.js?v=112c109deb93b220e4768f4656840e104866606b';
-import {random} from './wfc.js?v=112c109deb93b220e4768f4656840e104866606b';
-import {makeDungeonProp as makePropSprite} from './dungeon-props.js?v=112c109deb93b220e4768f4656840e104866606b';
-import {batchStaticGroup} from './mesh-batch.js?v=112c109deb93b220e4768f4656840e104866606b';
+import {roomContainsTile} from './room-footprint.js?v=7ab9ee66430396ccf651b982597738c01913a015';
+import {random} from './wfc.js?v=7ab9ee66430396ccf651b982597738c01913a015';
+import {makeDungeonProp as makePropSprite} from './dungeon-props.js?v=7ab9ee66430396ccf651b982597738c01913a015';
+import {batchStaticGroup} from './mesh-batch.js?v=7ab9ee66430396ccf651b982597738c01913a015';
 
 export const HAZARD_KINDS=Object.freeze(['pit','spikes','crate','rubble','swinging-axe','rolling-ball','rat-cage']);
 const TRAPS=new Set(HAZARD_KINDS.filter(k=>!['crate','rubble'].includes(k)));

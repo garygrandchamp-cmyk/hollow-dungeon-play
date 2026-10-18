@@ -1,4 +1,4 @@
-import {roomCells,roomContainsTile} from './room-footprint.js?v=112c109deb93b220e4768f4656840e104866606b';
+import {roomCells,roomContainsTile} from './room-footprint.js?v=7ab9ee66430396ccf651b982597738c01913a015';
 export const CHAPEL_ACTIONS=Object.freeze(['chapel-bell','chapel-valve','chapel-winch','chapel-treasury','chapel-bargain','chapel-drop']);
 export const CHAPEL_DM_COSTS=Object.freeze({'chapel-decoy':6,'chapel-flood':12,'chapel-ring':8});
 const live=a=>a&&a.alive!==false&&!a.fainted&&!a.escaped&&a.health>0;
@@ -55,12 +55,12 @@ export function createBellChapel({state,notify=()=>{},sound=()=>{},reward=()=>fa
   const f=current();for(const key of ['ring','flood','decoy'])f[key]=Math.max(0,f[key]-dt);f.heat=Math.max(0,f.heat-dt*.8);
   if(f.holder&&!near(s.actors.find(a=>a.id===f.holder),'winch'))f.holder=null;
   const carrier=s.actors.find(a=>a.id===f.carrier);if(f.carrier&&!live(carrier))f.carrier=null;
-  if(f.carrier){f.whisper-=dt;if(f.whisper<=0){f.whisper=8;f.heat=Math.min(100,f.heat+10);event('The carried reliquary whispers. Nearby enemies are listening.','whisper','treasury');}}
+  for(const curse of floors)if(curse.carrier){curse.whisper-=dt;if(curse.whisper<=0){curse.whisper=8;f.heat=Math.min(100,f.heat+10);event('The carried reliquary whispers. Nearby enemies are listening.','whisper','treasury');}}
   if(s.plan&&!f.silenced&&f.ring<=0&&s.bellkeeper?.()){f.ring=12;f.heat=Math.min(100,f.heat+20);event('A bellkeeper raises the alarm. Kill it or cut the bell rope.');}
  }
  function snapshot(){return {version:1,seed,floors:structuredClone(floors),finalReady,finalUsed,sequence,event:lastEvent?{...lastEvent}:null};}
  function apply(value){const checked=validateChapelSnapshot(value,seed);if(!checked)return false;floors=structuredClone(checked.floors);finalReady=checked.finalReady;finalUsed=checked.finalUsed;if(checked.sequence>sequence&&checked.event){lastEvent={...checked.event};if(lastEvent.floor===context().floor){notify(lastEvent.message);sound(lastEvent.kind,context().plan?.nodes[lastEvent.node]);}}sequence=checked.sequence;return true;}
- return {reset,action,dmAction,noise,tick,snapshot,apply,near,releaseHold(actor){const f=current();if(f.holder===actor?.id){f.holder=null;notify('You let go of the winch to fight.');}},get record(){return {...current()};},get finalReady(){return finalReady&&!finalUsed;},burdened:id=>floors.some(f=>f.carrier===id),movementScale(actor){const s=context(),f=current();return s.plan&&(f.flood>0||!f.drained)&&roomContainsTile(s.plan.room,actor.index%s.size,Math.floor(actor.index/s.size))?.78:1;}};
+ return {reset,action,dmAction,noise,tick,snapshot,apply,near,releaseHold(actor){const f=current();if(f.holder===actor?.id){f.holder=null;notify('You let go of the winch to fight.');}},get record(){return {...current()};},get finalReady(){return finalReady&&!finalUsed;},burdened:id=>floors.some(f=>f.carrier===id),homeFloor:id=>floors.findIndex(f=>f.carrier===id),movementScale(actor){const s=context(),f=current();return s.plan&&(f.flood>0||!f.drained)&&roomContainsTile(s.plan.room,actor.index%s.size,Math.floor(actor.index/s.size))?.78:1;}};
 }
 export function validateChapelSnapshot(v,seed){
  if(!v||v.version!==1||v.seed!==seed||!Array.isArray(v.floors)||v.floors.length!==2||!Number.isSafeInteger(v.sequence)||v.sequence<0||typeof v.finalReady!=='boolean'||typeof v.finalUsed!=='boolean'||v.finalUsed&&!v.finalReady)return null;
