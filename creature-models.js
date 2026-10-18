@@ -1,4 +1,4 @@
-import { batchStaticGroup } from './mesh-batch.js?v=679a6ce35ac41f2f93de327ed557392db4b515fe';
+import { batchStaticGroup } from './mesh-batch.js?v=ab1c3a2c3f50a1cc15eb7387806e39aa3043c1d7';
 
 /** Small, -Z facing monsters. Owns geometry; materials belong to mat's cache.
  * animate takes absolute seconds and never changes the returned root transform.
