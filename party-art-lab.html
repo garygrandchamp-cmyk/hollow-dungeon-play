@@ -19,11 +19,11 @@
 </header>
 <main id="stage" aria-label="Six live class review viewports"><div id="labels"></div></main>
 <script type="module">
-import * as THREE from './vendor/three.module.js';
-import {makePlayerSprite,PLAYER_SPRITE_CLASSES} from './player-sprites.js';
-import {makeSolidProp} from './solid-props.js';
-import {createRetroTextures} from './retro-textures.js';
-import {applyWorldMaterialDensity} from './pixel-density.js';
+import * as THREE from './vendor/three.module.js?v=6f522cb686c558f4c908d1aec66f280bb4b8a20c';
+import {makePlayerSprite,PLAYER_SPRITE_CLASSES} from './player-sprites.js?v=6f522cb686c558f4c908d1aec66f280bb4b8a20c';
+import {makeSolidProp} from './solid-props.js?v=6f522cb686c558f4c908d1aec66f280bb4b8a20c';
+import {createRetroTextures} from './retro-textures.js?v=6f522cb686c558f4c908d1aec66f280bb4b8a20c';
+import {applyWorldMaterialDensity} from './pixel-density.js?v=6f522cb686c558f4c908d1aec66f280bb4b8a20c';
 
 const stage=document.querySelector('#stage'),labels=document.querySelector('#labels'),status=document.querySelector('#status');
 let renderer,stopped=false;

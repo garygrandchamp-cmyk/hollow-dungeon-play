@@ -1,7 +1,7 @@
 import {writeFileSync} from 'node:fs';
 import {deflateSync} from 'node:zlib';
 import {createHash} from 'node:crypto';
-import {MAGIC_THEMES,magicEffectPixels} from '../../equipment-magic.js?v=3bb31c2b0119d0819fb38cd81c6202ed8ba2819a';
+import {MAGIC_THEMES,magicEffectPixels} from '../../equipment-magic.js?v=6f522cb686c558f4c908d1aec66f280bb4b8a20c';
 const crc=bytes=>{let value=0xffffffff;for(const b of bytes){value^=b;for(let n=0;n<8;n++)value=value&1?(value>>>1)^0xedb88320:value>>>1;}return (value^0xffffffff)>>>0;};
 function chunk(type,data){const name=Buffer.from(type),out=Buffer.alloc(data.length+12);out.writeUInt32BE(data.length);name.copy(out,4);data.copy(out,8);out.writeUInt32BE(crc(Buffer.concat([name,data])),data.length+8);return out;}
 function png({width,height,data}){const header=Buffer.alloc(13);header.writeUInt32BE(width);header.writeUInt32BE(height,4);header[8]=8;header[9]=6;const row=width*4,raw=Buffer.alloc((row+1)*height);for(let y=0;y<height;y++)Buffer.from(data.subarray(y*row,(y+1)*row)).copy(raw,y*(row+1)+1);return Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]),chunk('IHDR',header),chunk('IDAT',deflateSync(raw)),chunk('IEND',Buffer.alloc(0))]);}
