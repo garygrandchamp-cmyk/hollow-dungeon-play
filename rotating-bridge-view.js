@@ -1,5 +1,5 @@
-import {batchStaticGroup} from './mesh-batch.js?v=0b2a2cafb09c29e935e1f1032140ea48989343c5';
-import {BRIDGE_TURN_SECONDS,BRIDGE_DM_COST} from './rotating-bridge.js?v=0b2a2cafb09c29e935e1f1032140ea48989343c5';
+import {batchStaticGroup} from './mesh-batch.js?v=196054df12b9a11015c9d250d495b86ba916ef97';
+import {BRIDGE_TURN_SECONDS,BRIDGE_DM_COST} from './rotating-bridge.js?v=196054df12b9a11015c9d250d495b86ba916ef97';
 
 export function buildRotatingBridge({THREE,world,box,mat,plan,water,surfaceMaps}){
  const root=new THREE.Group();root.name='rotating-stone-bridge';world.add(root);if(!plan)return {root,update(){}};

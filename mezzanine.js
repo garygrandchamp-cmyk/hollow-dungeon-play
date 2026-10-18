@@ -1,5 +1,5 @@
-import {batchStaticGroup} from './mesh-batch.js?v=0b2a2cafb09c29e935e1f1032140ea48989343c5';
-import {createCurvedStair,curvedStairHeight,buildCurvedStair} from './gallery-curved-stair.js?v=0b2a2cafb09c29e935e1f1032140ea48989343c5';
+import {batchStaticGroup} from './mesh-batch.js?v=196054df12b9a11015c9d250d495b86ba916ef97';
+import {createCurvedStair,curvedStairHeight,buildCurvedStair} from './gallery-curved-stair.js?v=196054df12b9a11015c9d250d495b86ba916ef97';
 
 // A room-local upper floor, independent of the dungeon's discrete floor index.
 export function galleryPlan(room,size,module=4.8,enabled=true,stairStyle='straight'){
@@ -41,7 +41,7 @@ export function buildGallery({THREE,world,box,mat,plan:p,surfaceMaps,floorStyle=
  if(p.curve)buildCurvedStair({THREE,group:g,box,mat,plan:p.curve});else for(let j=0;j<n;j++){const h=p.height*(j+1)/n;box(g,s.x,h/2,s.z1-(j+.5)*run,s.width,h,run+.015,stone);}
  const railing=(x1,z1,x2,z2)=>{const len=Math.hypot(x2-x1,z2-z1),steps=Math.ceil(len/.7);for(let j=0;j<=steps;j++)box(g,x1+(x2-x1)*j/steps,p.height+.5,z1+(z2-z1)*j/steps,.09,1,.09,iron);const rail=box(g,(x1+x2)/2,p.height+1,(z1+z2)/2,len,.11,.11,trim);rail.rotation.y=-Math.atan2(z2-z1,x2-x1);};
  railing(p.left+p.width,p.north+p.width,p.right-p.width,p.north+p.width);
- railing(p.right-p.width,p.north+p.width,p.right-p.width,p.south);
+ if(p.liftGap){railing(p.right-p.width,p.north+p.width,p.right-p.width,p.liftGap.from);railing(p.right-p.width,p.liftGap.to,p.right-p.width,p.south);}else railing(p.right-p.width,p.north+p.width,p.right-p.width,p.south);
  railing(p.right-p.width,p.south,p.right,p.south);
  // Sloping stair handrails; the landing remains open at both ends.
  if(!p.curve)for(const sign of [-1,1]){const x=s.x+sign*s.width/2;for(let j=0;j<=12;j++){const t=j/12;box(g,x,p.height*t+.5,s.z1-(s.z1-s.z0)*t,.08,1,.08,iron);}const rail=box(g,x,p.height/2+1,(s.z0+s.z1)/2,.10,.10,Math.hypot(s.z1-s.z0,p.height),trim);rail.rotation.x=Math.atan(p.height/(s.z1-s.z0));}

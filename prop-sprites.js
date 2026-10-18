@@ -1,5 +1,5 @@
-import {PROP_SPRITE_DATA} from './prop-sprite-data.js?v=0b2a2cafb09c29e935e1f1032140ea48989343c5';
-import {makeTorchHardware} from './solid-props.js?v=0b2a2cafb09c29e935e1f1032140ea48989343c5';
+import {PROP_SPRITE_DATA} from './prop-sprite-data.js?v=196054df12b9a11015c9d250d495b86ba916ef97';
+import {makeTorchHardware} from './solid-props.js?v=196054df12b9a11015c9d250d495b86ba916ef97';
 
 export const PROP_SPRITE_KINDS=Object.freeze(Object.keys(PROP_SPRITE_DATA.kinds));
 const DEFAULT_HEIGHT={torch:1.8,chest:1.0,shrine:1.3,relic:.65,crate:.95,rubble:.45,spikes:.65,tomb:1.0,bookshelf:1.9,barrel:1.1,banner:1.8,basin:.8,spiderweb:1.5,drip:1.3};
