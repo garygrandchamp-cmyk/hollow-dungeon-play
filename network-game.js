@@ -1,4 +1,4 @@
-import {CHAPEL_ACTIONS} from './bell-chapel.js?v=439c045788228ed1823c656234002072c64acd17';
+import {CHAPEL_ACTIONS} from './bell-chapel.js?v=0b2a2cafb09c29e935e1f1032140ea48989343c5';
 // Host owns simulation; guests send controls, never actor state or coordinates.
 export const NETWORK_ACTIONS = Object.freeze([...CHAPEL_ACTIONS,'bridge-turn','attack','cast','interact','search','search-roll','search-close','take-item','jump','block','guard','release','swap','offhand','switch-offhand','escape','use']);
 const CLASSES = new Set(['mage','paladin','barbarian','warlock','thief','archer']);

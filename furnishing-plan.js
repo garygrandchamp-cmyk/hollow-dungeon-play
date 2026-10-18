@@ -1,4 +1,4 @@
-import {LARGE_ROOM_SHAPES,roomPerimeter} from './room-footprint.js?v=439c045788228ed1823c656234002072c64acd17';
+import {LARGE_ROOM_SHAPES,roomPerimeter} from './room-footprint.js?v=0b2a2cafb09c29e935e1f1032140ea48989343c5';
 // Stable room-local furnishing recipes; scene construction stays with the host.
 const themes={crypt:['tomb','cabinet','drawers','chest'],library:['bookshelf','cabinet','drawers','bookshelf'],barracks:['barrel','drawers','cabinet','chest'],flooded:['basin','barrel','crate','chest']};
 const heights={tomb:1.1,cabinet:1.9,drawers:1.05,chest:.9,bookshelf:2.1,barrel:1.1,basin:.8,crate:.95};

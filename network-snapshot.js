@@ -1,4 +1,4 @@
-import {CLASSES} from './party-campaign.js?v=439c045788228ed1823c656234002072c64acd17';
+import {CLASSES} from './party-campaign.js?v=0b2a2cafb09c29e935e1f1032140ea48989343c5';
 const finite=(x,min,max)=>typeof x==='number'&&Number.isFinite(x)&&x>=min&&x<=max;
 const plain=x=>x&&typeof x==='object'&&!Array.isArray(x);
 const id=x=>typeof x==='string'&&/^[a-zA-Z0-9_.:-]{1,128}$/.test(x);

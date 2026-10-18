@@ -1,4 +1,4 @@
-import {roomContainsWorld,roomCells} from './room-footprint.js?v=439c045788228ed1823c656234002072c64acd17';
+import {roomContainsWorld,roomCells} from './room-footprint.js?v=0b2a2cafb09c29e935e1f1032140ea48989343c5';
 // Local, low-level atmosphere: three batched draws, no canvas/assets/lights.
 const TAU=Math.PI*2;
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
