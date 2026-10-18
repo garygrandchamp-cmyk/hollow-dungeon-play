@@ -11,6 +11,8 @@ export function createOptionsMenu({notify=()=>{},audioControl=null,diagnosticsCo
   'WASD move · mouse / drag look · Space strike · E use doors, stairs and nearby containers.',
   'Q off hand · R swap shield / magic / torch · F search this tile for traps · I bag · M map · Esc menu.',
   'Face the attacker while guarding: shields cover a forward arc, leaving your sides and back exposed. Release guard to attack; missed swings still need recovery. Combat uses no stamina; spells use mana.',
+  'The Hollow Listener is blind. Its cupped ears and dry clicks warn you nearby. It follows loud actions and swings toward the last sound. Walk quietly to slip away; sidestep its windup for a counterattack.',
+  'Noise travels along passages. Heavy weapons and spells carry farther than bows or rummaging. Closed doors muffle it; sealed walls stop it. Unseen enemies investigate where the sound happened, not where you move afterward. Walking creates no alarm.',
   'Dodge the drowned sweep or crawler lunge, then close in during recovery: the Counter prompt marks a melee opening. Goblins can flank while another enemy keeps you busy.',
   'Touch: left stick moves; drag the right side to look. Use the labeled action buttons and Bag / Map / Menu shortcuts.',
   'Local roles: 0 selects DM; 1 / 2 / 3 select a hero. On phones, use the DM / Hero tabs.',

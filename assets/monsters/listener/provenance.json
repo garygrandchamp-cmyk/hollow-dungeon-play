@@ -1,0 +1,330 @@
+{
+  "generator": "OpenAI image generation",
+  "direction": "Original eyeless gaunt dark fantasy humanoid, ear-cupping listening idle, walking, committed claw swing, hurt, collapse. Four frames per clip. Realistic proportions, restrained corpse/brown/charcoal palette, transparent background.",
+  "sourceSHA256": "4c100f84f8b8e882ce6eab6b577bfae98085d50f3ea29ac3ace9b002eebd7aeb",
+  "scale": 0.39,
+  "footRow": 120,
+  "colors": 48,
+  "cuts": [
+    {
+      "row": 0,
+      "frame": 0,
+      "sourceBox": [
+        0,
+        0,
+        280,
+        286
+      ],
+      "alphaBounds": [
+        83,
+        14,
+        205,
+        270
+      ]
+    },
+    {
+      "row": 0,
+      "frame": 1,
+      "sourceBox": [
+        280,
+        0,
+        560,
+        286
+      ],
+      "alphaBounds": [
+        75,
+        12,
+        199,
+        269
+      ]
+    },
+    {
+      "row": 0,
+      "frame": 2,
+      "sourceBox": [
+        560,
+        0,
+        840,
+        286
+      ],
+      "alphaBounds": [
+        80,
+        18,
+        206,
+        270
+      ]
+    },
+    {
+      "row": 0,
+      "frame": 3,
+      "sourceBox": [
+        840,
+        0,
+        1122,
+        286
+      ],
+      "alphaBounds": [
+        81,
+        29,
+        215,
+        270
+      ]
+    },
+    {
+      "row": 1,
+      "frame": 0,
+      "sourceBox": [
+        0,
+        286,
+        280,
+        568
+      ],
+      "alphaBounds": [
+        45,
+        17,
+        239,
+        274
+      ]
+    },
+    {
+      "row": 1,
+      "frame": 1,
+      "sourceBox": [
+        280,
+        286,
+        560,
+        568
+      ],
+      "alphaBounds": [
+        47,
+        12,
+        227,
+        274
+      ]
+    },
+    {
+      "row": 1,
+      "frame": 2,
+      "sourceBox": [
+        560,
+        286,
+        840,
+        568
+      ],
+      "alphaBounds": [
+        44,
+        11,
+        223,
+        274
+      ]
+    },
+    {
+      "row": 1,
+      "frame": 3,
+      "sourceBox": [
+        840,
+        286,
+        1122,
+        568
+      ],
+      "alphaBounds": [
+        65,
+        15,
+        241,
+        274
+      ]
+    },
+    {
+      "row": 2,
+      "frame": 0,
+      "sourceBox": [
+        0,
+        568,
+        280,
+        838
+      ],
+      "alphaBounds": [
+        43,
+        22,
+        222,
+        258
+      ]
+    },
+    {
+      "row": 2,
+      "frame": 1,
+      "sourceBox": [
+        280,
+        568,
+        560,
+        838
+      ],
+      "alphaBounds": [
+        44,
+        31,
+        278,
+        260
+      ]
+    },
+    {
+      "row": 2,
+      "frame": 2,
+      "sourceBox": [
+        560,
+        568,
+        865,
+        838
+      ],
+      "alphaBounds": [
+        33,
+        8,
+        291,
+        259
+      ]
+    },
+    {
+      "row": 2,
+      "frame": 3,
+      "sourceBox": [
+        865,
+        568,
+        1122,
+        838
+      ],
+      "alphaBounds": [
+        48,
+        28,
+        213,
+        259
+      ]
+    },
+    {
+      "row": 3,
+      "frame": 0,
+      "sourceBox": [
+        0,
+        838,
+        280,
+        1145
+      ],
+      "alphaBounds": [
+        61,
+        35,
+        201,
+        279
+      ]
+    },
+    {
+      "row": 3,
+      "frame": 1,
+      "sourceBox": [
+        280,
+        838,
+        560,
+        1145
+      ],
+      "alphaBounds": [
+        68,
+        10,
+        215,
+        278
+      ]
+    },
+    {
+      "row": 3,
+      "frame": 2,
+      "sourceBox": [
+        560,
+        838,
+        840,
+        1145
+      ],
+      "alphaBounds": [
+        52,
+        41,
+        220,
+        278
+      ]
+    },
+    {
+      "row": 3,
+      "frame": 3,
+      "sourceBox": [
+        840,
+        838,
+        1122,
+        1145
+      ],
+      "alphaBounds": [
+        53,
+        21,
+        242,
+        279
+      ]
+    },
+    {
+      "row": 4,
+      "frame": 0,
+      "sourceBox": [
+        0,
+        1145,
+        280,
+        1402
+      ],
+      "alphaBounds": [
+        16,
+        32,
+        257,
+        222
+      ]
+    },
+    {
+      "row": 4,
+      "frame": 1,
+      "sourceBox": [
+        280,
+        1145,
+        530,
+        1402
+      ],
+      "alphaBounds": [
+        10,
+        66,
+        244,
+        232
+      ]
+    },
+    {
+      "row": 4,
+      "frame": 2,
+      "sourceBox": [
+        530,
+        1145,
+        835,
+        1402
+      ],
+      "alphaBounds": [
+        10,
+        98,
+        294,
+        228
+      ]
+    },
+    {
+      "row": 4,
+      "frame": 3,
+      "sourceBox": [
+        835,
+        1145,
+        1122,
+        1402
+      ],
+      "alphaBounds": [
+        1,
+        132,
+        275,
+        214
+      ]
+    }
+  ]
+}

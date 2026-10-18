@@ -1,4 +1,4 @@
-import {WORLD_PATTERN_SPANS,pixelsForSpan,tagTextureDensity,resamplePixelTile} from './pixel-density.js?v=7ab9ee66430396ccf651b982597738c01913a015';
+import {WORLD_PATTERN_SPANS,pixelsForSpan,tagTextureDensity,resamplePixelTile} from './pixel-density.js?v=651dfa860b2dae38e46f50e1c461f45d3145b8c8';
 // Fixed physical motifs, quantized to the character-referenced world grid.
 const N = 128, TAU = Math.PI * 2;
 const clamp = (x, lo = 0, hi = 255) => Math.max(lo, Math.min(hi, x));

@@ -1,8 +1,8 @@
-import {combatTiming} from './combat-timing.js?v=7ab9ee66430396ccf651b982597738c01913a015';
-import {createDMEntranceOverlay} from './dm-entrance-overlay.js?v=7ab9ee66430396ccf651b982597738c01913a015';
-import {CLASSES} from './party-campaign.js?v=7ab9ee66430396ccf651b982597738c01913a015';
-import {createHeldInput} from './held-input.js?v=7ab9ee66430396ccf651b982597738c01913a015';
-import {MONSTER_KINDS} from './monster-sprites.js?v=7ab9ee66430396ccf651b982597738c01913a015';
+import {combatTiming} from './combat-timing.js?v=651dfa860b2dae38e46f50e1c461f45d3145b8c8';
+import {createDMEntranceOverlay} from './dm-entrance-overlay.js?v=651dfa860b2dae38e46f50e1c461f45d3145b8c8';
+import {CLASSES} from './party-campaign.js?v=651dfa860b2dae38e46f50e1c461f45d3145b8c8';
+import {createHeldInput} from './held-input.js?v=651dfa860b2dae38e46f50e1c461f45d3145b8c8';
+import {MONSTER_KINDS} from './monster-sprites.js?v=651dfa860b2dae38e46f50e1c461f45d3145b8c8';
 
 const HERO_IDS = ['hero-1', 'hero-2', 'hero-3'];
 const MOVEMENT = new Set(['w', 'a', 's', 'd', 'arrowup', 'arrowleft', 'arrowdown', 'arrowright']);
@@ -251,7 +251,7 @@ export function createPartyView(options = {}) {
     if(workflowNext)setUI(workflowNext,'textContent',active?'Live: monsters use entrances and stamina. Traps use a selected map tile.':phase()!=='lobby'?'Next: press Next expedition to create a new dungeon, then choose loadouts and build.':!validation.valid?'Next: fix the route — '+(validation.reason??validation.errors?.[0]??'Check the completion path.'):'Next: choose loadouts, place encounters, then Start expedition.');
     setUI(startButton,'title',active?'The expedition is already running.':phase()!=='lobby'?'Generate a fresh dungeon and return to preparation. Survivors keep their collected loot.':!validation.valid?'Cannot start: '+(validation.reason??validation.errors?.[0]??'Check the completion path.'):'Begin once everyone has chosen class and gear.');
     setUI(validationLabel, 'textContent', validation.valid ? (validation.metrics?'Route ready · '+validation.metrics.metres+' m · '+validation.metrics.turns+' turns':'Route ready') : (validation.errors?.[0] ?? validation.reason ?? 'Route not ready'));
-    setUI(resourceLabel,'textContent',dm?active?`DM stamina ${Math.floor(dm.stamina??0)} / ${dm.maxStamina??'?'}`:`Build points: ${dm.remainingBudget??'?'} / ${dm.budget??'?'} left`:'DM resources pending');
+    setUI(resourceLabel,'textContent',dm?active?`DM stamina ${Math.floor(dm.stamina??0)} / ${dm.maxStamina??'?'}${focusedId==='dm'&&w.noiseReport?' · Heard: '+w.noiseReport:''}`:`Build points: ${dm.remainingBudget??'?'} / ${dm.budget??'?'} left`:'DM resources pending');
     for (const [id, controls] of ui) {
       const a = actor(id); if (!a) continue;
       setUI(controls.pane, 'hidden', buildWorkspace() || !!remote && id !== remote || !!(w.mobileLayout||w.singleView)&&id!==(remote??focusedId));
@@ -263,7 +263,7 @@ export function createPartyView(options = {}) {
       setUI(controls.label, 'textContent', `${id.slice(-1)} · ${CLASSES[a.classId]?.name ?? a.classId ?? 'Adventurer'}${!owned?' · REMOTE CONTROL':w.botIds?.includes(id)?' · BOT':selected?' · ACTIVE CONTROL':''}`);
       setUI(controls.label, 'disabled', !owned);setUIAttribute(controls.label,'aria-pressed',String(selected));setUI(controls.label, 'title', owned?(remote?'Your adventurer':`Click this pane or press ${id.slice(-1)} to control this adventurer`):'Controlled by a remote player');
       setUI(controls.pane.dataset, 'focused', String(selected));setUI(controls.hint, 'hidden', !selected);
-      setUI(controls.hint, 'textContent', active&&w.objective?[w.objective,w.interactionActorId===id?w.interactionHint:''].filter(Boolean).join(' · '):remote?'ACTIVE CONTROL · WASD move · drag look · Space strike · E interact':active?'ACTIVE CONTROL · 1 / 2 / 3 switch hero · 0 DM · WASD move':'ACTIVE CONTROL · 1 / 2 / 3 switch hero · Start expedition to move');
+      setUI(controls.hint, 'textContent', active&&w.objective?[w.objective,w.interactionActorId===id?w.interactionHint:'',w.noiseByActor?.[id]?'NOISE '+w.noiseByActor[id]:''].filter(Boolean).join(' · '):remote?'ACTIVE CONTROL · WASD move · drag look · Space strike · E interact':active?'ACTIVE CONTROL · 1 / 2 / 3 switch hero · 0 DM · WASD move':'ACTIVE CONTROL · 1 / 2 / 3 switch hero · Start expedition to move');
       setUIClass(controls.pane,'focused', selected); setUIClass(controls.pane,'dead', !living(a) && !a.escaped); setUIClass(controls.pane,'escaped', !!a.escaped);
       setUI(controls.stats, 'textContent', `${a.escaped ? 'ESCAPED · ' : !living(a) ? 'DOWN · ' : ''}HP ${Math.ceil(a.health ?? 0)}/${a.maxHealth ?? '?'} · MP ${Math.floor(a.mana ?? 0)}/${a.maxMana ?? '?'}${Number.isFinite(a.stamina) ? ' · STA ' + Math.floor(a.stamina) : ''} · G ${a.gold ?? 0}${hand(a)==='torch'?' · TORCH '+Math.ceil(a.torchFuel??120)+'s'+(a.torchLit===false?' (out)':''):''}`);
       const feedback=records.get(a.id),damaged=active&&now<(feedback?.damageUntil??0)&&!w.paused;const counter=active&&now<(feedback?.counterUntil??0)&&!w.paused;setUI(controls.damage,'hidden',!damaged&&!counter);setUI(controls.damage,'textContent',damaged?feedback.damageText:counter?'COUNTER':'');setUIClass(controls.damage,'counter',!damaged&&counter);setUIClass(controls.pane,'damage-hit',damaged);

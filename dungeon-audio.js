@@ -1,4 +1,4 @@
-import {createDungeonSampleBank} from './audio-samples.js?v=7ab9ee66430396ccf651b982597738c01913a015';
+import {createDungeonSampleBank} from './audio-samples.js?v=651dfa860b2dae38e46f50e1c461f45d3145b8c8';
 // Local CC0 recordings with procedural fallback. Audio starts on a gesture.
 export function createDungeonAudio(){
  let samples=null,context=null,master=null,ambience=null,music=null,enabled=false,volume=.35,lastStep=0,nextDrip=0,nextNote=0,noteIndex=0,noise=null,eventBus=null;
@@ -36,7 +36,7 @@ export function createDungeonAudio(){
  // game.js sends `${type}-step/-idle/-alert/-windup` with distance/pan/occluded.
  // Its per-enemy timers are supplemented by a shared mix budget for swarms.
  function allowCreature(name,distance){
-  const match=/^(skeleton|goblin|wraith|spider|slime|rat|bat|crawler|skeletal-mage|drowned)-(step|idle|alert|windup)$/.exec(name);
+  const match=/^(skeleton|goblin|wraith|spider|slime|rat|bat|crawler|skeletal-mage|drowned|listener)-(step|idle|alert|windup)$/.exec(name);
   if(!match)return true;
   const at=context.currentTime,cooldown={step:.28,idle:1.8,alert:1.25,windup:.25}[match[2]];
   const previous=creatureTimes.get(name),within=previous&&at-previous.at<cooldown;
@@ -56,12 +56,13 @@ export function createDungeonAudio(){
   else if(name==='goblin-windup'){hiss(.17,.018,570,0,'bandpass');tone(142,.16,.02,'triangle',0,98);tone(205,.09,.011,'triangle',.1,145);}
   else if(name==='rat-windup'){tone(175,.11,.017,'triangle',0,112);hiss(.045,.012,1250,0,'bandpass');tone(215,.07,.011,'triangle',.12,150);}
   else if(name==='crawler-windup'){hiss(.36,.024,850,0,'bandpass');tone(185,.18,.016,'triangle',0,110);tone(245,.12,.012,'triangle',.2,170);}
+  else if(name==='listener-windup'){for(const delay of [0,.13,.26]){hiss(.055,.024,1900,delay,'bandpass');tone(182,.09,.018,'triangle',delay,110);}hiss(.4,.016,420,.3);}
   else if(name==='drowned-windup'){tone(62,.5,.027,'triangle',0,82);hiss(.48,.023,380);tone(128,.18,.013,'triangle',.32,96);}
   else return false;
   return true;
  }
  function playCreature(name){
-  const match=/^(wraith|spider|slime|rat|bat|crawler|skeletal-mage|drowned)-(step|idle|alert)$/.exec(name);if(!match)return false;
+  const match=/^(wraith|spider|slime|rat|bat|crawler|skeletal-mage|drowned|listener)-(step|idle|alert)$/.exec(name);if(!match)return false;
   const [,kind,event]=match,v=.96+Math.random()*.08;
   const note=(f,d,g,type='sine',delay=0,end=f)=>tone(f*v,d,g,type,delay,end*v);
   switch(kind){
@@ -99,6 +100,11 @@ export function createDungeonAudio(){
     if(event==='step'){hiss(.16,.021,650);for(const delay of [0,.09])note(350,.055,.012,'triangle',delay,260);}
     else if(event==='idle'){hiss(.43,.024,1300,0,'bandpass');note(286,.35,.012,'sine',0,277);note(730,.12,.007,'triangle',.2,590);}
     else{note(146,.44,.026,'triangle',0,220);note(293,.38,.012,'sine',.07,440);hiss(.05,.014,1800,0,'bandpass');}
+    break;
+   case 'listener':
+    if(event==='step'){hiss(.19,.023,630);note(93,.12,.016,'triangle',0,51);}
+    else if(event==='idle'){for(const delay of [0,.19]){hiss(.035,.018,1800,delay,'bandpass');note(240,.07,.009,'triangle',delay,150);}hiss(.4,.013,360,.1);}
+    else{for(const delay of [0,.085,.17])note(280,.07,.021,'triangle',delay,95);hiss(.25,.025,1300,0,'bandpass');}
     break;
    case 'drowned':
     if(event==='step'){note(55,.16,.032,'triangle',0,32);hiss(.22,.03,210);note(92,.13,.012,'sine',.08,47);}

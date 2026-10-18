@@ -1,4 +1,4 @@
-import {normalize} from './wall-model.js?v=7ab9ee66430396ccf651b982597738c01913a015';
+import {normalize} from './wall-model.js?v=651dfa860b2dae38e46f50e1c461f45d3145b8c8';
 
 export const SIGHT_DAMAGE_PRESETS=Object.freeze({none:'No sight-only damage',slit:'Narrow arrow slit',viewhole:'Jagged viewing hole'});
 export function applySightDamagePreset(preset,current={},seed='wall') {

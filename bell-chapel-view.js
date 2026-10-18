@@ -1,4 +1,4 @@
-import {batchStaticGroup} from './mesh-batch.js?v=7ab9ee66430396ccf651b982597738c01913a015';
+import {batchStaticGroup} from './mesh-batch.js?v=651dfa860b2dae38e46f50e1c461f45d3145b8c8';
 /** Low-poly volumetric fixtures, existing masonry/water maps, no new lights. */
 export function buildBellChapel({THREE,world,box,mat,plan,coord,groundHeight,court,water}){
  const root=new THREE.Group();root.name='flooded-bell-chapel';world.add(root);if(!plan)return {update(){},root};

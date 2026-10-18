@@ -1,8 +1,8 @@
 // Pure entrance planning and host-owned reinforcement queue. Static-host safe:
 // no THREE, DOM, clocks, storage, network, asset imports, or implicit spawning.
-import {roomContainsTile} from './room-footprint.js?v=7ab9ee66430396ccf651b982597738c01913a015';
+import {roomContainsTile} from './room-footprint.js?v=651dfa860b2dae38e46f50e1c461f45d3145b8c8';
 export const ENEMY_INGRESS_KINDS=Object.freeze(['hatch','grate','ceiling']);
-export const ENEMY_INGRESS_MONSTERS=Object.freeze(['skeleton','goblin','wraith','spider','slime','rat','bat','crawler','skeletal-mage','drowned','boss']);
+export const ENEMY_INGRESS_MONSTERS=Object.freeze(['skeleton','goblin','wraith','spider','slime','rat','bat','crawler','skeletal-mage','drowned','listener','boss']);
 export const ENEMY_INGRESS_WARNING_SECONDS=Object.freeze({hatch:1.8,grate:1.8,ceiling:2});
 export const ENEMY_INGRESS_LIMITS=Object.freeze({entrances:64,pending:16,recentRequests:256,generated:6,blockedSeconds:6});
 const DIRS=[[0,-1],[1,0],[0,1],[-1,0]];

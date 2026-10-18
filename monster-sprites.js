@@ -1,5 +1,6 @@
-import { decodeMonsterAtlas } from './monster-atlas-data.js?v=7ab9ee66430396ccf651b982597738c01913a015';
-import { makeEnemySprite } from './enemy-sprites.js?v=7ab9ee66430396ccf651b982597738c01913a015';
+import { decodeListenerAtlas } from './listener-atlas-data.js?v=651dfa860b2dae38e46f50e1c461f45d3145b8c8';
+import { decodeMonsterAtlas } from './monster-atlas-data.js?v=651dfa860b2dae38e46f50e1c461f45d3145b8c8';
+import { makeEnemySprite } from './enemy-sprites.js?v=651dfa860b2dae38e46f50e1c461f45d3145b8c8';
 
 export const MONSTER_SPRITE_CLIPS = Object.freeze({
   idle: { row: 0, frames: 4, fps: 4, loop: true },
@@ -19,6 +20,7 @@ export const MONSTER_CATALOG = Object.freeze({
   bat: {name:'Cave bat',height:.55,hp:2,speed:2.3,damage:5,hover:.8},
   crawler: {name:'Crawling skeleton',height:.6,hp:3,speed:.75,damage:8},
   'skeletal-mage': {name:'Skeletal mage',height:1.8,hp:4,speed:.85,damage:10},
+  listener: {name:'Hollow Listener',height:1.7,hp:6,speed:1.5,damage:14,blind:true},
   drowned: {name:'Drowned',height:1.75,hp:6,speed:.7,damage:10},
 });
 export const MONSTER_KINDS = Object.freeze(Object.keys(MONSTER_CATALOG));
@@ -29,7 +31,7 @@ function acquire(THREE, kind) {
   if (!cache) { cache = new Map(); caches.set(THREE, cache); }
   let entry = cache.get(kind);
   if (!entry) {
-    const { data, width, height, standingPixels } = decodeMonsterAtlas(kind);
+    const { data, width, height, standingPixels } = kind==='listener'?decodeListenerAtlas():decodeMonsterAtlas(kind);
     // Explicit bottom-up rows avoid relying on browser unpack-flip behavior
     // for typed-array textures. The packed PNG/data decoder uses top-down rows.
     const bottomUp = new Uint8Array(data.length), stride = width * 4;
@@ -64,7 +66,7 @@ function acquire(THREE, kind) {
  */
 export function makeMonsterSprite(THREE, { kind = 'wraith', height, seed = 0 } = {}) {
   if (kind === 'skeleton' || kind === 'goblin') return makeEnemySprite(THREE, { kind, height: height ?? 1.7, seed });
-  kind = ['wraith','spider','slime','rat','bat','crawler','skeletal-mage','drowned'].includes(kind) ? kind : 'wraith';
+  kind = ['wraith','spider','slime','rat','bat','crawler','skeletal-mage','drowned','listener'].includes(kind) ? kind : 'wraith';
   height = height ?? MONSTER_CATALOG[kind].height;
   height = Number.isFinite(height) ? Math.max(0.1, Math.min(8, height)) : 1.7;
   const root = new THREE.Group();
