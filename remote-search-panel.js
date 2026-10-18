@@ -1,5 +1,5 @@
-import {compatibleCurse} from './cursed-equipment.js?v=c9a9bc6ffe6f41314b36d0ecab8f6285887953ea';
-import {searchFeedback,searchRollStyles,lootDetails,appendSearchComparison} from './search-feedback.js?v=c9a9bc6ffe6f41314b36d0ecab8f6285887953ea';
+import {compatibleCurse} from './cursed-equipment.js?v=439c045788228ed1823c656234002072c64acd17';
+import {searchFeedback,searchRollStyles,lootDetails,appendSearchComparison} from './search-feedback.js?v=439c045788228ed1823c656234002072c64acd17';
 // Presentation only. Host snapshots own outcomes, stamina and loot grants.
 export function createRemoteSearchPanel({sendAction,sound=()=>{},drawIcon=null,document:doc=globalThis.document,now=()=>globalThis.performance?.now?.()??Date.now(),setInterval:startInterval=globalThis.setInterval,clearInterval:stopInterval=globalThis.clearInterval,setTimeout:startTimeout=globalThis.setTimeout,clearTimeout:stopTimeout=globalThis.clearTimeout}={}) {
   if(typeof sendAction!=='function'||!doc)throw Error('Remote search requires sendAction and a document.');

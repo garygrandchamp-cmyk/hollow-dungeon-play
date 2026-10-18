@@ -1,5 +1,5 @@
-import {roomContainsCell} from './room-footprint.js?v=c9a9bc6ffe6f41314b36d0ecab8f6285887953ea';
-import {batchStaticGroup} from './mesh-batch.js?v=c9a9bc6ffe6f41314b36d0ecab8f6285887953ea';
+import {roomContainsCell} from './room-footprint.js?v=439c045788228ed1823c656234002072c64acd17';
+import {batchStaticGroup} from './mesh-batch.js?v=439c045788228ed1823c656234002072c64acd17';
 
 /** Two central tile cells in each axis are lowered. Four stepped ring sides
  * stay inside those tiles, so existing room doors/perimeter remain at0m.

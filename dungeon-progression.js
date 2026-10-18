@@ -1,12 +1,12 @@
-import {validateDungeon} from './progression-validator.js?v=c9a9bc6ffe6f41314b36d0ecab8f6285887953ea';
+import {validateDungeon} from './progression-validator.js?v=439c045788228ed1823c656234002072c64acd17';
 const dirs=[[0,-1],[1,0],[0,1],[-1,0]];
 /** Snapshot the navigation recipe, not scene meshes or enemy positions. */
-export function dungeonProgression({levels,size,tiles,locks=[],edgeAt=()=>null,extraKeys=[]}={}){
+export function dungeonProgression({levels,size,tiles,locks=[],edgeAt=()=>null,extraKeys=[],blockedCells=[[],[]]}={}){
  const nodes=[],doors=[],nodeIds=new Set(),nodeId=(floor,index)=>floor+':'+index;
  const lockByEdge=new Map(locks.map(l=>[l.floor+':'+l.doorKey,l]));
  for(let floor=0;floor<levels.length;floor++){
   const level=levels[floor],grid=level.result.grid;
-  for(let i=0;i<grid.length;i++)if(tiles[grid[i]]&&!tiles[grid[i]].s.every(s=>s===0))nodeIds.add(nodeId(floor,i));
+  for(let i=0;i<grid.length;i++)if(!blockedCells[floor]?.includes(i)&&tiles[grid[i]]&&!tiles[grid[i]].s.every(s=>s===0))nodeIds.add(nodeId(floor,i));
  }
  for(const [key,l]of lockByEdge)doors.push({id:key,kind:l.kind==='silver'?'silver':'named',keyId:l.kind,open:!!l.unlocked});
  for(let floor=0;floor<levels.length;floor++){
@@ -27,6 +27,6 @@ export function dungeonProgression({levels,size,tiles,locks=[],edgeAt=()=>null,e
    nodes.push({id,neighbors,keys,objective:level.items.some(item=>item.index===i)?id:undefined,exit:floor===0&&i===arch.start});
   }
  }
- return {nodes,doors,start:nodeId(0,levels[0].result.architecture.start)};
+ return {nodes,doors,start:nodeId(0,levels[0].result.architecture.start),requiredObjectives:levels.flatMap((l,f)=>l.items.map(item=>nodeId(f,item.index)))};
 }
 export function validateDungeonProgression(options){return validateDungeon(dungeonProgression(options));}
