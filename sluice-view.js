@@ -1,5 +1,5 @@
-import {batchStaticGroup} from './mesh-batch.js?v=b23c6bd9298aecfc45e3134840a59c28c03c1dce';
-import {buildRoomElevation} from './room-elevation.js?v=b23c6bd9298aecfc45e3134840a59c28c03c1dce';
+import {batchStaticGroup} from './mesh-batch.js?v=3a935cc6f4441f417ac4e7ea28a8fd66890685b1';
+import {buildRoomElevation} from './room-elevation.js?v=3a935cc6f4441f417ac4e7ea28a8fd66890685b1';
 export function buildSluice({THREE,world,box,mat,plan:p,water,surfaceMaps}){const root=new THREE.Group();root.name='sluice-court';world.add(root);if(!p)return {root,update(){}};const stone=mat('sluice-stone',0x62675f,{map:surfaceMaps?.flagstone}),iron=mat('sluice-iron',0x494c46),fixtures=new THREE.Group(),gate=new THREE.Group();root.add(fixtures,gate);gate.userData.dynamic=true;buildRoomElevation({THREE,group:fixtures,plan:p.elevation,material:stone,includeFloor:true});
  const block=(g,x,y,z,w,h,d,m,solid=false)=>{const b=box(g,x,y,z,w,h,d,m);b.userData.solidObstacle=solid;return b;};
  // Recessed outlet grille and lifting shutter sit above the east stair edge.

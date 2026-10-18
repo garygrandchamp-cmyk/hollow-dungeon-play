@@ -1,5 +1,5 @@
-import {LIFT_ACTIONS} from './counterweight-lift.js?v=b23c6bd9298aecfc45e3134840a59c28c03c1dce';
-import {CHAPEL_ACTIONS} from './bell-chapel.js?v=b23c6bd9298aecfc45e3134840a59c28c03c1dce';
+import {LIFT_ACTIONS} from './counterweight-lift.js?v=3a935cc6f4441f417ac4e7ea28a8fd66890685b1';
+import {CHAPEL_ACTIONS} from './bell-chapel.js?v=3a935cc6f4441f417ac4e7ea28a8fd66890685b1';
 // Host owns simulation; guests send controls, never actor state or coordinates.
 export const NETWORK_ACTIONS = Object.freeze([...LIFT_ACTIONS,...CHAPEL_ACTIONS,'sluice-turn','bridge-turn','attack','cast','interact','search','search-roll','search-close','take-item','jump','block','guard','release','swap','offhand','switch-offhand','escape','use']);
 const CLASSES = new Set(['mage','paladin','barbarian','warlock','thief','archer']);
