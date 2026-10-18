@@ -1,6 +1,6 @@
-import { decodeListenerAtlas } from './listener-atlas-data.js?v=b7b8538579c745f26bca5629102f407c3b7f1f39';
-import { decodeMonsterAtlas } from './monster-atlas-data.js?v=b7b8538579c745f26bca5629102f407c3b7f1f39';
-import { makeEnemySprite } from './enemy-sprites.js?v=b7b8538579c745f26bca5629102f407c3b7f1f39';
+import { decodeListenerAtlas } from './listener-atlas-data.js?v=096375a8b41b569f9c1ed4904ee997628eeda887';
+import { decodeMonsterAtlas } from './monster-atlas-data.js?v=096375a8b41b569f9c1ed4904ee997628eeda887';
+import { makeEnemySprite } from './enemy-sprites.js?v=096375a8b41b569f9c1ed4904ee997628eeda887';
 
 export const MONSTER_SPRITE_CLIPS = Object.freeze({
   idle: { row: 0, frames: 4, fps: 4, loop: true },

@@ -1,5 +1,5 @@
-import {CAPTURE_RULES,createCapture,tickCapture,struggleCapture,cutCapture,parseCapture,serializeCapture} from './creature-capture.js?v=b7b8538579c745f26bca5629102f407c3b7f1f39';
-import {tickCeilingWidow,WIDOW_RULES} from './ceiling-widow.js?v=b7b8538579c745f26bca5629102f407c3b7f1f39';
+import {CAPTURE_RULES,createCapture,tickCapture,struggleCapture,cutCapture,parseCapture,serializeCapture} from './creature-capture.js?v=096375a8b41b569f9c1ed4904ee997628eeda887';
+import {tickCeilingWidow,WIDOW_RULES} from './ceiling-widow.js?v=096375a8b41b569f9c1ed4904ee997628eeda887';
 
 // Host owns every transition. Guests only apply staged, bounded capture records.
 export function createWidowEncounters({state,enemies,clear,notify=()=>{},sound=()=>{}}){

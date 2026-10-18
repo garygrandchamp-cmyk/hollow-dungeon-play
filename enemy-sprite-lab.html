@@ -2,29 +2,30 @@
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Dungeon enemy sprite lab</title>
+<title>Hollow — Enemy sprite art inspector</title>
 <style>
-  :root{color-scheme:dark;font:15px/1.5 system-ui,sans-serif;background:#151719;color:#dbd9cc}
+  :root{color-scheme:dark;font:12px/1.55 "Lucida Console","Courier New",monospace;background:#10131a;color:#dbcfb4}
   *{box-sizing:border-box}body{margin:0 auto;padding:28px 22px;max-width:1050px}
-  h1{font-size:24px;margin:0 0 5px}p{color:#a3aaa5;margin:0 0 22px}
+  h1{font-size:19px;margin:0 0 5px;color:#d0b784}p{color:#b0aca0;margin:0 0 18px}
   main{display:grid;grid-template-columns:260px 1fr;gap:22px;align-items:start}
-  section,aside{background:#202426;border:1px solid #39413e;border-radius:12px;padding:20px}
-  label{display:block;margin:0 0 16px}select,input[type=range]{display:block;width:100%;margin-top:6px}
-  button,select{background:#303a36;color:#e6e4d8;border:1px solid #526058;border-radius:6px;padding:9px;font:inherit}
-  button{cursor:pointer}button:hover{background:#3e5046}.buttons{display:flex;gap:8px;margin-bottom:18px}
-  .toggle{display:flex;align-items:center;gap:8px}input[type=checkbox]{accent-color:#9ab48c}
-  .stage{overflow:auto;display:grid;justify-items:center;min-height:280px;padding:16px;background:#292d30;border-radius:7px}
+  section,aside{min-width:0;background:#171b24;border:3px double #817354;padding:16px}
+  label{display:block;margin:0 0 12px}select,input[type=range]{display:block;width:100%;min-height:44px;margin-top:6px}input[type=range]{accent-color:#a28b60}
+  button,select{background:#292e39;color:#e0d1af;border:3px outset #77766b;border-radius:0;padding:8px;font:inherit;min-height:44px}
+  button{cursor:pointer}button:hover{background:#3d3c32}button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid #d4bb85;outline-offset:2px}.buttons{display:flex;gap:8px;margin-bottom:14px}.buttons button{flex:1}
+  .toggle{display:flex;align-items:center;gap:8px;min-height:44px}input[type=checkbox]{accent-color:#a28b60;width:22px;height:22px}
+  .stage{overflow:auto;display:grid;justify-items:center;min-height:280px;padding:12px;background:#22262c;border:2px inset #666254}
   .stage.checker{background-color:#292d30;background-image:linear-gradient(45deg,#33393a 25%,transparent 25%),linear-gradient(-45deg,#33393a 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#33393a 75%),linear-gradient(-45deg,transparent 75%,#33393a 75%);background-size:24px 24px;background-position:0 0,0 12px,12px -12px,-12px 0}
   canvas{image-rendering:pixelated;image-rendering:crisp-edges;display:block;max-width:none}
-  output{font-variant-numeric:tabular-nums;color:#b9ceaa}small{display:block;color:#9ca8a1;margin-top:12px}
-  footer{margin-top:20px;color:#9ca8a1;font-size:13px}a{color:#b4cda4}
+  output{font-variant-numeric:tabular-nums;color:#c8b98d}small{display:block;color:#b0aaa0;margin-top:12px}
+  footer{margin-top:20px;color:#aaa69b;font-size:11px}a{color:#d0b784}.back{display:inline-block;min-height:44px;padding:8px 0}
   @media(max-width:700px){main{grid-template-columns:1fr}body{padding:18px 12px}.stage{justify-items:start}}
 </style>
-<h1>Dungeon enemy sprite lab</h1>
-<p>Inspect the final pixel art and animation frames without loading the dungeon.</p>
+<a class="back" href="./enemy-preview.html">← Back to Enemy Preview</a>
+<h1>HOLLOW / ENEMY SPRITE ART</h1>
+<p>Inspect shipped pixel art and animation cells. This 2D viewer does not simulate combat, ceiling perches, captures or enemy AI.</p>
 <main>
   <aside aria-label="Sprite controls">
-    <label>Enemy<select id="kind"><option value="skeleton">Skeleton swordsman</option><option value="goblin">Crypt goblin</option></select></label>
+    <label>Enemy<select id="kind"></select></label>
     <label>Animation<select id="clip"><option>idle</option><option>walk</option><option>attack</option><option>hurt</option><option>death</option></select></label>
     <div class="buttons"><button id="play" type="button">Pause</button><button id="restart" type="button">Restart</button></div>
     <label>Frame <output id="frameLabel">1 / 4</output><input id="frame" aria-label="Animation frame" type="range" min="0" max="3" step="1" value="0"></label>
@@ -33,58 +34,70 @@
     <label class="toggle"><input id="loop" type="checkbox" checked>Loop preview</label>
     <label class="toggle"><input id="checker" type="checkbox" checked>Show transparency grid</label>
     <label class="toggle"><input id="ground" type="checkbox" checked>Show foot baseline</label>
-    <small>Space: play/pause. Arrow keys: step frames. Looping death here is a preview option; the game holds its final frame.</small>
+    <small>Space: play/pause. Arrow keys: step frames. Loop repeats the selected clip for inspection; the game holds the final death pose. Choose 2× on phones; larger cells scroll.</small>
   </aside>
   <section aria-label="Pixel art preview">
     <div class="stage checker" id="stage"><canvas id="preview" width="128" height="128" aria-label="Animated enemy sprite"></canvas></div>
     <small id="status" role="status">Loading local sprite atlas…</small>
   </section>
 </main>
-<footer>PixelLab artwork • 128 × 128 cells • nearest-neighbor pixels • binary transparency<br>
-<a href="assets/enemies/enemy-contact-sheet.png" target="_blank" rel="noopener">All animation frames</a> · <a id="atlasLink" href="assets/enemies/skeleton-atlas.png" target="_blank" rel="noopener">Current transparent atlas</a></footer>
-<script>
+<footer>Shipped atlases · 128 × 128 cells · nearest-neighbor pixels · shared foot row 120<br>Runtime clip lengths and derived/reused poses are preserved. This viewer adds no animation frames.<br>
+<a href="assets/enemies/enemy-contact-sheet.png" target="_blank" rel="noopener">Skeleton/goblin contact sheet</a> · <a id="atlasLink" href="assets/enemies/skeleton-atlas.png" target="_blank" rel="noopener">Current transparent atlas</a></footer>
+<script type="module">
+  import {MONSTER_CATALOG,MONSTER_KINDS,MONSTER_SPRITE_CLIPS} from './monster-sprites.js?v=096375a8b41b569f9c1ed4904ee997628eeda887';
+  import {ENEMY_SPRITE_CLIPS} from './enemy-sprites.js?v=096375a8b41b569f9c1ed4904ee997628eeda887';
+  import {decodeEnemyAtlas} from './enemy-atlas-data.js?v=096375a8b41b569f9c1ed4904ee997628eeda887';
+  import {decodeMonsterAtlas} from './monster-atlas-data.js?v=096375a8b41b569f9c1ed4904ee997628eeda887';
+  import {decodeListenerAtlas} from './listener-atlas-data.js?v=096375a8b41b569f9c1ed4904ee997628eeda887';
+  import {wirePreviewNavigation} from './preview-navigation.js?v=096375a8b41b569f9c1ed4904ee997628eeda887';
+  wirePreviewNavigation();
   const $ = id => document.getElementById(id);
-  const clips = {idle:{row:0,frames:4,fps:4},walk:{row:1,frames:8,fps:10},attack:{row:2,frames:8,fps:12},hurt:{row:3,frames:4,fps:12},death:{row:4,frames:8,fps:10}};
+  const profiles=kind=>['skeleton','goblin'].includes(kind)?ENEMY_SPRITE_CLIPS:MONSTER_SPRITE_CLIPS;
+  for(const kind of MONSTER_KINDS){const option=document.createElement('option');option.value=kind;option.textContent=MONSTER_CATALOG[kind].name;$('kind').appendChild(option);}
+  const preset=new URLSearchParams(location.search).get('kind');$('kind').value=MONSTER_KINDS.includes(preset)?preset:'skeleton';
   const canvas=$('preview'),ctx=canvas.getContext('2d'),images={};
   let playing=true,elapsed=0,last=0,index=0;
-  for(const kind of ['skeleton','goblin']){
-    const image=new Image();images[kind]=image;
-    image.onload=()=>draw();
-    image.onerror=()=>{$('status').textContent='Could not load local atlas. Open this page from the dungeon server.';};
-    image.src=`assets/enemies/${kind}-atlas.png`;
+  function load(kind){
+    const source=kind==='ceiling-widow'?'spider':kind;if(images[source])return images[source];
+    const decoded=['skeleton','goblin'].includes(source)?decodeEnemyAtlas(source):source==='listener'?decodeListenerAtlas():decodeMonsterAtlas(source);
+    const atlas=document.createElement('canvas');atlas.width=decoded.width;atlas.height=decoded.height;const context=atlas.getContext('2d'),pixels=context.createImageData(decoded.width,decoded.height);pixels.data.set(decoded.data);context.putImageData(pixels,0,0);
+    images[source]={canvas:atlas,standingPixels:decoded.standingPixels??104};return images[source];
   }
   function draw(){
-    const clip=clips[$('clip').value],image=images[$('kind').value];
+    const kind=MONSTER_KINDS.includes($('kind').value)?$('kind').value:'skeleton',clip=profiles(kind)[$('clip').value]??profiles(kind).idle;let image;
+    try{image=load(kind);}catch{$('status').textContent='Could not decode shipped atlas. Open this page from the dungeon server.';return;}
+    index=Math.max(0,Math.min(clip.frames-1,index));
     const scale=+$('scale').value;
     canvas.style.width=canvas.style.height=`${128*scale}px`;
     ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,128,128);
-    if($('ground').checked){ctx.fillStyle='rgba(160,190,140,.65)';ctx.fillRect(0,120,128,1);}
-    if(image.complete&&image.naturalWidth)ctx.drawImage(image,index*128,clip.row*128,128,128,0,0,128,128);
+    if($('ground').checked){ctx.fillStyle='rgba(183,163,113,.7)';ctx.fillRect(0,120,128,1);}
+    ctx.drawImage(image.canvas,index*128,clip.row*128,128,128,0,0,128,128);
     $('frame').value=index;$('frame').max=clip.frames-1;
     $('frameLabel').textContent=`${index+1} / ${clip.frames}`;
     $('scaleLabel').textContent=`${scale}×`;$('speedLabel').textContent=`${$('speed').value}×`;
     $('play').textContent=playing?'Pause':'Play';
-    $('atlasLink').href=`assets/enemies/${$('kind').value}-atlas.png`;
-    if(image.complete&&image.naturalWidth)$('status').textContent=`${$('kind').value} · ${$('clip').value} · ${clip.fps} fps · frame ${index+1}/${clip.frames}`;
+    const source=kind==='ceiling-widow'?'spider':kind;
+    $('atlasLink').href=source==='listener'?'assets/monsters/listener/atlas.png':`assets/${['skeleton','goblin'].includes(source)?'enemies':'monsters'}/${source}-atlas.png`;
+    $('status').textContent=`${MONSTER_CATALOG[kind].name} · ${$('clip').value} · ${clip.fps} fps · frame ${index+1}/${clip.frames} · standing ${image.standingPixels}px${kind==='ceiling-widow'?' · original spider atlas alias; perch/capture not simulated':''}`;
   }
   function restart(){elapsed=0;index=0;draw();}
   $('play').onclick=()=>{playing=!playing;draw();};$('restart').onclick=restart;
   $('clip').onchange=restart;$('kind').onchange=restart;
-  $('frame').oninput=()=>{playing=false;index=+$('frame').value;elapsed=index/clips[$('clip').value].fps;draw();};
+  $('frame').oninput=()=>{playing=false;index=+$('frame').value;elapsed=index/profiles($('kind').value)[$('clip').value].fps;draw();};
   for(const id of ['scale','speed','ground'])$(id).oninput=draw;
   $('checker').onchange=()=>{$('stage').classList.toggle('checker',$('checker').checked);};
   document.addEventListener('keydown',event=>{
     if(['SELECT','INPUT','BUTTON'].includes(document.activeElement.tagName))return;
     if(event.code==='Space'){event.preventDefault();$('play').click();}
     if(event.key==='ArrowRight'||event.key==='ArrowLeft'){
-      event.preventDefault();playing=false;const clip=clips[$('clip').value];
+      event.preventDefault();playing=false;const clip=profiles($('kind').value)[$('clip').value];
       index=(index+(event.key==='ArrowRight'?1:-1)+clip.frames)%clip.frames;
       elapsed=index/clip.fps;draw();
     }
   });
   function tick(now){
     const delta=last?Math.min(.1,(now-last)/1000):0;last=now;
-    if(playing){elapsed+=delta*+$('speed').value;const clip=clips[$('clip').value];
+    if(playing){elapsed+=delta*+$('speed').value;const clip=profiles($('kind').value)[$('clip').value];
       index=$('loop').checked?Math.floor(elapsed*clip.fps)%clip.frames:Math.min(clip.frames-1,Math.floor(elapsed*clip.fps));draw();}
     requestAnimationFrame(tick);
   }
