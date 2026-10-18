@@ -1,6 +1,7 @@
 // Small deterministic host state machines. Timers use simulation dt, never wall
 // clock deadlines, so menus, rebuilding and guest rendering cannot finish a hit.
 export const ENEMY_BEHAVIORS=Object.freeze({
+ slime:Object.freeze({name:'swelling burst',trigger:2.35,reach:2.4,windup:1.3,recovery:2.6,damage:10,punish:1.65,arc:Math.PI*2,radius:.38,radial:true}),
  listener:Object.freeze({name:'blind claw sweep',trigger:2,reach:2.05,windup:1.05,recovery:2.1,damage:14,punish:1.6,arc:Math.PI*.5,radius:.3}),
  skeleton:Object.freeze({name:'measured strike',trigger:1.4,reach:1.55,windup:.75,recovery:1.65,damage:8,arc:Math.PI*.58,radius:.28}),
  goblin:Object.freeze({name:'quick stab',trigger:1.35,reach:1.5,windup:.45,recovery:.95,damage:8,arc:Math.PI*.48,radius:.25}),
@@ -35,7 +36,7 @@ function inSwing(intent,position,target,profile){
 /** Returns true while this enemy consumes its turn, false for ordinary pursuit.
  * move(dx,dz) performs swept collision checks; strike is host-owned damage.
  */
-export function tickEnemyBehavior(enemy,{dt,position,target,visible,canStrike,move,strike,telegraph=()=>{}}){
+export function tickEnemyBehavior(enemy,{dt,position,target,visible,canStrike,targets,canStrikeTarget,move,strike,telegraph=()=>{}}){
  const profile=!enemy.boss&&!enemy.controlled&&ENEMY_BEHAVIORS[enemy.type];if(!profile)return false;
  dt=Number.isFinite(dt)?Math.max(0,Math.min(.1,dt)):0;
  let intent=enemy.intent;
@@ -51,7 +52,12 @@ export function tickEnemyBehavior(enemy,{dt,position,target,visible,canStrike,mo
   if(intent.phase==='windup'){
    if(intent.remaining>0)return true;
    if(profile.lunge){intent.phase='lunge';intent.remaining=profile.lunge;return true;}
-   if(target&&visible&&(typeof canStrike==='function'?canStrike():canStrike)&&inSwing(intent,position,target.position,profile)){strike(profile.damage,intent.targetId);intent.hit=true;}
+   if(profile.radial){
+    const seen=new Set();for(const candidate of targets??[target]){if(!candidate||seen.has(candidate.id)||candidate.alive===false||candidate.fainted||candidate.escaped||candidate.health<=0)continue;seen.add(candidate.id);
+     const clear=typeof canStrikeTarget==='function'?canStrikeTarget(candidate):candidate.id===target?.id&&visible&&(typeof canStrike==='function'?canStrike():canStrike);
+     if(clear&&inSwing(intent,intent.origin,candidate.position,profile)){strike(profile.damage,candidate.id);intent.hit=true;}
+    }
+   }else if(target&&visible&&(typeof canStrike==='function'?canStrike():canStrike)&&inSwing(intent,position,target.position,profile)){strike(profile.damage,intent.targetId);intent.hit=true;}
    intent.phase='recover';intent.remaining=profile.recovery;return true;
   }
   if(intent.phase==='lunge'){
