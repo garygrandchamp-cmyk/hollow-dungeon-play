@@ -1,8 +1,8 @@
-import {combatTiming} from './combat-timing.js?v=5ac77501c6c8fbc7bdffe3074112354f4264b8e7';
-import {createDMEntranceOverlay} from './dm-entrance-overlay.js?v=5ac77501c6c8fbc7bdffe3074112354f4264b8e7';
-import {CLASSES} from './party-campaign.js?v=5ac77501c6c8fbc7bdffe3074112354f4264b8e7';
-import {createHeldInput} from './held-input.js?v=5ac77501c6c8fbc7bdffe3074112354f4264b8e7';
-import {MONSTER_KINDS} from './monster-sprites.js?v=5ac77501c6c8fbc7bdffe3074112354f4264b8e7';
+import {combatTiming} from './combat-timing.js?v=befddde92486212af07f25756204766ad2950b0a';
+import {createDMEntranceOverlay} from './dm-entrance-overlay.js?v=befddde92486212af07f25756204766ad2950b0a';
+import {CLASSES} from './party-campaign.js?v=befddde92486212af07f25756204766ad2950b0a';
+import {createHeldInput} from './held-input.js?v=befddde92486212af07f25756204766ad2950b0a';
+import {MONSTER_KINDS} from './monster-sprites.js?v=befddde92486212af07f25756204766ad2950b0a';
 
 const HERO_IDS = ['hero-1', 'hero-2', 'hero-3'];
 const MOVEMENT = new Set(['w', 'a', 's', 'd', 'arrowup', 'arrowleft', 'arrowdown', 'arrowright']);
@@ -263,7 +263,7 @@ export function createPartyView(options = {}) {
       setUI(controls.label, 'textContent', `${id.slice(-1)} · ${CLASSES[a.classId]?.name ?? a.classId ?? 'Adventurer'}${!owned?' · REMOTE CONTROL':w.botIds?.includes(id)?' · BOT':selected?' · ACTIVE CONTROL':''}`);
       setUI(controls.label, 'disabled', !owned);setUIAttribute(controls.label,'aria-pressed',String(selected));setUI(controls.label, 'title', owned?(remote?'Your adventurer':`Click this pane or press ${id.slice(-1)} to control this adventurer`):'Controlled by a remote player');
       setUI(controls.pane.dataset, 'focused', String(selected));setUI(controls.hint, 'hidden', !selected);
-      setUI(controls.hint, 'textContent', active&&w.objective?[w.objective,w.interactionActorId===id?w.interactionHint:'',w.noiseByActor?.[id]?'NOISE '+w.noiseByActor[id]:''].filter(Boolean).join(' · '):remote?'ACTIVE CONTROL · WASD move · drag look · Space strike · E interact':active?'ACTIVE CONTROL · 1 / 2 / 3 switch hero · 0 DM · WASD move':'ACTIVE CONTROL · 1 / 2 / 3 switch hero · Start expedition to move');
+      setUI(controls.hint, 'textContent', active&&w.objective?[w.objective,w.interactionActorId===id?w.interactionHint:'',w.ratPurses?.[id]??'',w.noiseByActor?.[id]?'NOISE '+w.noiseByActor[id]:''].filter(Boolean).join(' · '):remote?'ACTIVE CONTROL · WASD move · drag look · Space strike · E interact':active?'ACTIVE CONTROL · 1 / 2 / 3 switch hero · 0 DM · WASD move':'ACTIVE CONTROL · 1 / 2 / 3 switch hero · Start expedition to move');
       setUIClass(controls.pane,'focused', selected); setUIClass(controls.pane,'dead', !living(a) && !a.escaped); setUIClass(controls.pane,'escaped', !!a.escaped);
       setUI(controls.stats, 'textContent', `${a.escaped ? 'ESCAPED · ' : !living(a) ? 'DOWN · ' : ''}HP ${Math.ceil(a.health ?? 0)}/${a.maxHealth ?? '?'} · MP ${Math.floor(a.mana ?? 0)}/${a.maxMana ?? '?'}${Number.isFinite(a.stamina) ? ' · STA ' + Math.floor(a.stamina) : ''} · G ${a.gold ?? 0}${hand(a)==='torch'?' · TORCH '+Math.ceil(a.torchFuel??120)+'s'+(a.torchLit===false?' (out)':''):''}`);
       const feedback=records.get(a.id),damaged=active&&now<(feedback?.damageUntil??0)&&!w.paused;const counter=active&&now<(feedback?.counterUntil??0)&&!w.paused;setUI(controls.damage,'hidden',!damaged&&!counter);setUI(controls.damage,'textContent',damaged?feedback.damageText:counter?'COUNTER':'');setUIClass(controls.damage,'counter',!damaged&&counter);setUIClass(controls.pane,'damage-hit',damaged);

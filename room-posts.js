@@ -1,4 +1,4 @@
-import {roomContainsWorld} from './room-footprint.js?v=5ac77501c6c8fbc7bdffe3074112354f4264b8e7';
+import {roomContainsWorld} from './room-footprint.js?v=befddde92486212af07f25756204766ad2950b0a';
 // Decorative posts belong near the perimeter, outside spawn/interaction space.
 export function roomPosts(room, size, moduleSize, reservedIndices = []) {
   const center = i => [(i % size - (size-1)/2)*moduleSize, (Math.floor(i/size)-(size-1)/2)*moduleSize];
