@@ -1,4 +1,4 @@
-import {roomCells,roomContainsTile} from './room-footprint.js?v=ab1c3a2c3f50a1cc15eb7387806e39aa3043c1d7';
+import {roomCells,roomContainsTile} from './room-footprint.js?v=c83e4d4daa13c7855e4b7f872c6ac80790f66cde';
 export const CHAPEL_ACTIONS=Object.freeze(['chapel-bell','chapel-valve','chapel-winch','chapel-treasury','chapel-bargain','chapel-drop']);
 export const CHAPEL_DM_COSTS=Object.freeze({'chapel-decoy':6,'chapel-flood':12,'chapel-ring':8});
 const live=a=>a&&a.alive!==false&&!a.fainted&&!a.escaped&&a.health>0;
@@ -31,11 +31,11 @@ export function createBellChapel({state,notify=()=>{},sound=()=>{},reward=()=>fa
   const node=kind==='chapel-bargain'?'treasury':kind.slice(7);
   if(kind==='chapel-drop'){if(f.carrier!==actor.id||!near(actor,'treasury'))return false;f.carrier=null;event('The whispering reliquary is returned to its plinth.','door','treasury');return true;}
   if(!near(actor,node)){notify('Approach the chapel '+node+'.');return false;}
-  if(kind==='chapel-bell'){if(f.silenced||!charge(actor))return false;f.silenced=true;f.ring=0;event('Bell rope cut. The bellkeeper can no longer raise the alarm.');return true;}
+  if(kind==='chapel-bell'){if(f.silenced||!charge(actor))return false;f.silenced=true;f.ring=0;if(finalReady&&f.carrier)f.whisper=8;event('Bell rope cut. Alarms stopped; the reliquary keeps its slower whisper during escape.');return true;}
   if(kind==='chapel-valve'){if(s.floodable===false){notify('This flat chamber has no recessed court to drain.');return false;}if(!charge(actor))return false;f.drained=!f.drained;f.flood=0;noise(actor,8);event(f.drained?'Sluice opened. The court drains; footing is clear.':'Sluice closed. Cold water returns.','sluice','valve');return true;}
   if(kind==='chapel-winch'){if(f.holder!==actor.id&&!charge(actor))return false;f.holder=f.holder===actor.id?null:actor.id;event(f.holder?'Winch held. Stay here while a companion opens the treasury.':'The winch falls back.','door','winch');return true;}
   if(kind==='chapel-treasury'){if(f.treasury)return false;const holder=s.actors.find(a=>a.id===f.holder);if(!holder||holder.id===actor.id||!near(holder,'winch')){notify('A different living adventurer must hold the distant winch.');return false;}if(!charge(actor)||!reward(actor,'treasury'))return false;f.treasury=true;noise(actor,12);event('Treasury opened together. Its offered curse is a separate choice.','chest','treasury');return true;}
-  if(kind==='chapel-bargain'){if(!f.treasury||f.bargain){notify('Open the treasury first.');return false;}if(!reward(actor,'bargain'))return false;f.bargain=true;f.carrier=actor.id;f.whisper=8;restoreDM(18);event('Bargain accepted: extra loot; DM gains 18 stamina. The carrier whispers and cannot block until the reliquary is returned.','whisper','treasury');return true;}
+  if(kind==='chapel-bargain'){if(!f.treasury||f.bargain){notify('Open the treasury first.');return false;}if(!reward(actor,'bargain'))return false;f.bargain=true;f.carrier=actor.id;f.whisper=finalReady&&!f.silenced?4:8;restoreDM(18);event('Bargain accepted: extra loot; DM gains 18 stamina. The carrier whispers and cannot block until the reliquary is returned.','whisper','treasury');return true;}
   return false;
  }
  function dmAction(kind){const s=context(),f=current();if(s.remote||s.paused||s.phase!=='active')return false;
@@ -51,16 +51,16 @@ export function createBellChapel({state,notify=()=>{},sound=()=>{},reward=()=>fa
  function tick(dt){const s=context();if(s.remote||s.phase!=='active'||s.paused)return;dt=Math.max(0,Math.min(.1,Number.isFinite(dt)?dt:0));
   for(let floor=0;floor<2;floor++){const record=floors[floor];if(floor!==s.floor)record.holder=null;if(record.carrier&&!live(s.actors.find(a=>a.id===record.carrier)))record.carrier=null;}
   for(const [id,t]of noiseCooldown){if(t<=dt)noiseCooldown.delete(id);else noiseCooldown.set(id,t-dt);}
-  if(s.complete&&!finalReady){finalReady=true;event('All relics taken. Escape begins. The DM has one paid final pursuit through an entrance.');}
+  if(s.complete&&!finalReady){finalReady=true;for(const curse of floors)if(curse.carrier&&!curse.silenced)curse.whisper=Math.min(curse.whisper,4);event(floors.some(f=>f.carrier&&!f.silenced)?'Escape begins. The intact chapel bell quickens the carried curse: whispers every 4s. Return it or cut its rope. The DM has one paid pursuit.':'All relics taken. Escape begins. The DM has one paid final pursuit through an entrance.');}
   const f=current();for(const key of ['ring','flood','decoy'])f[key]=Math.max(0,f[key]-dt);f.heat=Math.max(0,f.heat-dt*.8);
   if(f.holder&&!near(s.actors.find(a=>a.id===f.holder),'winch'))f.holder=null;
   const carrier=s.actors.find(a=>a.id===f.carrier);if(f.carrier&&!live(carrier))f.carrier=null;
-  for(const curse of floors)if(curse.carrier){curse.whisper-=dt;if(curse.whisper<=0){curse.whisper=8;f.heat=Math.min(100,f.heat+10);event('The carried reliquary whispers. Nearby enemies are listening.','whisper','treasury');}}
+  for(const curse of floors)if(curse.carrier){curse.whisper-=dt;if(curse.whisper<=0){curse.whisper=finalReady&&!curse.silenced?4:8;f.heat=Math.min(100,f.heat+10);event('The carried reliquary whispers. Nearby enemies are listening.','whisper','treasury');}}
   if(s.plan&&!f.silenced&&f.ring<=0&&s.bellkeeper?.()){f.ring=12;f.heat=Math.min(100,f.heat+20);event('A bellkeeper raises the alarm. Kill it or cut the bell rope.');}
  }
  function snapshot(){return {version:1,seed,floors:structuredClone(floors),finalReady,finalUsed,sequence,event:lastEvent?{...lastEvent}:null};}
  function apply(value){const checked=validateChapelSnapshot(value,seed);if(!checked)return false;floors=structuredClone(checked.floors);finalReady=checked.finalReady;finalUsed=checked.finalUsed;if(checked.sequence>sequence&&checked.event){lastEvent={...checked.event};if(lastEvent.floor===context().floor){notify(lastEvent.message);sound(lastEvent.kind,context().plan?.nodes[lastEvent.node]);}}sequence=checked.sequence;return true;}
- return {reset,action,dmAction,noise,tick,snapshot,apply,near,releaseHold(actor){const f=current();if(f.holder===actor?.id){f.holder=null;notify('You let go of the winch to fight.');}},get record(){return {...current()};},get finalReady(){return finalReady&&!finalUsed;},burdened:id=>floors.some(f=>f.carrier===id),homeFloor:id=>floors.findIndex(f=>f.carrier===id),movementScale(actor){const s=context(),f=current();return s.plan&&(f.flood>0||!f.drained)&&roomContainsTile(s.plan.room,actor.index%s.size,Math.floor(actor.index/s.size))?.78:1;}};
+ return {reset,action,dmAction,noise,tick,snapshot,apply,near,releaseHold(actor){const f=current();if(f.holder===actor?.id){f.holder=null;notify('You let go of the winch to fight.');}},get record(){return {...current()};},get extracting(){return finalReady;},get finalReady(){return finalReady&&!finalUsed;},whisperInterval:id=>{const home=floors.find(f=>f.carrier===id);return home?(finalReady&&!home.silenced?4:8):0;},burdened:id=>floors.some(f=>f.carrier===id),homeFloor:id=>floors.findIndex(f=>f.carrier===id),movementScale(actor){const s=context(),f=current();return s.plan&&(f.flood>0||!f.drained)&&roomContainsTile(s.plan.room,actor.index%s.size,Math.floor(actor.index/s.size))?.78:1;}};
 }
 export function validateChapelSnapshot(v,seed){
  if(!v||v.version!==1||v.seed!==seed||!Array.isArray(v.floors)||v.floors.length!==2||!Number.isSafeInteger(v.sequence)||v.sequence<0||typeof v.finalReady!=='boolean'||typeof v.finalUsed!=='boolean'||v.finalUsed&&!v.finalReady)return null;
