@@ -25,7 +25,7 @@ export function createDungeonNoise({size,coord,edgeCost}){
  }
  function hear(floor,index){let best=null,score=-Infinity;for(const e of events){if(e.floor!==floor)continue;const d=field(e).get(index);if(d===undefined)continue;const p=NOISE_PROFILES[e.kind],value=(1-d/p.radius)*.7+e.remaining/p.duration*.3;if(value>score){score=value;best=e;}}return best?{...best}:null;}
  function hint(actorId,floor){const e=events.filter(e=>e.actorId===actorId&&e.floor===floor).at(-1);return e?NOISE_PROFILES[e.kind].label.toUpperCase()+' · '+Math.ceil(e.remaining)+'s':'';}
- function report(floor){const e=events.filter(e=>e.floor===floor).at(-1);return e?NOISE_PROFILES[e.kind].label+' · tile '+(e.index%size()+1)+','+(Math.floor(e.index/size())+1):'';}
+ function report(floor,gridSize){const e=events.filter(e=>e.floor===floor).at(-1);return e?NOISE_PROFILES[e.kind].label+' · tile '+(e.index%(gridSize??size())+1)+','+(Math.floor(e.index/(gridSize??size()))+1):'';}
  function snapshot(){return {version:1,serial,events:events.map(e=>({...e}))};}
  function apply(value){const parsed=parseDungeonNoise(value,size());if(!parsed)return false;serial=parsed.serial;events=parsed.events.map(e=>({...e}));fields.clear();cooldowns.clear();return true;}
  function approach(floor,index,id,canWalk){const event=events.find(e=>e.floor===floor&&e.id===id);if(!event)return index;const distances=field(event),current=distances.get(index);if(current===undefined)return index;let next=index,best=current;const n=size(),x=index%n,z=Math.floor(index/n);for(const [dx,dz]of [[0,-1],[1,0],[0,1],[-1,0]]){const xx=x+dx,zz=z+dz,j=zz*n+xx;if(xx<0||zz<0||xx>=n||zz>=n||!canWalk(index,j))continue;const cost=distances.get(j);if(cost!==undefined&&cost<best){best=cost;next=j;}}return next;}
