@@ -1,5 +1,5 @@
 export const DM_COSTS=Object.freeze({
- 'lift:jam':8,'bridge:turn':8,'chapel-decoy':6,'chapel-rummage':8,'chapel-flood':12,'chapel-ring':8,
+ 'sluice:turn':8,'lift:jam':8,'bridge:turn':8,'chapel-decoy':6,'chapel-rummage':8,'chapel-flood':12,'chapel-ring':8,
  'monster:skeleton':6,'monster:goblin':8,'monster:rat':3,'monster:bat':4,'monster:crawler':6,'monster:slime':10,'monster:spider':10,'monster:wraith':14,'monster:skeletal-mage':18,'monster:listener':14,'monster:drowned':12,'monster:boss':55,'action:possess-boss':35,
  'trap:spikes':5,'trap:pit':7,'trap:crate':2,'trap:rubble':2,'trap:swinging-axe':12,'trap:rolling-ball':14,'trap:rat-cage':16,
  'door:locked':3,'door:silver':3,'door:named':5,'key:silver':0,'key:named':0,'loot:chest':2,'loot:cabinet':2,

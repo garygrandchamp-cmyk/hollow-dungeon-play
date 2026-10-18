@@ -1,7 +1,7 @@
-import {LIFT_ACTIONS} from './counterweight-lift.js?v=196054df12b9a11015c9d250d495b86ba916ef97';
-import {CHAPEL_ACTIONS} from './bell-chapel.js?v=196054df12b9a11015c9d250d495b86ba916ef97';
+import {LIFT_ACTIONS} from './counterweight-lift.js?v=0c65da45f24943a5281d437aefafb2de4949edc9';
+import {CHAPEL_ACTIONS} from './bell-chapel.js?v=0c65da45f24943a5281d437aefafb2de4949edc9';
 // Host owns simulation; guests send controls, never actor state or coordinates.
-export const NETWORK_ACTIONS = Object.freeze([...LIFT_ACTIONS,...CHAPEL_ACTIONS,'bridge-turn','attack','cast','interact','search','search-roll','search-close','take-item','jump','block','guard','release','swap','offhand','switch-offhand','escape','use']);
+export const NETWORK_ACTIONS = Object.freeze([...LIFT_ACTIONS,...CHAPEL_ACTIONS,'sluice-turn','bridge-turn','attack','cast','interact','search','search-roll','search-close','take-item','jump','block','guard','release','swap','offhand','switch-offhand','escape','use']);
 const CLASSES = new Set(['mage','paladin','barbarian','warlock','thief','archer']);
 const MAX_BYTES = 2 * 1024 * 1024, CHUNK = 6000, encoder = new TextEncoder();
 const object = x => x !== null && typeof x === 'object' && !Array.isArray(x);

@@ -1,4 +1,4 @@
-import {applyPhysicalUVs} from './pixel-density.js?v=196054df12b9a11015c9d250d495b86ba916ef97';
+import {applyPhysicalUVs} from './pixel-density.js?v=0c65da45f24943a5281d437aefafb2de4949edc9';
 
 const KINDS=new Set(['hatch','grate','ceiling']);
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));

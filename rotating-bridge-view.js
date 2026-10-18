@@ -1,5 +1,5 @@
-import {batchStaticGroup} from './mesh-batch.js?v=196054df12b9a11015c9d250d495b86ba916ef97';
-import {BRIDGE_TURN_SECONDS,BRIDGE_DM_COST} from './rotating-bridge.js?v=196054df12b9a11015c9d250d495b86ba916ef97';
+import {batchStaticGroup} from './mesh-batch.js?v=0c65da45f24943a5281d437aefafb2de4949edc9';
+import {BRIDGE_TURN_SECONDS,BRIDGE_DM_COST} from './rotating-bridge.js?v=0c65da45f24943a5281d437aefafb2de4949edc9';
 
 export function buildRotatingBridge({THREE,world,box,mat,plan,water,surfaceMaps}){
  const root=new THREE.Group();root.name='rotating-stone-bridge';world.add(root);if(!plan)return {root,update(){}};
@@ -22,7 +22,7 @@ export function buildRotatingBridge({THREE,world,box,mat,plan,water,surfaceMaps}
 export function createBridgeUI({getState,onTurn,onDMTurn,document:doc=globalThis.document}){
  const root=doc.createElement('details');root.id='rotatingBridgePanel';root.className='rotating-bridge-panel';const heading=doc.createElement('summary'),status=doc.createElement('p'),help=doc.createElement('p'),button=doc.createElement('button');heading.textContent='Stone turntable';root.appendChild(heading);root.appendChild(status);root.appendChild(help);root.appendChild(button);doc.body.appendChild(root);
  const style=doc.createElement('style');style.textContent='.rotating-bridge-panel{box-sizing:border-box;position:fixed;z-index:37;width:270px;max-height:40vh;overflow:auto;border:3px ridge #9a8961;background:#171a21;color:#d8c89f;padding:8px;font:12px/1.5 monospace}.rotating-bridge-panel summary{cursor:pointer;color:#d6bb75}.rotating-bridge-panel p{margin:8px 0}.rotating-bridge-panel button{width:100%;min-height:44px;font:inherit;color:#d8c89f;background:#292e39;border:3px outset #777a7a}.rotating-bridge-panel button:disabled{opacity:.5}';doc.head.appendChild(style);
- let signature='';
+ root.addEventListener?.('toggle',()=>{if(root.open)for(const id of ['counterweightLiftPanel','sluicePanel']){const other=doc.getElementById?.(id);if(other)other.open=false;}});let signature='';
  function tick(){const s=getState(),v=s.viewport;root.hidden=!s.available||!s.plan||!v;if(root.hidden)return;root.style.left=v.left+12+'px';root.style.top=v.top+90+'px';root.style.width=Math.min(270,v.width-24)+'px';root.style.maxHeight=Math.max(60,v.height-114)+'px';const r=s.record,key=JSON.stringify([s.dm,s.phase,s.near,r.axis,r.turning,Math.ceil(r.elapsed),s.stamina,s.dmStamina]);if(key===signature)return;signature=key;
   status.textContent=r.turning?'TURNING · keep clear · '+Math.max(1,Math.ceil(BRIDGE_TURN_SECONDS-r.elapsed))+'s':(r.axis?'East–west':'North–south')+' crossing aligned.';
   help.textContent='Four bank cranks turn the stone bridge. Use the dry outer path to reach another crank. Everyone must leave the bridge and its sweep first. '+(s.dm?'DM turn costs 8 stamina and uses the same safety checks.':'Crank costs 2 stamina. E or tap below when beside a crank.');
