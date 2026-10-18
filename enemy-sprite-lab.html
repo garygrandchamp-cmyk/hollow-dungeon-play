@@ -44,12 +44,12 @@
 <footer>Shipped atlases · 128 × 128 cells · nearest-neighbor pixels · shared foot row 120<br>Runtime clip lengths and derived/reused poses are preserved. This viewer adds no animation frames.<br>
 <a href="assets/enemies/enemy-contact-sheet.png" target="_blank" rel="noopener">Skeleton/goblin contact sheet</a> · <a id="atlasLink" href="assets/enemies/skeleton-atlas.png" target="_blank" rel="noopener">Current transparent atlas</a></footer>
 <script type="module">
-  import {MONSTER_CATALOG,MONSTER_KINDS,MONSTER_SPRITE_CLIPS} from './monster-sprites.js?v=096375a8b41b569f9c1ed4904ee997628eeda887';
-  import {ENEMY_SPRITE_CLIPS} from './enemy-sprites.js?v=096375a8b41b569f9c1ed4904ee997628eeda887';
-  import {decodeEnemyAtlas} from './enemy-atlas-data.js?v=096375a8b41b569f9c1ed4904ee997628eeda887';
-  import {decodeMonsterAtlas} from './monster-atlas-data.js?v=096375a8b41b569f9c1ed4904ee997628eeda887';
-  import {decodeListenerAtlas} from './listener-atlas-data.js?v=096375a8b41b569f9c1ed4904ee997628eeda887';
-  import {wirePreviewNavigation} from './preview-navigation.js?v=096375a8b41b569f9c1ed4904ee997628eeda887';
+  import {MONSTER_CATALOG,MONSTER_KINDS,MONSTER_SPRITE_CLIPS} from './monster-sprites.js?v=b258c395560209e8026ca4d5dec71424998d0de6';
+  import {ENEMY_SPRITE_CLIPS} from './enemy-sprites.js?v=b258c395560209e8026ca4d5dec71424998d0de6';
+  import {decodeEnemyAtlas} from './enemy-atlas-data.js?v=b258c395560209e8026ca4d5dec71424998d0de6';
+  import {decodeMonsterAtlas} from './monster-atlas-data.js?v=b258c395560209e8026ca4d5dec71424998d0de6';
+  import {decodeListenerAtlas} from './listener-atlas-data.js?v=b258c395560209e8026ca4d5dec71424998d0de6';
+  import {wirePreviewNavigation} from './preview-navigation.js?v=b258c395560209e8026ca4d5dec71424998d0de6';
   wirePreviewNavigation();
   const $ = id => document.getElementById(id);
   const profiles=kind=>['skeleton','goblin'].includes(kind)?ENEMY_SPRITE_CLIPS:MONSTER_SPRITE_CLIPS;

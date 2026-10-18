@@ -1,6 +1,6 @@
-import {createEquipmentSprites,HELD_PIXELS_PER_UNIT,sampleHeldPixels} from './equipment-sprites.js?v=096375a8b41b569f9c1ed4904ee997628eeda887';
-import {generateWeapon,makeWeaponSprite,CLASS_WEAPON_DEFAULTS} from './weapon-forge.js?v=096375a8b41b569f9c1ed4904ee997628eeda887';
-import {hydrateWeaponArt} from './loot-art.js?v=096375a8b41b569f9c1ed4904ee997628eeda887';
+import {createEquipmentSprites,HELD_PIXELS_PER_UNIT,sampleHeldPixels} from './equipment-sprites.js?v=b258c395560209e8026ca4d5dec71424998d0de6';
+import {generateWeapon,makeWeaponSprite,CLASS_WEAPON_DEFAULTS} from './weapon-forge.js?v=b258c395560209e8026ca4d5dec71424998d0de6';
+import {hydrateWeaponArt} from './loot-art.js?v=b258c395560209e8026ca4d5dec71424998d0de6';
 const kinds={wand:'staff',dagger:'sword'};
 // The fist establishes the grip axis. Keep swords slightly outward instead of
 // leaning their blades across the knuckles as the viewport becomes wider.

@@ -1,4 +1,4 @@
-import {enemyPreviewHubHref,previewRelease} from './enemy-preview.js?v=096375a8b41b569f9c1ed4904ee997628eeda887';
+import {enemyPreviewHubHref,previewRelease} from './enemy-preview.js?v=b258c395560209e8026ca4d5dec71424998d0de6';
 // Keep every return link on the release the tester opened. No storage, opener
 // access, history tricks, embedded renderers or campaign imports are involved.
 export function wirePreviewNavigation(doc=document,search=globalThis.location?.search??''){
