@@ -1,9 +1,11 @@
-import {EQUIPMENT_CURSES,compatibleCurse,curseEffects,curseDescription} from './cursed-equipment.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
-import {random} from './wfc.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
-import {CLASSES} from './party-campaign.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
-import {WEAPON_CATALOG} from './weapon-forge.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
+import {EQUIPMENT_CURSES,compatibleCurse,curseEffects,curseDescription} from './cursed-equipment.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {random} from './wfc.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {CLASSES} from './party-campaign.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {WEAPON_CATALOG} from './weapon-forge.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
 
 export const INVENTORY_STORAGE_KEY = 'hollow:adventurer-inventory:v1';
+export const INVENTORY_RECOVERY_KEY = 'hollow:adventurer-inventory:v1:recovery';
+export const INVENTORY_RECOVERY_PREVIOUS_KEY = INVENTORY_RECOVERY_KEY + ':previous';
 export const GEAR_SLOTS = Object.freeze(['helm', 'chest', 'arms', 'legs', 'weapon', 'offhand']);
 export const INVENTORY_CAPACITY = 16;
 export const HUB_STASH_CAPACITY = 32;
@@ -124,6 +126,22 @@ function restore(payload) {
   }
   return records;
 }
+// Load-time recovery only: network snapshots and hub commits stay strict via restore().
+// Keeps every valid actor and item; an actor whose wallet or death-loss ledger is
+// inconsistent is skipped whole so no partial ledger can grant gold or items.
+function salvage(payload) {
+  if (payload?.version !== 1 || !Array.isArray(payload.actors)) return null;
+  const records = new Map();
+  for (const a of payload.actors.slice(0, 32)) {
+    const hub = normalizeHub(a?.hub), preparationLoss = normalizePreparationLoss(a?.preparationLoss);
+    if (!text(a?.id, 96) || records.has(a.id) || hub === false || preparationLoss === false || preparationLoss?.pendingMirror && hub) continue;
+    const seen = new Set(), keep = (list, limit) => (Array.isArray(list) ? list : []).map(normalizeItem).filter(item => item && !seen.has(item.id) && seen.add(item.id)).slice(0, limit);
+    const items = keep(a.items, INVENTORY_CAPACITY), stored = keep(a.stored, HUB_STASH_CAPACITY), equipped = emptyGear();
+    for (const slot of GEAR_SLOTS) {const id = object(a.equipped) ? a.equipped[slot] ?? null : null; if (items.some(item => item.id === id && item.slot === slot)) equipped[slot] = id;}
+    records.set(a.id, {id: a.id, items, stored, hub, preparationLoss, equipped});
+  }
+  return records;
+}
 
 /** Independent inventory authority. It does not mutate campaign actor.inventory,
  * actor.equipment, health or class maxima. Host supplies baseStats when needed,
@@ -134,15 +152,27 @@ function restore(payload) {
 export function createInventoryModel({getActor, storage, canChangeGear=()=>true,allowEphemeralHub=false} = {}) {
   if (getActor !== undefined && typeof getActor !== 'function') throw new TypeError('getActor must be a function.');
   const solo = {id: 'solo-hero', name: 'Adventurer', classId: 'adventurer', health: 100, maxHealth: 100, alive: true};
-  let records = new Map(), persistenceError = null,persistedRaw=null;
+  let records = new Map(), persistenceError = null,persistedRaw=null,recoveryNotice=null,writesBlocked=false,mirrored=null;
   const baseCache = new Map(), listeners = new Set();
   try {if (storage === undefined) storage = globalThis.localStorage ?? null;} catch {storage = null; persistenceError = 'Inventory storage is unavailable.';}
   try {
     const raw = storage?.getItem(INVENTORY_STORAGE_KEY);
     persistedRaw=raw??null;
     if (raw) {
-      const parsed = typeof raw === 'string' && raw.length <= 262144 ? restore(JSON.parse(raw)) : null;
-      if (parsed) records = parsed; else persistenceError = 'Saved inventory is invalid.';
+      let payload = null;
+      try {payload = typeof raw === 'string' && raw.length <= 262144 ? JSON.parse(raw) : null;} catch {payload = null;}
+      const parsed = restore(payload);
+      if (parsed) records = parsed;
+      else {
+        // Never let a later save overwrite an unreadable one: back up the original first, then keep what can be recovered.
+        // A differing earlier backup moves to a second slot so this one cannot erase it.
+        let backedUp = false;
+        try {const earlier = storage.getItem(INVENTORY_RECOVERY_KEY); if (earlier !== null && earlier !== raw) storage.setItem(INVENTORY_RECOVERY_PREVIOUS_KEY, earlier); storage.setItem(INVENTORY_RECOVERY_KEY, raw); backedUp = true;}
+        catch {writesBlocked = true; persistenceError = 'Saved inventory is invalid and could not be backed up; changes will not be saved.';}
+        // Salvaged gear is usable this session even when saving stays blocked.
+        const recovered = salvage(payload); records = recovered ?? new Map();
+        if (backedUp) recoveryNotice = recovered?.size ? 'Some saved items could not be loaded. The original save was kept as a backup.' : 'Saved inventory could not be loaded. The original save was kept as a backup.';
+      }
     }
   } catch {persistenceError = 'Saved inventory could not be read.';}
   function actor() {try {const a = getActor ? getActor() : solo; return a && text(a.id, 96) ? a : null;} catch {return null;}}
@@ -154,7 +184,7 @@ export function createInventoryModel({getActor, storage, canChangeGear=()=>true,
   const recordData=r=>({id:r.id,items:r.items.map(copy),equipped:{...r.equipped},...(r.stored.length?{stored:r.stored.map(copy)}:{}),...(r.hub?{hub:copy(r.hub)}:{}),...(r.preparationLoss?{preparationLoss:copy(r.preparationLoss)}:{})});
   function snapshot() {return {version: 1, actors: [...records.values()].map(recordData)};}
   function persist() {
-    if (!storage) return false;
+    if (!storage || writesBlocked || mirrored) return false;
     try {const raw=JSON.stringify(snapshot());storage.setItem(INVENTORY_STORAGE_KEY,raw);persistedRaw=raw;persistenceError = null; return true;}
     catch {persistenceError = 'Inventory could not be saved. Your equipment is still available in this session.'; return false;}
   }
@@ -204,8 +234,11 @@ export function createInventoryModel({getActor, storage, canChangeGear=()=>true,
     changed(); return true;
   }
   function getEquipped(slot) {const r = record(), item = r?.items.find(item => item.id === r.equipped[slot]); return item ? copy(item) : null;}
-  function applySnapshot(value){const next=restore(value);if(!next)return false;if(JSON.stringify(snapshot())===JSON.stringify(value))return true;records=next;changed();return true;}
-  function hubStorageCurrent(){try{return storage?(storage.getItem(INVENTORY_STORAGE_KEY)??null)===persistedRaw:allowEphemeralHub===true;}catch{return false;}}
+  // A remote snapshot is the host's party, not this player's save: keep it in
+  // memory only and restore the local records when the guest session ends.
+  function applySnapshot(value,{remote=false}={}){const next=restore(value);if(!next)return false;if(remote&&!mirrored)mirrored={records};if(JSON.stringify(snapshot())===JSON.stringify(value))return true;records=next;if(mirrored)notify();else changed();return true;}
+  function endRemoteMirror(){if(!mirrored)return false;records=mirrored.records;mirrored=null;notify();return true;}
+  function hubStorageCurrent(){if(writesBlocked||mirrored)return false;try{return storage?(storage.getItem(INVENTORY_STORAGE_KEY)??null)===persistedRaw:allowEphemeralHub===true;}catch{return false;}}
   // Single durable write commits carried items, stash, wallet checkpoint and
   // retry receipts together. No subscriber sees a partially moved item.
   function commitHubRecord(value,{expected}={}){
@@ -234,10 +267,12 @@ export function createInventoryModel({getActor, storage, canChangeGear=()=>true,
    const a=actor(),r=record();if(!storage||!a||!r?.preparationLoss||r.preparationLoss.epoch!==epoch||r.preparationLoss.runNumber!==runNumber||!hubStorageCurrent())return false;if(!r.preparationLoss.pendingMirror)return true;
    const next=new Map(records);next.set(a.id,{...r,preparationLoss:{...r.preparationLoss,pendingMirror:false}});const raw=JSON.stringify({version:1,actors:[...next.values()].map(recordData)});if(raw.length>262144)return false;try{storage.setItem(INVENTORY_STORAGE_KEY,raw);}catch{return false;}records=next;persistedRaw=raw;return true;
   }
-  return {commitPreparationLoss,acknowledgePreparationLoss,applySnapshot,grantLoot, equip, unequip, stats, reset, persist, snapshot, getEquipped,commitHubRecord,acknowledgeHubMirror,hubStorageCurrent,hubRecord:()=>record()?recordData(record()):null, generateLoot: generateInventoryLoot,
+  // Recovery mirrors gold straight onto actors; refresh() lets listeners (the
+  // game's cached vitals) re-read them without a record change.
+  return {refresh(){notify();},commitPreparationLoss,acknowledgePreparationLoss,applySnapshot,endRemoteMirror,grantLoot, equip, unequip, stats, reset, persist, snapshot, getEquipped,commitHubRecord,acknowledgeHubMirror,hubStorageCurrent,hubRecord:()=>record()?recordData(record()):null, generateLoot: generateInventoryLoot,
     subscribe(fn) {if (typeof fn !== 'function') throw new TypeError('Inventory subscriber must be a function.'); listeners.add(fn); return () => listeners.delete(fn);},
     get actor() {return actor();}, get items() {return record()?.items.map(copy) ?? [];},get stored(){return record()?.stored.map(copy)??[];}, get equipped() {return {...(record()?.equipped ?? emptyGear())};},
-    get hubDurable(){return !!storage;},get persistenceError() {return persistenceError;}};
+    get hubDurable(){return !!storage;},get remoteMirror(){return !!mirrored;},get persistenceError() {return persistenceError;},get recoveryNotice(){return recoveryNotice;}};
 }
 export {normalizeItem as normalizeInventoryItem};
 
@@ -324,7 +359,7 @@ export function createInventory(options = {}) {
         }
         table.appendChild(tbody); element.appendChild(table);
       }
-      if (api.persistenceError) {const message = make('p', api.persistenceError); message.className = 'inventory-note'; element.appendChild(message);}
+      for (const note of [api.persistenceError, api.recoveryNotice]) if (note) {const message = make('p', note); message.className = 'inventory-note'; element.appendChild(message);}
     };
     keydown = event => {
       if (event.repeat || event.ctrlKey || event.metaKey || event.altKey || event.key?.toLowerCase() !== 'i') return;

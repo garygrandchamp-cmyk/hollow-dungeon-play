@@ -1,11 +1,11 @@
-import {applySightDamagePreset} from './wall-damage.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
-import {applyPhysicalUVs} from './pixel-density.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
-import {addWindowTracery} from './gothic-details.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
-import {batchStaticGroup} from './mesh-batch.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
-import {buildWallGeometry,wallBodyBlocked} from './wall-mesh.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
-import {addArchedDoors,doorBlocksBody} from './arched-doors.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
-import {buildWallVines} from './vines.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
-import {defaults,normalize,wallRecipe,traversable,breached} from './wall-model.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
+import {applySightDamagePreset} from './wall-damage.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {applyPhysicalUVs} from './pixel-density.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {addWindowTracery} from './gothic-details.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {batchStaticGroup} from './mesh-batch.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {buildWallGeometry,wallBodyBlocked} from './wall-mesh.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {addArchedDoors,doorBlocksBody} from './arched-doors.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {buildWallVines} from './vines.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {defaults,normalize,wallRecipe,traversable,breached} from './wall-model.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
 const editorDefaults={...defaults,masonry:'dressed',vineStyle:'ivy',detail:'plain'};
 function validateEditorBuild(saved,requireSnapshot=false){
  if(!saved||![1,2].includes(saved.version))throw Error('No saved build found.');
@@ -130,7 +130,7 @@ export function createEditor({THREE,world,camera,canvas,box,mat,coord,edgeKey,ge
  const p=new THREE.Vector3();if(!ray.ray.intersectPlane(plane,p))return;const n=getState().size,pt={x:Math.max(0,Math.min(n,Math.round(p.x/getState().tileSize+n/2))),z:Math.max(0,Math.min(n,Math.round(p.z/getState().tileSize+n/2)))};if(!first){first=pt;$('editStatus').textContent=`Start ${pt.x}, ${pt.z}. Click the opposite corner.`;return;}const a=first;first=null;if(tool==='room'){stampRoom(a,pt);return;}if(a.x!==pt.x&&a.z!==pt.z){notify('Draw along one grid axis.');return;}if(a.x===pt.x&&a.z===pt.z)return;const horizontal=a.z===pt.z,count=horizontal?Math.abs(pt.x-a.x):Math.abs(pt.z-a.z);for(let j=0;j<count;j++){const gx=horizontal?Math.min(a.x,pt.x)+j:a.x,gz=horizontal?a.z:Math.min(a.z,pt.z)+j;const segment={x:(gx-n/2+(horizontal?.5:0))*getState().tileSize,z:(gz-n/2+(horizontal?0:.5))*getState().tileSize,rot:horizontal?0:Math.PI/2};let index,d;if(horizontal){index=gz>0?(gz-1)*n+gx:gx;d=gz>0?2:0;}else{index=gx>0?gz*n+gx-1:gz*n;d=gx>0?1:3;}segment.index=index;segment.d=d;const key=edgeKey(index,d),existing=records.get(key);edits[getState().floor].set(key,{...normalize({...defaults,...recipe()}),segment});if(existing)disposeGroup(existing.group);records.delete(key);register(key,segment.x,segment.z,segment.rot,edits[getState().floor].get(key),index,d);}finish();notify('Wall drawn. Its edges now block movement.');});
  function recipeSettings(p){return normalize(Object.fromEntries(Object.keys(editorDefaults).map(k=>[k,p[k]??editorDefaults[k]])));}
  function recipe(){try{return JSON.parse(localStorage.getItem('hollow-wall-recipe')||'null')??defaults;}catch{return defaults;}}
- $('saveRecipe').onclick=()=>{if(selected){localStorage.setItem('hollow-wall-recipe',JSON.stringify(recipeSettings(params(selected,records.get(selected).base))));notify('Wall recipe saved in this browser.');}};$('applyRecipe').onclick=()=>{if(selected){pushUndo();Object.assign(params(selected,records.get(selected).base),recipeSettings(recipe()),{modified:true});buildWall(records.get(selected));sync();}};
+ $('saveRecipe').onclick=()=>{if(selected){try{localStorage.setItem('hollow-wall-recipe',JSON.stringify(recipeSettings(params(selected,records.get(selected).base))));notify('Wall recipe saved in this browser.');}catch{notify('Wall recipe could not be saved: browser storage is blocked or full.');}}};$('applyRecipe').onclick=()=>{if(selected){pushUndo();Object.assign(params(selected,records.get(selected).base),recipeSettings(recipe()),{modified:true});buildWall(records.get(selected));sync();}};
  $('undoEdit').onclick=()=>{const h=history.pop();if(!h)return;edits[h.floor].set(h.key,h.value);if(h.floor===getState().floor){selected=h.key;rebuild();}notify('Last parameter edit restored.');};
  for(const key of ['width','rise','steps','rails','shape'])$('st-'+key).oninput=()=>{stairSettings[getState().floor][key]=key==='rails'?$('st-rails').checked:key==='shape'?$('st-shape').value:+$('st-'+key).value;rebuild();};
  let loadEpoch=0,loading=false,loadUi=null;

@@ -73,7 +73,9 @@ export function tickEnemyBehavior(enemy,{dt,position,target,visible,canStrike,ta
    if(intent.remaining===0){intent.phase='recover';intent.remaining=profile.recovery;}return true;
   }
  }
- if(!target||!visible||Math.abs(target.position.y-position.y)>.45)return true;
+ if(!target||!visible)return true;
+ // A target on another level is reached by ordinary navigation (stairs, ramps).
+ if(Math.abs(target.position.y-position.y)>.45)return false;
  const distance=gap(position,target.position);
  if(distance>profile.trigger){
   if(profile.stalkRadius&&distance<=profile.stalkRadius){
@@ -81,8 +83,8 @@ export function tickEnemyBehavior(enemy,{dt,position,target,visible,canStrike,ta
    // hook falls back to a direct swept step instead of orbiting into a wall.
    const side=[...String(enemy.id??'spider')].reduce((n,c)=>n+c.charCodeAt(0),0)%2?1:-1;
    const dx=(target.position.x-position.x)/distance,dz=(target.position.z-position.z)/distance,step=profile.stalkSpeed*dt;
-   if(!move((dx*.8-dz*.6*side)*step,(dz*.8+dx*.6*side)*step))move(dx*step,dz*step);
-   return true;
+   // When both swept steps are blocked, ordinary navigation routes around the obstacle.
+   return move((dx*.8-dz*.6*side)*step,(dz*.8+dx*.6*side)*step)||move(dx*step,dz*step);
   }
   return false;
  }

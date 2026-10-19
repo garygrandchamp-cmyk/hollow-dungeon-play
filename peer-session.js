@@ -5,6 +5,8 @@ export const MAX_CODE_LENGTH = 180000;
 const CHANNEL = 'hollow-party-v1';
 const encoder = new TextEncoder();
 const bytes = value => encoder.encode(value).length;
+// randomUUID exists only in secure contexts; hosting over plain-HTTP LAN falls back to getRandomValues.
+export function sessionToken() {const c = globalThis.crypto; if (typeof c?.randomUUID === 'function') return c.randomUUID(); const raw = new Uint8Array(16); if (typeof c?.getRandomValues === 'function') c.getRandomValues(raw); else for (let i = 0; i < 16; i++) raw[i] = Math.floor(Math.random() * 256); raw[6] = raw[6] & 15 | 64; raw[8] = raw[8] & 63 | 128; const hex = [...raw].map(b => b.toString(16).padStart(2, '0')).join(''); return hex.slice(0, 8) + '-' + hex.slice(8, 12) + '-' + hex.slice(12, 16) + '-' + hex.slice(16, 20) + '-' + hex.slice(20);}
 const record = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 function safeJSON(value, depth = 0, budget = {n: 0}) {
   if (++budget.n > 8192 || depth > 24) throw new Error('Message structure is too complex.');
@@ -103,7 +105,7 @@ export function createPeerSession({onPeer = () => {}, onMessage = () => {}, onSt
       alive(); if (!Number.isInteger(slot) || slot < 1 || slot > 3) throw new Error('Choose peer slot 1, 2, or 3.');
       if (role === 'guest') throw new Error('A guest cannot host peers.');
       if (peers.has(slot)) throw new Error('Slot is already occupied. Disconnect it before creating another invite.');
-      role = 'host'; const entry = make(slot, globalThis.crypto.randomUUID());
+      role = 'host'; const entry = make(slot, sessionToken());
       try { attach(entry, entry.pc.createDataChannel(CHANNEL, {ordered: true})); return await localCode(entry, 'offer'); }
       catch (error) { remove(entry); throw error; }
     },

@@ -1,4 +1,4 @@
-import {WEAPON_CATALOG} from './weapon-forge.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
+import {WEAPON_CATALOG} from './weapon-forge.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
 export const CAMPAIGN_STORAGE_KEY = 'hollow:party-campaign:v1';
 export const INVENTORY_LIMIT = 16;
 const MAX_GOLD = 1_000_000_000, MAX_OBJECTIVES = 1024;
@@ -94,7 +94,8 @@ function readSnapshot(value) {
   for (let index = 0; index < 3; index++) {
     const a = value.actors[index], classId = classIdOf(a?.classId), profile = CLASSES[classId];
     if (!object(a) || a.id !== `hero-${index + 1}` || !profile || a.classId !== classId
-      || (!Number.isFinite(a.maxHealth)||a.maxHealth<profile.maxHealth||a.maxHealth>profile.maxHealth+10000) || a.maxMana !== profile.maxMana
+      // Cursed gear (Bloodbound, Hollowed) lowers the maximum below the class base; inventory stats clamp HP to at least 1.
+      || (!Number.isFinite(a.maxHealth)||a.maxHealth<1||a.maxHealth>profile.maxHealth+10000) || a.maxMana !== profile.maxMana
       || !Number.isFinite(a.health) || a.health < 0 || a.health > a.maxHealth
       || !Number.isFinite(a.mana) || a.mana < 0 || a.mana > profile.maxMana
       || typeof a.alive !== 'boolean' || typeof a.escaped !== 'boolean' || a.alive !== (a.health > 0) || a.escaped && !a.alive
@@ -126,7 +127,7 @@ function readSnapshot(value) {
  * beginRun can force the next run while active: living carry, dead lose gear.
  */
 export function createPartyCampaign(options = {}) {
-  let storage = null, persistenceError = null;
+  let storage = null, persistenceError = null, mirrored = null;
   try { storage = options.storage === undefined ? globalThis.localStorage ?? null : options.storage; }
   catch { persistenceError = 'Campaign storage is unavailable.'; }
   const actors = [0, 1, 2].map(freshActor);
@@ -155,7 +156,7 @@ export function createPartyCampaign(options = {}) {
     return {version: 1, ...clean};
   }
   function persist() {
-    if (!storage) return false;
+    if (!storage || mirrored) return false;
     try { storage.setItem(CAMPAIGN_STORAGE_KEY, JSON.stringify(snapshot())); persistenceError = null; return true; }
     catch { persistenceError = 'Campaign could not be saved. Gameplay remains available.'; return false; }
   }
@@ -236,8 +237,23 @@ export function createPartyCampaign(options = {}) {
     a.health = a.alive ? a.maxHealth : 0; a.mana = a.alive ? a.maxMana : 0; a.equipment = defaultEquipment(classId);
     persist(); return true;
   }
+  // Online guests mirror the host's party; the local save is frozen and restored on leaving.
+  // Each actor's full local record (runtime fields such as stamina, kills, torch and stains included) is kept as well,
+  // so fields the host added while mirrored are removed on leaving instead of leaking into the local save.
+  const localRecord = a => {const copy = {}; for (const [key, value] of Object.entries(a)) if (key !== 'position' && typeof value !== 'function') {try {copy[key] = structuredClone(value);} catch { /* Skip non-cloneable runtime handles. */ }} return copy;};
+  function beginMirror() { if (!mirrored) mirrored = {...snapshot(), records: actors.map(localRecord)}; return true; }
+  function endMirror() {
+    if (!mirrored) return false; const saved = mirrored; mirrored = null;
+    for (const key of Object.keys(state)) if (!(key in saved.state)) delete state[key];
+    Object.assign(state, saved.state, {objectives: new Set(saved.state.objectives)});
+    saved.actors.forEach((data, index) => {const a = actors[index], location = a.position, record = {...saved.records[index], ...structuredClone(data)};
+      for (const key of Object.keys(a)) if (key !== 'position' && !(key in record)) delete a[key];
+      Object.assign(a, record); delete a.position; if (location?.set) {location.set(data.position.x, data.position.y, data.position.z); a.position = location;} else a.position = structuredClone(data.position);});
+    return true;
+  }
   function bossDefeated(){if(state.phase!=='active'||!actors.some(a=>a.alive))return false;state.phase='partyVictory';state.endReason='bossDefeated';persist();return true;}
-  return {actors, state, actor, beginRun,bossDefeated, damage, heal, spendMana, regen, grantLoot, grantGold, collectObjective, escape, evaluate, setClass, persist, snapshot,
+  return {actors, state, actor, beginRun,bossDefeated, damage, heal, spendMana, regen, grantLoot, grantGold, collectObjective, escape, evaluate, setClass, persist, snapshot, beginMirror, endMirror,
+    get mirrored() {return !!mirrored;},
     get phase() {return state.phase;}, get seed() {return state.seed;}, get runNumber() {return state.runNumber;},
     get objectives() {return state.objectives;}, get persistenceError() {return persistenceError;}};
 }

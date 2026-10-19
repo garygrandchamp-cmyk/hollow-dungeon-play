@@ -1,12 +1,12 @@
-import {createWorldMaterial} from './graphics-compatibility.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
-import {makeCounterDressing} from './hub-counter-dressing.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
-import {makeKeeperCandidate} from './hub-keeper.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
-import {createRetroTextures} from './retro-textures.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
-import {applyPhysicalUVs} from './pixel-density.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
-import {makeDungeonProp} from './dungeon-props.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
-import {makeWorldTorch} from './torch-props.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
-import {makePlayerSprite} from './player-sprites.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
-import {batchStaticGroup} from './mesh-batch.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
+import {createWorldMaterial} from './graphics-compatibility.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {makeCounterDressing} from './hub-counter-dressing.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {makeKeeperCandidate} from './hub-keeper.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {createRetroTextures} from './retro-textures.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {applyPhysicalUVs} from './pixel-density.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {makeDungeonProp} from './dungeon-props.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {makeWorldTorch} from './torch-props.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {makePlayerSprite} from './model-actors.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {batchStaticGroup} from './mesh-batch.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
 
 export const HUB_EYE_HEIGHT=1.48,HUB_BODY_RADIUS=.23;
 const GLYPHS={S:['111','100','111','001','111'],T:['111','010','010','010','010'],A:['010','101','111','101','101'],H:['101','101','111','101','101'],O:['111','101','101','101','111'],P:['111','101','111','100','100']};

@@ -1,3 +1,5 @@
+/** An uncleared cage skips its release while this many of its rats still live. */
+export const RAT_CAGE_LIVING_LIMIT=3;
 /** Queue cage releases until after hazard iteration, since spawning rebuilds meshes. */
 export function createRatCageSpawner({spawn}={}){
  if(typeof spawn!=='function')throw TypeError('A rat spawner is required.');

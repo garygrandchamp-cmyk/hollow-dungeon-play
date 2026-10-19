@@ -13,7 +13,7 @@ export function createMobileControls({document:doc=globalThis.document,window:wi
  const make=(tag,text,parent=root)=>{const el=doc.createElement(tag);if(text)el.textContent=text;parent.appendChild(el);return el;};
  const removers=[],listen=(node,name,fn)=>{node?.addEventListener?.(name,fn,{passive:false});removers.push(()=>node?.removeEventListener?.(name,fn));};
  const stop=e=>{e.preventDefault?.();e.stopPropagation?.();};
- let compact=false,moving=null,looking=null,attack=null,guard=null,repeat=0,lastActor=null,input={forward:0,side:0},destroyed=false;
+ let compact=false,narrow=false,moving=null,looking=null,attack=null,guard=null,repeat=0,lastActor=null,input={forward:0,side:0},destroyed=false;
  const touches=new Map();let pinch=0;
  const state=()=>getState()??{};
  const active=()=>{const s=state();return compact&&s.available&&s.playing&&!s.busy&&!s.dm;};
@@ -75,7 +75,10 @@ export function createMobileControls({document:doc=globalThis.document,window:wi
  let previousTab=null;
  const hide=(node,value)=>{if(node.hidden!==value)node.hidden=value;};
  function tick(dt){
-  if(destroyed)return;const s=state(),wasCompact=compact;compact=win.innerWidth<=900||win.innerWidth<=1366&&!!win.matchMedia?.('(pointer: coarse)').matches;if(wasCompact!==compact)reset();
+  if(destroyed)return;const s=state(),wasCompact=compact;
+  // Touch layout needs a touch-first device; a narrow mouse/keyboard window only gets the narrow flag.
+  const touch=!!(win.matchMedia?.('(pointer: coarse)').matches||win.matchMedia?.('(hover: none)').matches);compact=touch&&win.innerWidth<=1366;narrow=win.innerWidth<=900;if(wasCompact!==compact)reset();
+  if(doc.body.classList.contains('narrow-layout')!==narrow)doc.body.classList.toggle('narrow-layout',narrow);
   if(doc.body.classList.contains('mobile-game')!==compact)doc.body.classList.toggle('mobile-game',compact);hide(root,!compact||!s.available||s.busy);hide(nav,!s.party||s.remote);hide(quick,false);for(const [kind,b]of quickButtons)hide(b,!!s.dm&&kind!=='menu');
   if(lastActor!==s.actorId||s.busy||!s.available||!active()&&!s.dm)reset();lastActor=s.actorId;
   const selected=s.dm?'dm':s.actorId;if(previousTab!==selected){previousTab=selected;for(const [id,b]of tabs)b.setAttribute('aria-pressed',String(selected===id));}
@@ -84,5 +87,5 @@ export function createMobileControls({document:doc=globalThis.document,window:wi
   if(fold)hide(fold,!compact);
   if(attack!==null&&active()){repeat+=Math.max(0,Math.min(.1,dt||0));if(repeat>=.55){repeat=0;onAction('attack',s.actorId);}}
  }
- return {root,tick,reset,get compact(){return compact;},get input(){return {...input,actorId:lastActor};},destroy(){if(destroyed)return;reset();destroyed=true;removers.forEach(fn=>fn());root.remove();fold?.remove();doc.body.classList.remove('mobile-game');}};
+ return {root,tick,reset,get compact(){return compact;},get narrow(){return narrow;},get input(){return {...input,actorId:lastActor};},destroy(){if(destroyed)return;reset();destroyed=true;removers.forEach(fn=>fn());root.remove();fold?.remove();doc.body.classList.remove('mobile-game');doc.body.classList.remove('narrow-layout');}};
 }

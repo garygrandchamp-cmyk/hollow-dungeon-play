@@ -17,6 +17,10 @@ export function repelPursuer(enemy){
 export const pursuerBlocks=enemy=>enemy.type!=='deathless-pursuer'||['hunt','search'].includes(enemy.pursuit?.phase);
 // Returns true when the pursuit owns this turn. Only a currently visible quarry
 // can enter the ordinary warned melee state machine. No hidden position tracking.
+// moveToward returns true on arrival, false while walking and null when no route exists (e.g. a closed door).
+// Host-only retry timers for an idle pursuer stranded away from home (e.g. its door was closed); not replicated.
+const homeRetry=new WeakMap();
+export const PURSUER_HOME_RETRY_SECONDS=3;
 export function tickDeathlessPursuit(enemy,{dt,target,visible,moveToward,onAcquire=()=>{}}){
  const p=pursuitState(enemy),step=Number.isFinite(dt)?Math.min(.1,Math.max(0,dt)):0;
  p.cooldown=Math.max(0,p.cooldown-step);
@@ -25,7 +29,10 @@ export function tickDeathlessPursuit(enemy,{dt,target,visible,moveToward,onAcqui
   if(!['hunt','search'].includes(p.phase))onAcquire();p.phase='hunt';p.remaining=PURSUER_RULES.memory;p.lastIndex=target.index;p.targetId=target.id;return false;
  }
  enemy.intent=null;enemy.target=null;
- if(['hunt','search'].includes(p.phase)){p.phase='search';p.remaining=Math.max(0,p.remaining-step);if(p.remaining>0){moveToward(p.lastIndex,PURSUER_RULES.speed);return true;}p.phase='return';p.targetId=null;}
- if(p.phase==='return'&&moveToward(p.homeIndex,PURSUER_RULES.speed*.7))p.phase='idle';
+ if(['hunt','search'].includes(p.phase)){p.phase='search';p.remaining=Math.max(0,p.remaining-step);if(p.remaining>0&&moveToward(p.lastIndex,PURSUER_RULES.speed)!==null)return true;p.phase='return';p.targetId=null;}
+ // An unreachable home ends the return where it stands instead of freezing in 'return' forever.
+ if(p.phase==='return'){const arrived=moveToward(p.homeIndex,PURSUER_RULES.speed*.7);if(arrived===true||arrived===null)p.phase='idle';if(arrived===null)homeRetry.set(enemy,PURSUER_HOME_RETRY_SECONDS);}
+ // Stranded idle pursuers look for a route home again every few seconds, so a reopened door lets them return.
+ else if(p.phase==='idle'&&Number.isInteger(p.homeIndex)&&enemy.index!==p.homeIndex){const wait=(homeRetry.get(enemy)??0)-step;if(wait>0)homeRetry.set(enemy,wait);else{homeRetry.set(enemy,PURSUER_HOME_RETRY_SECONDS);p.phase='return';}}
  return true;
 }

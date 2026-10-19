@@ -359,3 +359,6 @@ body:not(.mobile-game) .party-pane[data-focused="true"] .party-control-hint:not(
 :is(#partyResult,#soloResult) .result-rows { overflow-x:auto; }
 :is(#partyResult,#soloResult) button { min-height:44px; font:inherit; }
 #soloResult { font-family:"Lucida Console","Courier New",monospace; }
+
+/* Guest-only notice while the host link is down. */
+#hostConnection { position: fixed; top: calc(var(--retro-toolbar) + 8px); left: 50%; transform: translateX(-50%); z-index: 60; padding: 6px 12px; background: #2a1712; border: 2px solid #8f5a3c; color: #e3c6a4; font: 12px monospace; pointer-events: none; }

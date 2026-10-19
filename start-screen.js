@@ -1,8 +1,8 @@
-import {createPeerSession, MAX_CODE_LENGTH} from './peer-session.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
+import {createPeerSession, MAX_CODE_LENGTH} from './peer-session.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
 
 // Callbacks start gameplay only after the player explicitly chooses a play button.
 // sessionFactory(peerOptions) may inject the application's message/authority hooks.
-export function createStartScreen({onLocal = () => {}, onHost = () => {}, onJoin = () => {}, onOptions = () => {},onLab=null, onResume = () => {}, sessionFactory = createPeerSession, peerOptions = {}, document: doc = globalThis.document} = {}) {
+export function createStartScreen({onLocal = () => {}, onHost = () => {}, onJoin = () => {}, onOptions = () => {},onLab=null, onResume = () => {}, focusAfterHide = null, onLeave = null, sessionFactory = createPeerSession, peerOptions = {}, document: doc = globalThis.document} = {}) {
   if (!doc) throw new Error('Start screen requires a document.');
   const root = doc.createElement('div'); root.className = 'hollow-start'; root.setAttribute('role', 'dialog'); root.setAttribute('aria-modal', 'true'); root.setAttribute('aria-label', 'Hollow main menu');
   const style = doc.createElement('style'); style.textContent = `
@@ -18,7 +18,8 @@ export function createStartScreen({onLocal = () => {}, onHost = () => {}, onJoin
   .hollow-start .hs-tools{border-top:1px solid #514d40;padding-top:10px;margin-top:6px}
   `;
   root.append(style); const card = doc.createElement('section'); card.className = 'hs-card'; root.append(card);
-  let session = null, page = 'main', disposed = false, resume = false, previousFocus = null, generation = 0;
+  // live: the session handed to the running game (Open party setup / Enter party).
+  let session = null, live = null, page = 'main', disposed = false, resume = false, previousFocus = null, generation = 0;
   const connected = new Set();
   const node = (tag, text, parent = card) => { const el = doc.createElement(tag); if (text !== undefined) el.textContent = text; parent.append(el); return el; };
   const button = (text, action, parent = card) => { const el = node('button', text, parent); el.type = 'button'; el.addEventListener('click', () => action(el)); return el; };
@@ -26,7 +27,16 @@ export function createStartScreen({onLocal = () => {}, onHost = () => {}, onJoin
   const setStatus = text => { if (statusNode) statusNode.textContent = String(text); };
   const errorText = error => error?.message || String(error);
   async function busy(el, action) { el.disabled = true; const version = generation; try { await action(() => !disposed && version === generation); } catch (error) { if (version === generation) setStatus(errorText(error)); } finally { if (!disposed && version === generation) el.disabled = false; } }
-  function closeSession() { generation++; session?.close(); session = null; connected.clear(); }
+  // onLeave lets the game drop its network layer first, so a deliberate leave is not reported as a lost connection.
+  function closeSession() { generation++; if (session && session === live && typeof onLeave === 'function') { try { onLeave(); } catch { /* Leaving still closes the session. */ } } session?.close(); session = null; live = null; connected.clear(); }
+  // Leaving a running online party disconnects everyone, so ask first.
+  function leaveOnline(next) {
+    if (!live || live !== session) return next();
+    heading('Leave the online party?', 'You are in an online party. Continuing ends this online session and disconnects every player.');
+    button('Disconnect and continue', () => { closeSession(); return next(); }).className = 'hs-primary';
+    // Back is the safe default: a double Enter or Escape must not disconnect the party.
+    const back = button('Back', () => main(true)); card.scrollTop = 0; back.focus?.({preventScroll: true});
+  }
   function newSession() {
     closeSession();
     session = sessionFactory({...peerOptions,
@@ -70,12 +80,12 @@ export function createStartScreen({onLocal = () => {}, onHost = () => {}, onJoin
     };
     if (resume) button('Resume game', () => invoke(onResume), menu).className = 'hs-primary';
     node('h3','Play on this device',menu);
-    choice('adventurer','Solo adventurer','You explore. An AI dungeon master opposes you; two AI companions follow.',() => { closeSession(); return invoke(onLocal,{mode:'adventurer'}); }).className='hs-primary';
-    choice('dm','Solo dungeon master','You build and direct encounters against three bot adventurers.',() => { closeSession(); return invoke(onLocal,{mode:'dm'}); });
-    choice('local','Local party · shared screen','Human-controlled DM and three adventurers share this device. Switch roles manually; no bots.',() => { closeSession(); return invoke(onLocal); });
+    choice('adventurer','Solo adventurer','You explore. An AI dungeon master opposes you; two AI companions follow.',() => leaveOnline(() => { closeSession(); return invoke(onLocal,{mode:'adventurer'}); })).className='hs-primary';
+    choice('dm','Solo dungeon master','You build and direct encounters against three bot adventurers.',() => leaveOnline(() => { closeSession(); return invoke(onLocal,{mode:'dm'}); }));
+    choice('local','Local party · shared screen','Human-controlled DM and three adventurers share this device. Switch roles manually; no bots.',() => leaveOnline(() => { closeSession(); return invoke(onLocal); }));
     node('h3','Play online',menu);
-    choice('host','Host online · dungeon master','Invite up to three remote adventurers by manually exchanging connection codes.',host);
-    choice('join','Join online · adventurer','Use an invite code from your dungeon master. No public matchmaking.',join);
+    choice('host','Host online · dungeon master','Invite up to three remote adventurers by manually exchanging connection codes.',() => leaveOnline(host));
+    choice('join','Join online · adventurer','Use an invite code from your dungeon master. No public matchmaking.',() => leaveOnline(join));
     button('Options', () => invoke(onOptions), menu);
     if(typeof onLab==='function'){
       const tools=node('div',undefined,menu);tools.className='hs-tools';
@@ -83,7 +93,7 @@ export function createStartScreen({onLocal = () => {}, onHost = () => {}, onJoin
     }
     focusFirst();
   }
-  function invoke(callback, data = {}) { return Promise.resolve().then(() => callback({...data, screen: api})).catch(error => setStatus(errorText(error))); }
+  function invoke(callback, data = {}, onDone) { return Promise.resolve().then(() => callback({...data, screen: api})).then(result => { onDone?.(); return result; }, error => setStatus(errorText(error))); }
   function host() {
     heading('Host a party', 'You are the dungeon master. Create one invite per remote adventurer, then paste each answer into its matching slot. After connecting, prepare the dungeon before starting the expedition.');
     try { newSession(); } catch (error) { setStatus(errorText(error)); }
@@ -98,7 +108,7 @@ export function createStartScreen({onLocal = () => {}, onHost = () => {}, onJoin
       button('Accept answer', el => busy(el, async current => { if (!session) throw new Error('Create an invite first.'); await session.acceptAnswer(slot, answer.value); if (current()) setStatus(`Connecting adventurer ${slot}…`); }), group);
       button('Reset slot', () => { session?.disconnect(slot); offer.value = ''; answer.value = ''; connected.delete(slot); updateConnections(); setStatus(`Slot ${slot} cleared. Create a new invite.`); }, group);
     }
-    const play = button('Open party setup', () => invoke(onHost, {session})); play.dataset.hostPlay = ''; play.className = 'hs-primary';
+    const play = button('Open party setup', () => { const handed = session; return invoke(onHost, {session: handed}, () => { if (session === handed) live = handed; }); }); play.dataset.hostPlay = ''; play.className = 'hs-primary';
     button('Back', main); networkNote(); updateConnections(); focusFirst();
   }
   function join() {
@@ -108,13 +118,13 @@ export function createStartScreen({onLocal = () => {}, onHost = () => {}, onJoin
     const actions = node('div'); actions.className = 'hs-row';
     button('Create answer', el => busy(el, async current => { if (!session) throw new Error('WebRTC is unavailable.'); const code = await session.joinInvite(offer.value); if (current()) answer.value = code; }), actions);
     copyButton(answer, actions);
-    const play = button('Enter party', () => invoke(onJoin, {session})); play.dataset.guestPlay = ''; play.className = 'hs-primary';
+    const play = button('Enter party', () => { const handed = session; return invoke(onJoin, {session: handed}, () => { if (session === handed) live = handed; }); }); play.dataset.guestPlay = ''; play.className = 'hs-primary';
     button('Try another invite', join); button('Back', main); networkNote(); updateConnections(); focusFirst();
   }
-  function focusFirst() { if (!root.hidden) card.querySelector('button,textarea')?.focus(); }
+  function focusFirst() { if (root.hidden) return; card.scrollTop = 0; card.querySelector('button,textarea')?.focus({preventScroll: true}); }
   root.addEventListener('keydown', event => {
     event.stopPropagation();
-    if (event.key === 'Escape') { event.preventDefault(); if (page !== 'The party awaits') main(); return; }
+    if (event.key === 'Escape') { event.preventDefault(); if (page === 'Leave the online party?') main(true); else if (page !== 'The party awaits') main(); return; }
     if (event.key !== 'Tab') return;
     const items = [...card.querySelectorAll('button:not(:disabled),textarea:not(:disabled),summary,[tabindex="0"]')].filter(el => !el.hidden);
     const first = items[0], last = items.at(-1);
@@ -126,7 +136,8 @@ export function createStartScreen({onLocal = () => {}, onHost = () => {}, onJoin
     get session() { return session; },
     get visible() { return !root.hidden; },
     show({canResume = resume} = {}) { if (disposed) return; previousFocus = doc.activeElement; resume = canResume; root.hidden = false; if (canResume || page === 'main' || page === 'The party awaits') main(true); else focusFirst(); },
-    hide() { root.hidden = true; previousFocus?.focus?.(); },
+    // Gameplay resumes on the canvas; returning focus to the menu button would let Space reopen the menu.
+    hide() { root.hidden = true; if (typeof focusAfterHide === 'function') focusAfterHide(); else previousFocus?.focus?.({preventScroll: true}); },
     setStatus,
     // Leaving a lobby closes its connections. Hiding it for gameplay preserves them.
     reset() { main(); },

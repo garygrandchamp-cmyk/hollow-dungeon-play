@@ -1,6 +1,8 @@
-import {createEquipmentSprites,HELD_PIXELS_PER_UNIT,sampleHeldPixels} from './equipment-sprites.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
-import {generateWeapon,makeWeaponSprite,CLASS_WEAPON_DEFAULTS} from './weapon-forge.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
-import {hydrateWeaponArt} from './loot-art.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
+import {createEquipmentSprites,HELD_PIXELS_PER_UNIT,sampleHeldPixels} from './equipment-sprites.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {generateWeapon,makeWeaponSprite,CLASS_WEAPON_DEFAULTS} from './weapon-forge.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {hydrateWeaponArt} from './loot-art.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {modelsEnabled} from './model-actors.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {attachFirstPersonModel} from './first-person-models.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
 const kinds={wand:'staff',dagger:'sword'};
 // The fist establishes the grip axis. Keep swords slightly outward instead of
 // leaning their blades across the knuckles as the viewport becomes wider.
@@ -9,10 +11,10 @@ function matchHeldDensity(THREE,root,recipe,height){let mesh;root.traverse(o=>{i
 /** The gauntlet stays a separate cutout; forged blades/hafts are replaceable. */
 export function createLoadoutEquipment(THREE,actor={},equipmentOptions={}){
  const base=createEquipmentSprites(THREE,{...equipmentOptions,modularRightHand:true}),right=base.right,hand=right.userData.hand,handGrip=right.userData.gripAnchor;right.name='modular-right-hand';
- let weapon=null,recipe=null,key='',weaponKey='starter:'+(actor.classId??'adventurer'),stain=null;
+ let weapon=null,recipe=null,key='',heldKind='sword',weaponKey='starter:'+(actor.classId??'adventurer'),stain=null;
  function release(){if(!weapon)return;weapon.userData.disposeMaterials?.();weapon.traverse(o=>o.geometry?.dispose());weapon.removeFromParent();weapon=null;}
  function setWeapon(item={kind:actor.equipment?.weapon?.id??'sword'}){
-  const signature=JSON.stringify(item);if(signature===key)return;key=signature;release();weaponKey=item.id??'starter:'+(actor.classId??'adventurer');const kind=kinds[item.kind]??item.kind;
+  const signature=JSON.stringify(item);if(signature===key)return;key=signature;release();heldKind=item.kind??'sword';weaponKey=item.id??'starter:'+(actor.classId??'adventurer');const kind=kinds[item.kind]??item.kind;
   const profile=Object.entries(CLASS_WEAPON_DEFAULTS).find(([name])=>name.toLowerCase()===actor.classId)?.[1],starter=item.seed==null&&profile?.kind===kind?profile:{};
   const blade=item.blade??item.parts?.blade,grip=item.base??item.parts?.base;
   recipe=generateWeapon({...starter,kind:['sword','axe','mace','hammer','bow','staff'].includes(kind)?kind:'sword',seed:item.seed??actor.id??'starter',theme:item.theme??starter.theme??'steel',...(blade!==undefined?{blade}:{}),...(grip!==undefined?{base:grip}:{}),...(item.color?{color:item.color}:{})});
@@ -21,5 +23,7 @@ export function createLoadoutEquipment(THREE,actor={},equipmentOptions={}){
   const currentWeapon=weapon;weapon.userData.setGripAnchor=anchor=>{if(weapon!==currentWeapon||!anchor||!Number.isFinite(anchor.x)||!Number.isFinite(anchor.y)||anchor.x<0||anchor.x>1||anchor.y<0||anchor.y>1)return false;const local=new THREE.Vector3((anchor.x-.5)*height*recipe.width/recipe.height,(1-anchor.y)*height,0);weapon.userData.gripAnchor={x:anchor.x,y:anchor.y};weapon.userData.localGrip=local;weapon.position.copy(handGrip).sub(local.clone().multiply(weapon.scale).applyQuaternion(weapon.quaternion));return true;};weapon.userData.setGripAnchor(recipe.anchors?.grip??{x:.5,y:.75});weapon.userData.setStain?.(actor.weaponStains?.[weaponKey]??stain);Promise.resolve(hydrateWeaponArt(weapon,recipe)).catch(()=>{});
  }
  setWeapon();
- return {...base,right,setWeapon,layout(aspect,fov=72){if(weapon&&Number.isFinite(aspect)&&aspect>0){weapon.rotation.z=recipe.kind==='sword'?swordGripAngle:Math.atan(aspect/6.6);weapon.userData.setGripAnchor(weapon.userData.gripAnchor);}return base.layout(aspect,fov);},get magicTheme(){return base.magicTheme;},get torchState(){return base.torchState;},setStain(value){stain=value;weapon?.userData.setStain?.(value);},get weapon(){return recipe;},animate(options){weapon?.userData.setStain?.(actor.weaponStains?.[weaponKey]??stain);base.animate(options);},dispose(){release();base.dispose();right.removeFromParent();}};
+ // Experimental: with 3D models on, the class GLB's own arms hold the weapon (the sprites keep all state, hidden).
+ const model3d=modelsEnabled()?attachFirstPersonModel(THREE,base,actor,()=>heldKind):null;
+ return {...base,right,setWeapon,firstPersonModel:model3d,layout(aspect,fov=72){if(weapon&&Number.isFinite(aspect)&&aspect>0){weapon.rotation.z=recipe.kind==='sword'?swordGripAngle:Math.atan(aspect/6.6);weapon.userData.setGripAnchor(weapon.userData.gripAnchor);}return base.layout(aspect,fov);},get magicTheme(){return base.magicTheme;},get torchState(){return base.torchState;},setStain(value){stain=value;weapon?.userData.setStain?.(value);},get weapon(){return recipe;},animate(options){weapon?.userData.setStain?.(actor.weaponStains?.[weaponKey]??stain);base.animate(options);model3d?.animate(options);},dispose(){model3d?.dispose();release();base.dispose();right.removeFromParent();}};
 }

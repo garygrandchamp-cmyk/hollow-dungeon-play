@@ -1,5 +1,5 @@
-import {LIFT_ACTIONS} from './counterweight-lift.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
-import {CHAPEL_ACTIONS} from './bell-chapel.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
+import {LIFT_ACTIONS} from './counterweight-lift.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {CHAPEL_ACTIONS} from './bell-chapel.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
 // Host owns simulation; guests send controls, never actor state or coordinates.
 export const NETWORK_ACTIONS = Object.freeze([...LIFT_ACTIONS,...CHAPEL_ACTIONS,'sluice-turn','bridge-turn','attack','cast','interact','search','search-roll','search-close','take-item','jump','block','guard','release','swap','offhand','switch-offhand','escape','use']);
 const CLASSES = new Set(['mage','paladin','barbarian','warlock','thief','archer']);
@@ -29,14 +29,15 @@ function loadoutOf(value) {
   return {weapon:value.weapon,offhand:value.offhand};
 }
 
-export function createNetworkGame({session,getSnapshot=()=>({world:null,state:null}),onWorld=()=>{},onState=()=>{},onInput=()=>{},onAction=()=>{},onClass=()=>{},onLoadout=()=>{},notify=()=>{},now:clock=()=>globalThis.performance?.now?.()??Date.now()}={}) {
+export function createNetworkGame({session,getSnapshot=()=>({world:null,state:null}),onWorld=()=>{},onState=()=>{},onInput=()=>{},onAction=()=>{},onClass=()=>{},onLoadout=()=>{},notify=()=>{},onConnectionChange=()=>{},now:clock=()=>globalThis.performance?.now?.()??Date.now()}={}) {
   if(!session || !['host','guest'].includes(session.role))throw Error('Network game requires a host or guest peer session.');
-  const role=session.role, peers=new Map(), bundles=new Map();let closed=false, seq=0,worldSeq=0,worldCache=null,lastStateAt=-Infinity,lastInputAt=-Infinity,lastHelloAt=-Infinity,latestInput=null,actorId=role==='host'?'dm':null,appliedStamp=null,appliedVersion=null,appliedWorldSeq=0,appliedStateSeq=0,applying=null,pendingWorld=null,pendingState=null,lastClock=clock();
+  const role=session.role, peers=new Map(), bundles=new Map();let closed=false, seq=0,worldSeq=0,worldCache=null,lastStateAt=-Infinity,lastInputAt=-Infinity,lastHelloAt=-Infinity,latestInput=null,actorId=role==='host'?'dm':null,appliedStamp=null,appliedVersion=null,appliedWorldSeq=0,appliedStateSeq=0,applying=null,pendingWorld=null,pendingState=null,lastClock=clock(),lastActorId=actorId;
   const report=message=>notify(String(message));
   const context=(slot,extra={})=>({slot,actorId:'hero-'+slot,...extra});
   const connected=slot=>Number.isInteger(slot)&&slot>=1&&slot<=3&&session.connected.includes(slot);
   function time(value=clock()){if(!Number.isFinite(value))return lastClock;lastClock=Math.max(lastClock,value);return lastClock;}
   function peer(slot){let p=peers.get(slot);if(!p){p={slot,queue:[],last:{},buckets:{},ready:null,input:null,inputAt:0};peers.set(slot,p);}return p;}
+  const release=(slot,p)=>onInput({forward:0,strafe:0,yaw:p?.input?.yaw??0,pitch:p?.input?.pitch??0,blocking:false,sprint:false},context(slot,{disconnected:true}));
   function permit(p,kind,rate,capacity){const t=time(), b=p.buckets[kind]??{tokens:capacity,at:t};b.tokens=Math.min(capacity,b.tokens+Math.max(0,t-b.at)*rate/1000);b.at=t;p.buckets[kind]=b;if(b.tokens<1)return false;b.tokens--;return true;}
   function fresh(p,kind,value){if(!sequence(value)||value<=(p.last[kind]??0))return false;p.last[kind]=value;return true;}
   function packet(kind,data,meta={}){return {v:1,kind,seq:++seq,...meta,data};}
@@ -71,7 +72,7 @@ export function createNetworkGame({session,getSnapshot=()=>({world:null,state:nu
   function receiveGuest(value,slot){
     if(value.kind==='welcome'){
       if(!keys(value.data,['actorId'])||value.data.actorId!=='hero-'+slot)return false;
-      actorId=value.data.actorId;return true;
+      actorId=lastActorId=value.data.actorId;return true;
     }
     if(!['world','state'].includes(value.kind)||!stampOK(value.stamp)||!Number.isInteger(value.version)||value.version<1||value.version>65535)return false;
     if(value.kind==='state'){applyState(value);return true;}
@@ -132,14 +133,17 @@ export function createNetworkGame({session,getSnapshot=()=>({world:null,state:nu
     return consume(JSON.parse(text),slot);
   }
   const api={
-    get role(){return role;},get actorId(){return actorId;},get layoutStamp(){return appliedStamp??worldCache?.stamp??null;},
+    get role(){return role;},get actorId(){return actorId;},
+    // Survives a dropped connection so the guest view can stay on its own hero.
+    get lastActorId(){return lastActorId;},get layoutStamp(){return appliedStamp??worldCache?.stamp??null;},
     receive(message,slot){
       if(closed||!connected(slot)||!keys(message,['type','payload'])||message.type!=='net'||!object(message.payload)||message.payload.v!==1)return false;
       try{return message.payload.kind==='chunk'?chunk(message.payload,slot):consume(message.payload,slot);}catch(error){report('Ignored network message: '+error.message);return false;}
     },
     onPeer(event){
       if(closed||!Number.isInteger(event?.slot)||event.slot<1||event.slot>3)return;
-      if(!event.connected){const p=peers.get(event.slot);if(role==='host'&&p?.input)onInput({forward:0,strafe:0,yaw:p.input.yaw,pitch:p.input.pitch,blocking:false,sprint:false},context(event.slot,{disconnected:true}));peers.delete(event.slot);if(role==='guest'){appliedStamp=null;appliedVersion=null;actorId=null;applying=null;pendingWorld=null;pendingState=null;latestInput=null;bundles.clear();}return;}
+      try{onConnectionChange({connected:!!event.connected,role,slot:event.slot});}catch{ /* UI notice only. */ }
+      if(!event.connected){const p=peers.get(event.slot);if(role==='host')release(event.slot,p);peers.delete(event.slot);if(role==='guest'){appliedStamp=null;appliedVersion=null;appliedWorldSeq=0;appliedStateSeq=0;actorId=null;applying=null;pendingWorld=null;pendingState=null;latestInput=null;bundles.clear();}return;}
       const p=peer(event.slot);if(p.linked)return;p.linked=true;if(role==='host'){try{sendWorld(p);}catch(error){report(error.message);}}else hello();
     },
     tick(dt,now=clock()){
@@ -152,17 +156,19 @@ export function createNetworkGame({session,getSnapshot=()=>({world:null,state:nu
       }
       for(const p of peers.values())if(p.input&&t-p.inputAt>350){onInput({forward:0,strafe:0,yaw:p.input.yaw,pitch:p.input.pitch,blocking:false,sprint:false},context(p.slot,{timeout:true}));p.input=null;}
       if(t-lastStateAt<1000/12)return;lastStateAt=t;
+      // Nobody to send to: skip the snapshot (it serializes and hashes the build).
+      let anyone=false;for(const p of peers.values())if(connected(p.slot)){anyone=true;break;}if(!anyone)return;
       try{
         const snap=snapshot();const state=packet('state',snap.state,{stamp:snap.stamp,version:snap.version});
         for(const p of peers.values())if(connected(p.slot)){if(p.ready!==snap.stamp){if(!p.queue.some(b=>b.kind==='world')&&p.lastWorldSeq!==worldSeq){sendWorld(p);p.lastWorldSeq=worldSeq;}}else enqueue(p,state);}
       }catch(error){report(error.message);}
     },
-    sendInput(input){if(closed||role!=='guest')return false;latestInput=inputOf(input);return true;},
+    sendInput(input){if(closed||role!=='guest')return false;const yaw=typeof input?.yaw==='number'?(input.yaw%(Math.PI*2)+Math.PI*3)%(Math.PI*2)-Math.PI:input?.yaw;latestInput=inputOf(input&&typeof input==='object'?{...input,yaw}:input);return true;},
     sendAction(kind,targetId){if(closed||role!=='guest'||!NETWORK_ACTIONS.includes(kind))return false;if(kind==='take-item'){if(typeof targetId!=='string'||!/^[a-zA-Z0-9_.:-]{1,128}$/.test(targetId))return false;}else if(targetId!==undefined)return false;return sendGuest(packet('action',kind==='take-item'?{kind,targetId}:{kind}));},
     sendClass(classId){if(closed||role!=='guest'||!CLASSES.has(classId))return false;return sendGuest(packet('class',{classId}));},
     sendLoadout(loadout){if(closed||role!=='guest')return false;return sendGuest(packet('loadout',loadoutOf(loadout)));},
     broadcastWorld(){if(closed||role!=='host')return false;try{snapshot(true);for(const slot of session.connected)sendWorld(peer(slot));return true;}catch(error){report(error.message);return false;}},
-    close(){if(closed)return;for(const p of peers.values())if(role==='host'&&p.input)onInput({forward:0,strafe:0,yaw:p.input.yaw,pitch:p.input.pitch,blocking:false,sprint:false},context(p.slot,{disconnected:true}));closed=true;peers.clear();bundles.clear();applying=null;pendingWorld=null;pendingState=null;latestInput=null;}
+    close(){if(closed)return;if(role==='host')for(const p of peers.values())release(p.slot,p);closed=true;peers.clear();bundles.clear();applying=null;pendingWorld=null;pendingState=null;latestInput=null;}
   };
   for(const slot of session.connected)api.onPeer({slot,connected:true});return api;
 }

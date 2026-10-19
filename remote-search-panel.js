@@ -1,5 +1,5 @@
-import {compatibleCurse} from './cursed-equipment.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
-import {searchFeedback,searchRollStyles,lootDetails,appendSearchComparison} from './search-feedback.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
+import {compatibleCurse} from './cursed-equipment.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {searchFeedback,searchRollStyles,lootDetails,appendSearchComparison} from './search-feedback.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
 // Presentation only. Host snapshots own outcomes, stamina and loot grants.
 export function createRemoteSearchPanel({sendAction,sound=()=>{},drawIcon=null,document:doc=globalThis.document,now=()=>globalThis.performance?.now?.()??Date.now(),setInterval:startInterval=globalThis.setInterval,clearInterval:stopInterval=globalThis.clearInterval,setTimeout:startTimeout=globalThis.setTimeout,clearTimeout:stopTimeout=globalThis.clearTimeout}={}) {
   if(typeof sendAction!=='function'||!doc)throw Error('Remote search requires sendAction and a document.');
@@ -21,10 +21,13 @@ export function createRemoteSearchPanel({sendAction,sound=()=>{},drawIcon=null,d
     }
     return result;
   }
-  let waitingKind=null,dieDisplay=null;
+  let waitingKind=null,dieDisplay=null,rollingSince=-Infinity,stallTimer=null;
+  // The host settles a roll in about a second. If no result arrives (host dropped),
+  // Close becomes available again instead of trapping the player in the dialog.
+  const ROLL_STALL_MS=5000,rolling=()=>current?.status==='rolling'||waitingKind==='search-roll',stalled=()=>now()-rollingSince>=ROLL_STALL_MS;
   function timers(){if(animation!==null)stopInterval(animation);if(retry!==null)stopTimeout(retry);animation=retry=null;waiting=false;waitingKind=null;}
   function animateDie(die,token){die.className=die.className.replace(' search-settled','')+' rs-rolling';die.textContent='?';let face=0,ticks=0;animation=startInterval(()=>{if(token!==epoch||!open)return;face=(face+7)%20;ticks++;if(ticks<=16&&ticks%2===0)sound('dice-roll-tick');die.textContent=String(face+1);},65);animation?.unref?.();}
-  function hide(){epoch++;timers();open=false;current=null;signature='';if(dialog.open)dialog.close?.();dialog.hidden=true;dialog.replaceChildren();previousFocus?.focus?.();}
+  function hide(){epoch++;timers();if(stallTimer!==null)stopTimeout(stallTimer);stallTimer=null;open=false;current=null;signature='';if(dialog.open)dialog.close?.();dialog.hidden=true;dialog.replaceChildren();previousFocus?.focus?.();}
   function request(kind,targetId,token,button){
     if(disposed||!open||token!==epoch||waiting)return;
     let sent=false;try{sent=sendAction(kind,targetId)!==false;}catch{sent=false;}
@@ -33,7 +36,7 @@ export function createRemoteSearchPanel({sendAction,sound=()=>{},drawIcon=null,d
     if(token!==epoch||!open)return;
     waiting=true;waitingKind=kind;for(const el of dialog.querySelectorAll('button'))if(el.dataset.request||kind==='search-roll')el.disabled=true;
     feedback.textContent=kind==='take-item'?'Waiting for the host to grant this item…':'Waiting for the host to roll…';
-    if(kind==='search-roll'){animateDie(dieDisplay,token);sound('dice-roll-start');}
+    if(kind==='search-roll'){rollingSince=now();animateDie(dieDisplay,token);sound('dice-roll-start');}
     retry=startTimeout(()=>{if(token!==epoch||disposed||!open)return;retry=null;waiting=false;render();},2000);retry?.unref?.();
   }
   let feedback;
@@ -52,7 +55,8 @@ export function createRemoteSearchPanel({sendAction,sound=()=>{},drawIcon=null,d
     }else if(c.status!=='rolling'){
       const roll=make('button',c.fainted||c.exhausted?'Exhausted — cannot search':c.status==='failed'?'Try again · 8 stamina':'Roll D20 · 8 stamina');roll.type='button';roll.dataset.request='roll';roll.disabled=c.fainted||c.exhausted;roll.addEventListener('click',()=>{if(!c.fainted&&!c.exhausted)request('search-roll',undefined,token,roll);});
     }
-    const done=make('button','Close');done.type='button';done.disabled=c.status==='rolling';done.addEventListener('click',()=>{if(token===epoch&&current?.id===c.id)api.close();});
+    if(stallTimer!==null)stopTimeout(stallTimer);stallTimer=null;if(c.status==='rolling'&&!stalled()){stallTimer=startTimeout(()=>{stallTimer=null;if(token===epoch&&open)render();},Math.max(0,rollingSince+ROLL_STALL_MS-now()));stallTimer?.unref?.();}
+    const done=make('button','Close');done.type='button';done.disabled=c.status==='rolling'&&!stalled();done.addEventListener('click',()=>{if(token===epoch&&current?.id===c.id)api.close();});
   }
   dialog.addEventListener('cancel',event=>{event.preventDefault();api.close();});
   dialog.addEventListener('keydown',event=>event.stopPropagation());
@@ -65,12 +69,12 @@ export function createRemoteSearchPanel({sendAction,sound=()=>{},drawIcon=null,d
       const value=clean(snapshot);if(!value){if(open)hide();return false;}
       if(suppressed?.id===value.id&&now()<suppressed.until)return false;
       suppressed=null;const next=JSON.stringify(value);if(open&&signature===next)return true;
-      const hadOpen=open,focused=doc.activeElement,previous=current,pendingRoll=waitingKind==='search-roll';current=value;signature=next;open=true;dialog.hidden=false;render();if(previous?.id!==value.id||previous?.status!==value.status){if(value.status==='rolling'&&!pendingRoll)sound('dice-roll-start');else if(value.status==='success'||value.status==='failed')sound(value.status==='success'?'dice-success':'dice-failure');}
+      const hadOpen=open,focused=doc.activeElement,previous=current,pendingRoll=waitingKind==='search-roll';if(value.status==='rolling'&&(previous?.id!==value.id||previous?.status!=='rolling'))rollingSince=now();current=value;signature=next;open=true;dialog.hidden=false;render();if(previous?.id!==value.id||previous?.status!==value.status){if(value.status==='rolling'&&!pendingRoll)sound('dice-roll-start');else if(value.status==='success'||value.status==='failed')sound(value.status==='success'?'dice-success':'dice-failure');}
       if(!hadOpen){previousFocus=focused;try{if(!dialog.open)dialog.showModal?.();}catch{dialog.setAttribute('open','');}dialog.querySelector('button')?.focus();}
       else if(!dialog.contains?.(focused))dialog.querySelector('button')?.focus();
       return true;
     },
-    close(){if(!open||disposed||current?.status==='rolling'||waitingKind==='search-roll')return;suppressed={id:current.id,until:now()+1500};hide();try{sendAction('search-close');}catch{}},
+    close(){if(!open||disposed||rolling()&&!stalled())return;suppressed={id:current.id,until:now()+1500};hide();try{sendAction('search-close');}catch{}},
     destroy(){if(disposed)return;hide();disposed=true;dialog.remove();style.remove();}
   };return api;
 }

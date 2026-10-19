@@ -1,11 +1,13 @@
-import {createHubTransactions} from './hub-transactions.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
-import {INVENTORY_CAPACITY,HUB_STASH_CAPACITY} from './adventurer-inventory.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
+import {createHubTransactions} from './hub-transactions.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {INVENTORY_CAPACITY,HUB_STASH_CAPACITY} from './adventurer-inventory.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
 
 export const HUB_PREPARATION_KEY='hollow:hub-preparation:v1';
 const clone=value=>JSON.parse(JSON.stringify(value));
 const fail=reason=>({ok:false,reason});
 const token=value=>typeof value==='string'&&value.length<=64&&/^[a-zA-Z0-9_.:-]+$/.test(value);
 const point=p=>p&&['x','y','z'].every(k=>Number.isFinite(p[k])&&Math.abs(p[k])<=1e6);
+// randomUUID needs a secure context (missing on plain-HTTP LAN testing and old Safari).
+function randomEpochToken(){const c=globalThis.crypto;if(typeof c?.randomUUID==='function')return c.randomUUID();const bytes=new Uint8Array(16);if(typeof c?.getRandomValues==='function')c.getRandomValues(bytes);else for(let i=0;i<16;i++)bytes[i]=Math.floor(Math.random()*256);const hex=[...bytes].map(b=>b.toString(16).padStart(2,'0')).join('');return hex.slice(0,8)+'-'+hex.slice(8,12)+'-'+hex.slice(12,16)+'-'+hex.slice(16,20)+'-'+hex.slice(20);}
 const eligible=a=>a&&a.alive!==false&&!a.fainted&&!a.escaped&&a.health>0;
 function decode(raw){
  if(raw===null)return null;
@@ -24,7 +26,7 @@ function decode(raw){
  * Root must call beforeStart BEFORE resetting inventory/campaign, then
  * completeStart AFTER beginRun, spawn/stat setup and campaign persistence.
  */
-export function createHubPreparation({campaign,inventory,storage,withActor,getRole=()=> 'local',getPaused=()=>false,stations,spawns,blocked,offersForEpoch,sellPrice,createEpoch=()=> 'prep:'+globalThis.crypto.randomUUID(),persistCampaign=()=>campaign.persist(),getActor=id=>campaign.actors.find(a=>a.id===id),prepareActors=()=>({ok:true}),validatePrepared=()=>({ok:true})}={}){
+export function createHubPreparation({campaign,inventory,storage,withActor,getRole=()=> 'local',getPaused=()=>false,stations,spawns,blocked,offersForEpoch,sellPrice,createEpoch=()=> 'prep:'+randomEpochToken(),persistCampaign=()=>campaign.persist(),getActor=id=>campaign.actors.find(a=>a.id===id),prepareActors=()=>({ok:true}),validatePrepared=()=>({ok:true})}={}){
  if(!campaign?.state||!Array.isArray(campaign.actors)||!inventory?.hubRecord||typeof withActor!=='function'||!storage?.getItem||!storage?.setItem||typeof getRole!=='function'||typeof getPaused!=='function'||typeof blocked!=='function'||typeof offersForEpoch!=='function'||typeof sellPrice!=='function'||typeof createEpoch!=='function'||typeof persistCampaign!=='function'||typeof getActor!=='function'||typeof prepareActors!=='function'||typeof validatePrepared!=='function')throw TypeError('Invalid preparation dependencies');
  const stationPoints=clone(stations??{}),poses=new Map(),panels=new Map();
  if(Object.keys(stationPoints).sort().join(',')!=='shop,stash'||!Object.values(stationPoints).every(point)||campaign.actors.length!==3||new Set(campaign.actors.map(a=>a.id)).size!==3)throw TypeError('Invalid hub geometry');
@@ -32,7 +34,11 @@ export function createHubPreparation({campaign,inventory,storage,withActor,getRo
  const initial=[...poses.values()];if(initial.some((p,i)=>initial.some((q,j)=>j<i&&Math.hypot(p.position.x-q.position.x,p.position.z-q.position.z)<.46)))throw TypeError('Overlapping hub spawns');
  let raw=null,record=null,loadError=false,ready=false,closed=false,locked=false,transactions=null,recoveryEpoch=null;
  try{raw=storage.getItem(HUB_PREPARATION_KEY)??null;record=decode(raw);}catch{loadError=true;}
- loadError ||= !!inventory.persistenceError||!!campaign.persistenceError;
+ // Save health is checked on each entry (after one retry), not frozen at construction.
+ function storageHealthy(){if(campaign.persistenceError)saveCampaign();if(inventory.persistenceError)inventory.persist?.();return !inventory.persistenceError&&!campaign.persistenceError;}
+ // Run numbers never decrease: a record ahead of the campaign, or a departure the
+ // campaign does not reflect, means the campaign save was reset or lost.
+ function regressed(){return !!record&&(record.runNumber>campaign.runNumber||record.runNumber===campaign.runNumber&&record.status==='departed');}
  const authority=()=>['local','host'].includes(getRole());
  function current(){try{return (storage.getItem(HUB_PREPARATION_KEY)??null)===raw;}catch{return false;}}
  function write(next){if(!current())return fail('preparation-stale');try{const bytes=JSON.stringify(next);storage.setItem(HUB_PREPARATION_KEY,bytes);raw=bytes;record=next;return {ok:true};}catch{return fail('preparation-storage');}}
@@ -62,15 +68,17 @@ export function createHubPreparation({campaign,inventory,storage,withActor,getRo
  function enterPreparation(){return boundary(()=>{
   const gate=base();if(!gate.ok)return gate;ready=false;panels.clear();
   if(campaign.state.phase!=='lobby')return fail('phase');
-  if(record&&record.runNumber>campaign.runNumber)return fail('run-conflict');
-  if(record?.runNumber===campaign.runNumber&&record.status==='sealed')return fail('start-sealed');
-  if(record?.runNumber===campaign.runNumber&&record.status==='departed')return fail('run-conflict');
-  const recovered=recoverAll(record?.runNumber===campaign.runNumber?record.epoch:null);if(!recovered.ok)return recovered;
-  let next=record;
+  if(!storageHealthy())return fail('preparation-invalid');
+  // With no pending wallet or loss ledger nothing is lost by opening a fresh epoch.
+  const stale=regressed();if(stale&&inventory.snapshot().actors.some(r=>r.hub?.pendingMirror||r.preparationLoss?.pendingMirror))return fail('run-conflict');
+  if(!stale&&record?.runNumber===campaign.runNumber&&record.status==='sealed')return fail('start-sealed');
+  const recovered=recoverAll(!stale&&record?.runNumber===campaign.runNumber?record.epoch:null);if(!recovered.ok)return recovered;
+  let next=stale?null:record;
   if(!next||next.runNumber!==campaign.runNumber){const epoch=createEpoch();if(!token(epoch)||epoch===record?.epoch||inventory.snapshot().actors.some(r=>r.hub?.epoch===epoch))return fail('epoch');next={version:1,epoch,runNumber:campaign.runNumber,status:'preparing'};}
   // Build/validate deterministic stock before persisting a new epoch.
   const tx=build(next.epoch),saved=write(next);if(!saved.ok)return saved;
-  const prepared=prepareActors({epoch:record.epoch});if(!prepared?.ok)return prepared??fail('preparation-actors');transactions=tx;ready=true;return {ok:true,epoch:record.epoch};
+  // Wallet recovery and death loss set actor gold directly: let cached vitals re-read it.
+  const prepared=prepareActors({epoch:record.epoch});if(!prepared?.ok)return prepared??fail('preparation-actors');transactions=tx;ready=true;inventory.refresh?.();return {ok:true,epoch:record.epoch};
  });}
  function actorGate(actorId,ownerId){const gate=base();if(!gate.ok)return gate;if(!ready||record?.status!=='preparing'||record.runNumber!==campaign.runNumber)return fail('not-ready');if(campaign.state.phase!=='lobby')return fail('phase');if(getPaused())return fail('paused');if(ownerId!==actorId||!poses.has(actorId))return fail('ownership');if(!eligible(getActor(actorId)))return fail('actor');return {ok:true};}
  const distance=(id,station)=>{const p=poses.get(id)?.position,s=stationPoints[station];return p&&s?Math.hypot(p.x-s.x,p.y-s.y,p.z-s.z):Infinity;};
@@ -93,7 +101,7 @@ export function createHubPreparation({campaign,inventory,storage,withActor,getRo
  });}
  function abortStart(){return boundary(()=>{
   const gate=base();if(!gate.ok)return gate;if(record?.status!=='sealed'||record.runNumber!==campaign.runNumber||campaign.state.phase!=='lobby')return fail('start-conflict');
-  const result=recoverAll(record.epoch);if(!result.ok)return result;const prepared=prepareActors({epoch:record.epoch});if(!prepared?.ok)return prepared??fail('preparation-actors');const tx=build(record.epoch),saved=write({...record,status:'preparing'});if(!saved.ok)return saved;transactions=tx;ready=true;return {ok:true};
+  const result=recoverAll(record.epoch);if(!result.ok)return result;const prepared=prepareActors({epoch:record.epoch});if(!prepared?.ok)return prepared??fail('preparation-actors');const tx=build(record.epoch),saved=write({...record,status:'preparing'});if(!saved.ok)return saved;transactions=tx;ready=true;inventory.refresh?.();return {ok:true};
  });}
  function completeStart(){return boundary(()=>{
   const gate=base();if(!gate.ok)return gate;if(record?.status!=='sealed'||campaign.state.phase==='lobby'||campaign.runNumber!==record.runNumber+1)return fail('start-conflict');

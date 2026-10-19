@@ -68,6 +68,7 @@ body.mobile-game:not(.party-active):not(.first-person) aside{top:90px;left:8px;w
 #graphicsRecovery{position:fixed;z-index:11000;left:50%;top:50%;transform:translate(-50%,-50%);width:min(400px,90vw);padding:18px;background:#161b24;border:3px double #b49b70;color:#e4d3ac;font:14px monospace}#graphicsRecovery[hidden]{display:none}#graphicsRecovery button{min-height:48px;padding:10px;background:#332f25;color:#e4d3ac;border:2px solid #aa9370}
 
 /* Keep touch targets inside their frames and long loot/loadout names contained. */
+body.mobile-game{--retro-toolbar:52px}
 body.mobile-game #partyToolbar{height:52px!important;min-height:52px;padding:2px 4px!important;scroll-padding-inline:8px;overscroll-behavior-x:contain}
 body.mobile-game #partyToolbar button{min-height:44px}
 body.mobile-game .mobile-view-tabs{top:calc(56px + env(safe-area-inset-top));padding-inline:8px}

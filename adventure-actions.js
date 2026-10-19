@@ -9,7 +9,7 @@ export function createActionBudget({actor={stamina:100,maxStamina:100,fainted:fa
   const roll=dc===undefined?null:1+Math.min(19,Math.max(0,Math.floor(random()*20))),total=roll===null?null:roll+modifier;
   const result={kind,maxStamina:actor.maxStamina??100,silent,allowed:true,success:roll===null||roll===20||roll!==1&&total>=dc,roll,total,dc,cost,remaining:actor.stamina,exhausted:actor.stamina===0,becameExhausted:before>0&&actor.stamina===0,fainted:!!actor.fainted};onResult(result);return result;
  }
- return {actor,attempt,exhaust(){actor.stamina=0;onResult({kind:'exhaustion',allowed:false,success:false,cost:0,remaining:0,exhausted:true,becameExhausted:true,fainted:!!actor.fainted});},defeat(){actor.health=0;actor.alive=false;},reset(){actor.stamina=actor.maxStamina??100;actor.fainted=false;actor.alive=true;},get exhausted(){return actor.stamina===0;},get fainted(){return !!actor.fainted||actor.alive===false;}};
+ return {actor,attempt,exhaust(){actor.stamina=0;onResult({kind:'exhaustion',allowed:false,success:false,cost:0,remaining:0,exhausted:true,becameExhausted:true,fainted:!!actor.fainted});},defeat(){actor.health=0;actor.alive=false;},reset(){actor.stamina=actor.maxStamina??100;actor.fainted=false;actor.alive=true;actor.escaped=false;},get exhausted(){return actor.stamina===0;},get fainted(){return !!actor.fainted||actor.alive===false;}};
 }
 
 export function createAdventureActions({notify=()=>{},sound=()=>{}}={}){

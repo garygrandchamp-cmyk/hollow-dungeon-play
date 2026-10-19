@@ -1,11 +1,11 @@
-import {planRotatingBridge} from './rotating-bridge.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
-import {roomElevationAt,sampleRoomElevation} from './room-elevation.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
+import {planRotatingBridge} from './rotating-bridge.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {roomElevationAt,sampleRoomElevation} from './room-elevation.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
 export const SLUICE_SECONDS=6,SLUICE_DM_COST=8;
 const fresh=()=>({level:1,target:1,moving:false,cooldown:0,serial:0});
 const living=a=>a&&a.alive!==false&&!a.fainted&&!a.escaped&&a.health>0;
 export function preferSluice(seed){let h=0;for(const c of String(seed))h=(Math.imul(h,31)+c.charCodeAt(0))>>>0;return h%3===0;}
 export function planSluice(options){const p=planRotatingBridge(options);if(!p)return null;return {...p,id:p.id.replace('turntable:','sluice:'),controls:[p.controls[1],p.controls[3]],elevation:{left:p.cx-p.half,right:p.cx+p.half,north:p.cz-p.half,south:p.cz+p.half,depth:.9,stairWidth:1.8,steps:6,tileIndices:p.cells,module:4.8}};}
-export function selectSluices({levels,size,tiles,seed='',reserved=[[],[]]}){const plans=levels.map((l,floor)=>planSluice({architecture:l.result.architecture,grid:l.result.grid,tiles,size,seed:seed+':sluice',floor,reserved:reserved[floor]}));const choices=plans.flatMap((p,i)=>p?[i]:[]);if(!choices.length)return plans;let h=0;for(const c of seed)h=(Math.imul(h,31)+c.charCodeAt(0))>>>0;const chosen=choices[h%choices.length];return plans.map((p,i)=>i===chosen?p:null);}
+export function selectSluices({levels,size,tiles,seed='',reserved=[[],[]],avoid=[[],[]]}){const plans=levels.map((l,floor)=>planSluice({architecture:l.result.architecture,grid:l.result.grid,tiles,size,seed:seed+':sluice',floor,reserved:reserved[floor],avoid:avoid?.[floor]??[]}));const choices=plans.flatMap((p,i)=>p?[i]:[]);if(!choices.length)return plans;let h=0;for(const c of seed)h=(Math.imul(h,31)+c.charCodeAt(0))>>>0;const chosen=choices[h%choices.length];return plans.map((p,i)=>i===chosen?p:null);}
 export function inSluice(p,x,z,r=.18){return !!p&&Math.abs(x-p.cx)<p.half+r&&Math.abs(z-p.cz)<p.half+r;}
 export function sluiceSurface(p,r,x,z,previous=0,radius=.18){if(!p||!inSluice(p,x,z,radius))return undefined;if(r.moving||r.level>0)return null;return roomElevationAt([p.elevation],x,z,previous,radius);}
 export function sluiceGround(p,r,x,z){if(!p||!inSluice(p,x,z,0))return undefined;return sampleRoomElevation([p.elevation],x,z);}

@@ -1,11 +1,12 @@
-import {combatTiming} from './combat-timing.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
-import {createDMCameraNavigation} from './dm-camera.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
-import {roomContainsTile} from './room-footprint.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
-import {postGameSummary,renderPostGame} from './post-game.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
-import {createDMEntranceOverlay} from './dm-entrance-overlay.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
-import {CLASSES} from './party-campaign.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
-import {createHeldInput} from './held-input.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
-import {MONSTER_KINDS} from './monster-sprites.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
+import {combatTiming} from './combat-timing.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {stableChildCount} from './static-culling.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {createDMCameraNavigation} from './dm-camera.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {roomContainsTile} from './room-footprint.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {postGameSummary,renderPostGame} from './post-game.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {createDMEntranceOverlay} from './dm-entrance-overlay.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {CLASSES} from './party-campaign.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {createHeldInput} from './held-input.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {MONSTER_KINDS} from './monster-sprites.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
 
 const HERO_IDS = ['hero-1', 'hero-2', 'hero-3'];
 const MOVEMENT = new Set(['w', 'a', 's', 'd', 'arrowup', 'arrowleft', 'arrowdown', 'arrowright']);
@@ -52,8 +53,12 @@ export function hitPartyViewport(rectangles, x, y) {
  */
 export function createPartyView(options = {}) {
   const {THREE, renderer, scene, dmCamera, roof, campaign, makePlayerSprite, createEquipmentSprites,
-    layoutEquipment, moveActor = () => {}, onAction, onStart, onNewDungeon,onContinue,onOpenLab,onFloor,onIngress, onPlace, onValidate, onInventory, onLoadout, onClass, onNamedLock,
+    layoutEquipment, moveActor = () => {}, onAction: rawOnAction, onStart, onNewDungeon,onContinue,onOpenLab,onFloor: rawOnFloor,onIngress: rawOnIngress, onPlace: rawOnPlace, onValidate, onInventory: rawOnInventory, onLoadout, onClass, onNamedLock: rawOnNamedLock,
     notify = () => {}} = options;
+  // Callbacks that can change app state (pause, open panels, switch floors) drop the per-scope getWorld() cache,
+  // so later checks in the same tick/event see the new state.
+  const invalidating = fn => typeof fn === 'function' ? function (...args) {try {return fn.apply(this, args);} finally {worldCache = null;}} : fn;
+  const onAction = invalidating(rawOnAction), onFloor = invalidating(rawOnFloor), onIngress = invalidating(rawOnIngress), onPlace = invalidating(rawOnPlace), onInventory = invalidating(rawOnInventory), onNamedLock = invalidating(rawOnNamedLock);
   if (!THREE || !renderer?.domElement || !scene?.add || !dmCamera || !Array.isArray(campaign?.actors) || campaign.actors.length !== 3) throw new TypeError('Party view requires THREE, renderer, scene, DM camera and three campaign actors.');
   if (campaign.actors.some((a, i) => a.id !== HERO_IDS[i])) throw new TypeError('Party actors must use stable hero-1 through hero-3 ids.');
   const document = options.document ?? globalThis.document, window = options.window ?? document?.defaultView ?? globalThis;
@@ -71,7 +76,11 @@ export function createPartyView(options = {}) {
   let placementRevision=0;let namedLockSelect=null,namedLockOptions='',toolStatus=null,tileStatus=null,placementStatus=null,selectedTile=null,hoverTile=null;
   const tileMarker=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({color:0xc8b778,transparent:true,opacity:.28,depthTest:false,depthWrite:false,side:THREE.DoubleSide}));tileMarker.name='dm-target-tile';tileMarker.rotation.x=-Math.PI/2;tileMarker.renderOrder=1000;tileMarker.userData.dmOnly=true;tileMarker.visible=false;scene.add(tileMarker);const entranceOverlay=createDMEntranceOverlay(THREE);scene.add(entranceOverlay.root);let overlayPoints=null;
   let shell = null, toolbar = null, palette = null, launcher = null, startButton = null,labButton=null,newDungeonButton=null,workflowStatus=null,workflowNext=null,cancelPlacement=null,floorSelect=null,ingressPanel=null,ingressSelect=null,ingressSend=null,ingressStatus=null,ingressOptions='',ingressMonsterSelect=null,monsterGroup=null,ingressMonsterOptions=new Map(),ingressSending=false,ingressChoice=null,ingressLastResult=null,ingressLastMessage='',guideAction=null, validationLabel = null, resourceLabel = null, result = null, resultKey = '', dismissedResultKey = '';
-  const world = () => {try {return options.getWorld?.() ?? {};} catch {return {paused: true};}};
+  // getWorld() assembles a large object; inside one tick/render/event/API call it is built once and reused.
+  let worldDepth = 0, worldCache = null;
+  const fetchWorld = () => {try {return options.getWorld?.() ?? {};} catch {return {paused: true};}};
+  const world = () => worldDepth > 0 ? worldCache ??= fetchWorld() : fetchWorld();
+  const scoped = fn => function (...args) {if (worldDepth++ === 0) worldCache = null; try {return fn.apply(this, args);} finally {if (--worldDepth === 0) worldCache = null;}};
   const dmNavigation=options.dmNavigation===true?createDMCameraNavigation(THREE,{getBounds:()=>{const w=world();return {size:w.size??16,moduleSize:w.moduleSize??4.8,key:(w.seed??'')+':'+(w.floor??0)};}}):null;
   const dmPointers=new Map();let dmPinch=null,dmMulti=false,suppressDMContextMenu=false,cameraControls=null,orbitButton=null,panButton=null,roomButton=null;
   function clearDMGesture(){dmPointers.clear();dmPinch=null;dmMulti=false;}
@@ -93,14 +102,14 @@ export function createPartyView(options = {}) {
   function lookActor(a,dx,dy){const hub=preparation();if(hub)return hub.look(a.id,dx,dy);a.yaw=(a.yaw??0)+dx;a.pitch=clamp((a.pitch??0)+dy,-1.25,1.25);}
   const typing = (e=document?.activeElement) => e?.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(e?.tagName);
   const hand = a => {const value = a.leftHand ?? a.offhand ?? a.equipment?.offhand?.id; const kind=typeof value==='object'?value?.id:value;return ['magic','torch'].includes(kind)?kind:'shield';};
-  function listen(target, type, fn, capture = false) {target?.addEventListener?.(type, fn, capture); removers.push(() => target?.removeEventListener?.(type, fn, capture));}
+  function listen(target, type, handler, capture = false) {const fn = scoped(handler); target?.addEventListener?.(type, fn, capture); removers.push(() => target?.removeEventListener?.(type, fn, capture));}
   function report(error) {notify(error?.message ?? 'Party action could not be completed.');}
   function emit(a, kind) {
     if (!playable(a) || typeof onAction !== 'function') return false;
     const hub=preparation();if(hub){if(kind!=='interact')return false;keys.clear();drag=null;return hub.interact(a.id);}
     try {
       const r = records.get(a.id),offense=kind==='attack'||kind==='guard'&&hand(a)==='magic';
-      if(remoteId()&&r&&(offense||kind==='guard')&&now<(r.recoveryUntil??-Infinity))return false;
+      if(remoteId()&&r&&(offense||kind==='guard')&&(now<(r.recoveryUntil??-Infinity)||(options.recoveryRemaining?.(a.id)??0)>0))return false;
       if(remoteId()&&kind==='attack'&&(a.guarding||[...guards.values()].includes(a.id)))return false;
       const accepted = onAction(a, kind); accepted?.catch?.(report);
       if (accepted === false) return false;
@@ -188,7 +197,7 @@ export function createPartyView(options = {}) {
     catch (error) {report(error); return false;}
     finally {starting = false;if(!accepted&&phase()==='lobby')setDMOpen(true);updateUI();}
   }
-  function setDMOpen(value) {dmOpen = !!value && enabled && !remoteId(); if (palette) palette.hidden = !dmOpen; if(!dmOpen){hoverTile=null;tileMarker.visible=false;tool='select';drag=null;clearDMGesture();placementRevision++;} document?.body?.classList.toggle('dm-open', dmOpen);}
+  function setDMOpen(value) {dmOpen = !!value && enabled && !remoteId(); if (palette) palette.hidden = !dmOpen; if(!dmOpen){hoverPending=null;hoverTile=null;tileMarker.visible=false;tool='select';drag=null;clearDMGesture();placementRevision++;} document?.body?.classList.toggle('dm-open', dmOpen);}
   function setEnabled(value) {
     if (destroyed || enabled === !!value) return;
     clearInputs(); enabled = !!value; root.visible = enabled;
@@ -373,12 +382,21 @@ export function createPartyView(options = {}) {
   const keydown = event => {
     syncMode();
     const key = event.key?.toLowerCase(); if (!enabled || typing() || typing(event.target)) return;
+    // Menus, dialogs and focused page controls keep their own keys (Escape, Space on <summary>, Enter).
+    // The hub station panel (role=dialog) promises "Close · E / Esc" even while one of its buttons has focus.
+    if((key==='escape'||key==='e')&&!event.repeat&&!busy()&&preparation()?.adapter.getStation(focusedId)){event.preventDefault();event.stopImmediatePropagation?.();preparation().closePanels();clearInputs();return;}
+    // Hero hotkeys 0-3 still switch focus from inside the hub station panel (role=dialog); other dialogs keep every key.
+    const heroHotkey=/^Digit[0-3]$/.test(event.code??'')||!event.code&&/^[0-3]$/.test(key??'');
+    if(busy()||event.target?.closest?.('dialog,[role="dialog"]')&&!(heroHotkey&&event.target.closest?.('.local-prep-panel')))return;
+    const control=['BUTTON','SUMMARY','A'].includes(document?.activeElement?.tagName);
     if(key==='escape'&&preparation()?.adapter.getStation(focusedId)){event.preventDefault();event.stopImmediatePropagation?.();preparation().closePanels();clearInputs();return;}
-    if(key==='escape'&&!remoteId()&&dmOpen){event.preventDefault();event.stopImmediatePropagation?.();tool='select';placementRevision++;drag=null;clearDMGesture();tileMarker.visible=false;updateUI();return;}
+    if(key==='escape'&&!remoteId()&&dmOpen&&(tool!=='select'||drag)){event.preventDefault();event.stopImmediatePropagation?.();tool='select';placementRevision++;drag=null;clearDMGesture();tileMarker.visible=false;updateUI();return;}
     const digit=/^Digit[0-3]$/.test(event.code??'')?event.code.slice(-1):!event.code&&/^[0-3]$/.test(key??'')?key:null;
     if(digit!==null){if(remoteId()||busy()||event.repeat||event.ctrlKey||event.metaKey||event.altKey||event.shiftKey)return;const wanted=digit==='0'?'dm':'hero-'+digit;if(focus(wanted)){event.preventDefault();event.stopImmediatePropagation?.();}return;}
-    if(document?.activeElement?.tagName==='BUTTON')return;
+    if(control&&(key===' '||key==='enter'))return;
     if (!MOVEMENT.has(key) && !Object.hasOwn(COMMANDS, key) && key !== 'q') return;
+    // DM focus has no hero here; leave keys for possessed-boss and DM handlers.
+    if(focusedId==='dm'&&!remoteId())return;
     event.preventDefault(); event.stopImmediatePropagation?.();
     if(focusReleaseKeys.has(key)){if(event.repeat)return;focusReleaseKeys.delete(key);}
     const a = actor(focusedId); if (!playable(a)) return;
@@ -398,19 +416,29 @@ export function createPartyView(options = {}) {
     if(world().mobileLayout&&dmOpen){const top=Math.min(160,rect.height*.25),sheet=palette?.getBoundingClientRect?.(),bottom=Math.max(top+64,Math.min(rect.height,(sheet?.top??rect.top+rect.height*.52)-rect.top)),offset=rect.height/2-(top+bottom)/2;camera.setViewOffset?.(rect.width,rect.height,0,offset,rect.width,rect.height);}
     camera.updateProjectionMatrix();
   }
+  // Reused picking objects; the renderer keeps world matrices current, so no forced scene-wide update.
+  const pickRay = new THREE.Raycaster(), pickPointer = new THREE.Vector2(), groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+  let hoverPending = null, hoverDone = false;
+  function hover(clientX, clientY) {const point=raycast(clientX,clientY);if(point)preview(point.position);else{hoverTile=null;tileMarker.visible=false;}}
+  // DM hover raycasts at most once per frame: the first pick applies at once, later moves wait for the next tick/render.
+  function requestHover(clientX, clientY) {
+    if(!(enabled&&!remoteId()&&dmOpen&&hitPartyViewport(getViewports(),clientX,clientY)?.id==='dm')){hoverPending=null;hoverTile=null;tileMarker.visible=false;return;}
+    if (hoverDone) {hoverPending = {x: clientX, y: clientY}; return;} hoverDone = true; hover(clientX, clientY);
+  }
+  function flushHover(){hoverDone=false;if(hoverPending){const p=hoverPending;hoverPending=null;if(enabled&&!remoteId()&&dmOpen){hoverDone=true;hover(p.x,p.y);}}}
   function raycast(clientX, clientY) {
     const rect = getViewportRect('dm'); if (!rect) return null;
     const aspect = dmCamera.aspect, oldView = dmCamera.view ? {...dmCamera.view} : null;
     try {
-      frameDMView(dmCamera,rect); scene.updateMatrixWorld(true); dmCamera.updateMatrixWorld(true);
-      const ray = new THREE.Raycaster(); ray.setFromCamera(new THREE.Vector2((clientX - rect.left) / rect.width * 2 - 1, -(clientY - rect.top) / rect.height * 2 + 1), dmCamera);
+      frameDMView(dmCamera,rect); dmCamera.updateMatrixWorld(true);
+      const ray = pickRay; ray.setFromCamera(pickPointer.set((clientX - rect.left) / rect.width * 2 - 1, -(clientY - rect.top) / rect.height * 2 + 1), dmCamera);
       const w = world(), target = w.isObject3D ? w : w.world ?? w.group ?? w.root;
       const hits = target ? ray.intersectObject(target, true).filter(hit => {
         for (let p = hit.object; p; p = p.parent) if (p === roof || p === root || !p.visible) return false;
         return true;
       }) : [];
       if (hits[0]) return {position: hits[0].point.clone(), hit: hits[0]};
-      const point = new THREE.Vector3(); return ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), point) ? {position: point, hit: null} : null;
+      const point = new THREE.Vector3(); return ray.ray.intersectPlane(groundPlane, point) ? {position: point, hit: null} : null;
     } finally {dmCamera.aspect = aspect; dmCamera.view = oldView; dmCamera.updateProjectionMatrix();}
   }
   listen(canvas, 'pointerdown', event => {
@@ -431,7 +459,7 @@ export function createPartyView(options = {}) {
       drag.x=event.clientX;drag.y=event.clientY;event.preventDefault();event.stopImmediatePropagation?.();return;
     }
     if(drag?.id==='dm'&&Math.hypot(event.clientX-drag.startX,event.clientY-drag.startY)>5)drag.orbit=true;
-    if(enabled&&!remoteId()&&dmOpen&&hitPartyViewport(getViewports(),event.clientX,event.clientY)?.id==='dm'){const point=raycast(event.clientX,event.clientY);if(point)preview(point.position);else{hoverTile=null;tileMarker.visible=false;}}else{hoverTile=null;tileMarker.visible=false;}
+    requestHover(event.clientX,event.clientY);
     if (!enabled || !drag || drag.id === 'dm') return;
     const a = actor(drag.id); if (playable(a)) {const settings=inputSettings(),speed=.004*settings.sensitivity;lookActor(a,-(event.clientX-drag.x)*speed,-(event.clientY-drag.y)*speed*(settings.invertY?-1:1));}
     drag.x = event.clientX; drag.y = event.clientY; event.preventDefault(); event.stopImmediatePropagation?.();
@@ -447,8 +475,8 @@ export function createPartyView(options = {}) {
     else try {const placed=onPlace(tool,point.position,{hit:point.hit,phase:phase()});const feedback=ok=>{if(revision!==placementRevision||destroyed)return;if(placementStatus)placementStatus.textContent=ok===false?'Could not place '+toolLabel(placedKind)+' here. Check the message and choose another tile.':toolLabel(placedKind)+' placed at tile '+placedTile.column+', '+placedTile.row+'.';selectedTile=targetTile(point.position);updateUI();};if(placed?.then)placed.then(feedback).catch(report);else feedback(placed);lastValidation=-Infinity;}catch(error){report(error);}
     event.preventDefault();event.stopImmediatePropagation?.();
   }, true);
-  listen(canvas,'pointerleave',()=>{hoverTile=null;tileMarker.visible=false;});
-  listen(canvas, 'pointercancel', () => {drag = null;dmPointers.clear();dmPinch=null;dmMulti=false;});
+  listen(canvas,'pointerleave',()=>{hoverPending=null;hoverTile=null;tileMarker.visible=false;});
+  listen(canvas, 'pointercancel', () => {hoverPending=null;drag = null;dmPointers.clear();dmPinch=null;dmMulti=false;});
   listen(canvas,'lostpointercapture',()=>{if(dmPointers.size){drag=null;dmPointers.clear();dmPinch=null;dmMulti=false;}});
   listen(canvas,'wheel',event=>{if(!enabled||!dmNavigation||remoteId()||world().dmBoss||busy()||hitPartyViewport(getViewports(),event.clientX,event.clientY)?.id!=='dm')return;event.preventDefault();event.stopImmediatePropagation?.();dmNavigation.zoomBy(Math.exp(clamp(Number.isFinite(event.deltaY)?event.deltaY:0,-1000,1000)*.0015));},true);
   listen(canvas,'contextmenu',event=>{if(enabled&&dmNavigation&&!remoteId()&&!world().dmBoss&&(suppressDMContextMenu||hitPartyViewport(getViewports(),event.clientX,event.clientY)?.id==='dm')){suppressDMContextMenu=false;event.preventDefault();event.stopImmediatePropagation?.();}},true);
@@ -457,6 +485,7 @@ export function createPartyView(options = {}) {
     if (!enabled || destroyed) return;
     const remote = syncMode();
     now = Number.isFinite(time) ? time : now; dt = clamp(Number.isFinite(dt) ? dt : 0, 0, .05); attachActors();
+    flushHover();
     if (now - lastValidation >= 500 && phase() !== 'active' && !starting) validate();
     const intents = new Map(campaign.actors.map(a => [a.id, {forward: 0, side: 0, dt}]));
     if ((phase() !== 'active'&&!preparation()) || busy()) {const mapDrag=!busy()&&drag?.id==='dm'?drag:null;clearInputs({preserveDM:!!mapDrag});drag=mapDrag;}
@@ -505,11 +534,11 @@ export function createPartyView(options = {}) {
       if(!active||!sameRun){r.hurtUntil=0;r.damageUntil=0;r.counterUntil=0;}
       r.previousHealth=hp;r.previousMaxHealth=maxHp;r.feedbackRun=campaign.runNumber;r.feedbackPhase=phase();
       r.sprite.position.set(a.position.x, a.position.y, a.position.z); r.sprite.rotation.y = a.yaw ?? 0;
-      r.sprite.userData.animate?.({time: now / 1000, moving: r.moving, attacking: now < r.attackUntil||now<(a.lastAttack??-Infinity)+280, dead: a.alive === false, hurt: now < r.hurtUntil||now < (a.hurtUntil ?? 0)});
+      r.sprite.userData.animate?.({time: now / 1000, moving: r.moving, attacking: now < r.attackUntil||(options.gameClock?.()??now)<(a.lastAttack??-Infinity)+280, casting: now < r.castUntil || now < (a.castingUntil ?? 0)||(options.gameClock?.()??now)<(a.lastCast??-Infinity)+380, dead: a.alive === false, hurt: now < r.hurtUntil||now < (a.hurtUntil ?? 0)});
       const hubPose=preparation()?.getPose(a.id),pose=hubPose??a;r.camera.position.set(pose.position.x, pose.position.y + 1.48, pose.position.z); r.camera.rotation.set(pose.pitch ?? 0, pose.yaw ?? 0, 0);
       if(living(a)&&(equipmentView===null||equipmentView===a.id)){
         r.equipment?.setTorchState?.({fuel:a.torchFuel??120,lit:a.torchLit!==false});
-        r.equipment?.animate?.({impact,time: now, moving: r.moving, attacking: now < r.attackUntil||now<(a.lastAttack??-Infinity)+280, casting: now < r.castUntil || now < (a.castingUntil ?? 0)||now<(a.lastCast??-Infinity)+380, blocking: hand(a) === 'shield' && ([...guards.values()].includes(a.id)||!!a.guarding)});
+        r.equipment?.animate?.({impact,time: now, moving: r.moving, attacking: now < r.attackUntil||(options.gameClock?.()??now)<(a.lastAttack??-Infinity)+280, casting: now < r.castUntil || now < (a.castingUntil ?? 0)||(options.gameClock?.()??now)<(a.lastCast??-Infinity)+380, blocking: hand(a) === 'shield' && ([...guards.values()].includes(a.id)||!!a.guarding)});
       }
     }
     updateUI();
@@ -517,13 +546,13 @@ export function createPartyView(options = {}) {
   let visibilityCache=null,renderViewCount=0;
   function render() {
     if (!enabled || destroyed) return false;
-    attachActors(); updateUI();
+    flushHover(); attachActors(); updateUI();
     const rectangles = getViewports();renderViewCount=rectangles.length; if (rectangles.length !== (remoteId()||buildWorkspace()||world().mobileLayout||world().singleView ? 1 : 4)) return false;
     const savedViewport = renderer.getViewport?.(new THREE.Vector4()), savedScissor = renderer.getScissor?.(new THREE.Vector4()), savedScissorTest = renderer.getScissorTest?.() ?? false, savedAutoClear = renderer.autoClear;
     const oldAspect = dmCamera.aspect, oldView = dmCamera.view ? {...dmCamera.view} : null, oldFog = scene.fog?.density;
     const w = world(), hidden = (w.hideDuringParty ?? []).filter(Boolean);const dmLights=(w.dmLights??[]).filter(l=>Number.isFinite(l?.intensity)),lightPowers=new Map(dmLights.map(l=>[l,l.intensity]));
     const revision=w.world?.userData?.visibilityRevision??0;
-    if(!visibilityCache||visibilityCache.world!==w.world||visibilityCache.children!==scene.children.length||visibilityCache.worldChildren!==w.world?.children.length||visibilityCache.revision!==revision){const dmOnly=[],atmosphere=[];scene.traverse(o=>{if(o.userData?.dmOnly)dmOnly.push(o);if(o.userData?.atmosphere)atmosphere.push(o);});visibilityCache={world:w.world,children:scene.children.length,worldChildren:w.world?.children.length,revision,dmOnly,atmosphere};}
+    if(!visibilityCache||visibilityCache.world!==w.world||visibilityCache.children!==stableChildCount(scene)||visibilityCache.worldChildren!==stableChildCount(w.world)||visibilityCache.revision!==revision){const dmOnly=[],atmosphere=[];scene.traverse(o=>{if(o.userData?.dmOnly)dmOnly.push(o);if(o.userData?.atmosphere)atmosphere.push(o);});visibilityCache={world:w.world,children:stableChildCount(scene),worldChildren:stableChildCount(w.world),revision,dmOnly,atmosphere};}
     const {dmOnly,atmosphere}=visibilityCache;
     const tracked = [...atmosphere,...hidden,...(w.dmBoss?.mesh?[w.dmBoss.mesh]:[]), ...dmOnly, ...(roof ? [roof] : [])];
     for (const r of records.values()) tracked.push(r.sprite, r.light, ...equipmentNodes(r.equipment));
@@ -564,7 +593,7 @@ export function createPartyView(options = {}) {
     for (const node of [launcher, toolbar, shell, palette, result]) node?.remove();
     if (originalTabIndex === null) canvas.removeAttribute?.('tabindex'); else canvas.setAttribute?.('tabindex', originalTabIndex);
   }
-  return {setEnabled, focus, openDMTools(){if(remoteId())return false;focus('dm');setDMOpen(true);updateUI();return true;},attachActors, selectEntrance, getViewportRect, tick, render, start, validate, clearInputs, act:(id,kind)=>emit(actor(id),kind), destroy, dispose: destroy,
+  return {setEnabled: scoped(setEnabled), focus: scoped(focus), openDMTools: scoped(()=>{if(remoteId())return false;focus('dm');setDMOpen(true);updateUI();return true;}),attachActors: scoped(attachActors), selectEntrance: scoped(selectEntrance), getViewportRect: scoped(getViewportRect), tick: scoped(tick), render: scoped(render), start: scoped(start), validate: scoped(validate), clearInputs, act:scoped((id,kind)=>emit(actor(id),kind)), destroy, dispose: destroy,
     get enabled() {return enabled;}, set enabled(value) {setEnabled(value);}, get focusedActor() {syncMode(); return actor(focusedId);}, get focusedId() {syncMode(); return focusedId;},
     get renderedViews(){return renderViewCount;},get dmCameraState(){return remoteId()?null:dmNavigation?.state??null;},get actorRoot() {return root;}, get toolbar() {return toolbar;}, get palette() {return palette;}, get shell() {return shell;},
     getCamera(id) {if (remoteId() && id !== remoteId()) return null; return records.get(id)?.camera ?? (id === 'dm' ? dmCamera : null);}, get validation() {return validation;}};

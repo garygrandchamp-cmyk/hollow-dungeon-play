@@ -19,7 +19,7 @@ body{background:#080706}.vignette{background:linear-gradient(90deg,#080706 0%,#0
 
 #adventureHud{gap:12px;flex-wrap:wrap;max-width:min(660px,calc(100vw - 84px))}#adventureHud .mana-stat{color:#7db8d9}.first-person.guarding #crosshair{color:#83b6df}.first-person.casting #crosshair{color:#a6a5ff;transform:translate(-50%,-50%) scale(1.6)}@media(max-width:850px){#adventureHud{gap:7px;max-width:calc(100vw - 40px)}#adventureHud button{padding:6px;font-size:9px}}
 
-#scene canvas{image-rendering:pixelated}
+#scene canvas{image-rendering:pixelated;display:block;width:100%;height:100%}
 
 #soundQuick{position:fixed;right:24px;top:145px;z-index:12;padding:7px 10px;background:#171510d9;border:1px solid #8a765544;color:#c0ad88;font:10px inherit}#audioOptions{margin:16px 0;padding:13px;border:1px solid #ad865a33;background:#16130feb}#audioOptions label{display:block;margin-top:12px}#audioOptions button{margin-top:12px;padding:8px;background:#30271c;color:#d6c198;border:1px solid #8a765544}.first-person #soundQuick{top:170px}@media(max-width:850px){#soundQuick{top:175px;right:20px}}
 

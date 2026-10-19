@@ -1,6 +1,6 @@
-import { decodePlayerAtlas } from './player-atlas-data.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
-import { decodeClassAtlas } from './class-atlas-data.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
-import { decodeClassDirectionAtlas } from './class-direction-data.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
+import { decodePlayerAtlas } from './player-atlas-data.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import { decodeClassAtlas } from './class-atlas-data.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import { decodeClassDirectionAtlas } from './class-direction-data.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
 
 export const PLAYER_SPRITE_CLIPS = Object.freeze({
   idle: { row: 0, frames: 4, fps: 4, loop: true },
@@ -135,15 +135,19 @@ export function makePlayerSprite(THREE, { height = 1.7, seed = 0, classId } = {}
   }
   root.userData.setAnimation = setAnimation;
   root.userData.faceCamera = faceCamera;
-  root.userData.animate = ({ time = 0, moving = false, attacking = false, hurt = false, dead = false, state: requested, camera } = {}) => {
-    time = Number.isFinite(time) ? time : lastTime;
+  root.userData.animate = (options = {}) => {
+    const { time: requestedTime = 0, moving = false, attacking = false, hurt = false, dead = false, state: requested, camera } = options;
+    const time = Number.isFinite(requestedTime) ? requestedTime : lastTime;
     if (time < lastTime) started = time;
     lastTime = time;
     const previous = PLAYER_SPRITE_CLIPS[state];
     const finished = !previous.loop && time - started >= previous.frames / previous.fps;
     if (requested) setAnimation(requested, time);
     else if (dead) setAnimation('death', time);
-    else if (state !== 'death') {
+    // Death holds unless the caller explicitly reports the actor alive again
+    // (a revived hero whose unchanged gear kept this sprite).
+    else if (state === 'death') { if (options.dead === false) setAnimation(moving ? 'walk' : 'idle', time); }
+    else {
       if (hurt) setAnimation('hurt', time, state === 'hurt' && finished);
       else if ((state !== 'attack' && state !== 'hurt') || finished) {
         const next = attacking ? 'attack' : moving ? 'walk' : 'idle';

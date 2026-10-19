@@ -1,6 +1,6 @@
-import {roomContainsTile} from './room-footprint.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
-import {dungeonProgression} from './dungeon-progression.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
-import {validateDungeon} from './progression-validator.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
+import {roomContainsTile} from './room-footprint.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {dungeonProgression} from './dungeon-progression.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {validateDungeon} from './progression-validator.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
 
 export const BRIDGE_TURN_SECONDS=2.4;
 export const BRIDGE_DM_COST=8;
@@ -11,10 +11,13 @@ const hash=value=>{let n=2166136261;for(const c of String(value))n=Math.imul(n^c
 
 /** A two-tile court within a fully occupied four-tile patch. Its outer ring
  * remains ordinary ground in BOTH configurations and during the turn. */
-export function planRotatingBridge({architecture,grid,tiles,size,seed='',floor=0,reserved=[]}={}){
+// avoid: world rectangles {left,right,north,south} (e.g. a gallery stair and landing) that the 2×2 court,
+// or with avoidRadius the swept turntable circle, must stay clear of.
+export function planRotatingBridge({architecture,grid,tiles,size,seed='',floor=0,reserved=[],avoid=[],avoidRadius=0}={}){
  if(!architecture||!Array.isArray(grid)||!Number.isInteger(size)||size<8)return null;
  const protectedCells=new Set([architecture.start,architecture.start+1,architecture.start-size-1,architecture.start-size+1,architecture.stair,architecture.stair+1,architecture.stair-1,architecture.stair-size,architecture.stair+size,...architecture.objectiveIndices??[],...architecture.doors.map(d=>d.index),...reserved]);
- const candidates=[];
+ const candidates=[],avoided=(Array.isArray(avoid)?avoid:[]).filter(b=>b&&[b.left,b.right,b.north,b.south].every(Number.isFinite));
+ const intrudes=(cx,cz,half)=>avoided.some(b=>avoidRadius>0?Math.hypot(Math.max(b.left,Math.min(cx,b.right))-cx,Math.max(b.north,Math.min(cz,b.south))-cz)<avoidRadius:b.left<cx+half&&b.right>cx-half&&b.north<cz+half&&b.south>cz-half);
  for(const room of architecture.rooms)if(room.w>=5&&room.h>=5){
   for(let z=room.z+1;z<room.z+room.h-2;z++)for(let x=room.x+1;x<room.x+room.w-2;x++){
    const patch=[];let valid=true;
@@ -24,14 +27,16 @@ export function planRotatingBridge({architecture,grid,tiles,size,seed='',floor=0
    const controls=[(z-1)*size+x,z*size+x+2,(z+2)*size+x,z*size+x-1];
    if([...cells,...controls].some(i=>protectedCells.has(i)))continue;
    const cx=(x+1-size/2)*4.8,cz=(z+1-size/2)*4.8,half=4.8;
+   if(intrudes(cx,cz,half))continue;
    candidates.push({id:`turntable:${floor}:${x}:${z}`,floor,room,x,z,cx,cz,half,width:2,length:9.9,cells,reserved:patch,
-    controls:directions.map(([dx,dz],i)=>({index:controls[i],x:cx+dx*(half+1.5),z:cz+dz*(half+1.5)})),score:hash(seed+':bridge:'+floor+':'+x+':'+z)});
+    // cx/cz lie on tile seams; nudge each bank control 0.6 m into its recorded tile so position and index agree.
+    controls:directions.map(([dx,dz],i)=>({index:controls[i],x:cx+dx*(half+1.5)-(dx===0?.6:0),z:cz+dz*(half+1.5)-(dz===0?.6:0)})),score:hash(seed+':bridge:'+floor+':'+x+':'+z)});
   }
  }
  candidates.sort((a,b)=>a.score-b.score);return candidates[0]??null;
 }
-export function selectRotatingBridges({levels,size,tiles,seed='',reserved=[[],[]]}={}){
- const plans=levels.map((l,floor)=>planRotatingBridge({architecture:l.result.architecture,grid:l.result.grid,tiles,size,seed,floor,reserved:reserved[floor]}));
+export function selectRotatingBridges({levels,size,tiles,seed='',reserved=[[],[]],avoid=[[],[]]}={}){
+ const plans=levels.map((l,floor)=>planRotatingBridge({architecture:l.result.architecture,grid:l.result.grid,tiles,size,seed,floor,reserved:reserved[floor],avoid:avoid?.[floor]??[],avoidRadius:Math.hypot(9.9/2,2/2)+.5}));
  const eligible=plans.flatMap((p,i)=>p?[i]:[]);if(!eligible.length)return plans;
  const chosen=eligible[hash(seed+':turntable-floor')%eligible.length];return plans.map((p,i)=>i===chosen?p:null);
 }

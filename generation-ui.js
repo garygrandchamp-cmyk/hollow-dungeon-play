@@ -1,4 +1,4 @@
-import {roomCells,roomCenterTile} from './room-footprint.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
+import {roomCells,roomCenterTile} from './room-footprint.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
 
 let seedSequence=0;
 /** Called by the host/local new-world path only. Reconnect imports its snapshot. */
@@ -53,7 +53,9 @@ export function createBuildReveal(THREE,{world,architecture,size,moduleSize=4.8,
   originals.push([o,o.material]);o.material=Array.isArray(o.material)?o.material.map(temporary):temporary(o.material);
   culling.push([o,o.frustumCulled,o.castShadow]);o.frustumCulled=false;o.castShadow=false;
  });
- function finish(){if(done)return;done=true;for(const [o,material]of originals)o.material=material;for(const [o,value]of hidden)o.visible=value;for(const [o,value,shadow]of culling){o.frustumCulled=value;o.castShadow=shadow;}for(const material of copies.values())material.dispose();copies.clear();map.dispose();}
+ // A mesh whose reveal copy was replaced meanwhile (e.g. by the compatibility
+ // fallback) keeps that replacement; its source copy stays alive for it.
+ function finish(){if(done)return;done=true;const kept=new Set();for(const [o,material]of originals){const sources=[material].flat(),current=[o.material].flat();if(current.length===sources.length&&current.every((m,i)=>m===copies.get(sources[i])))o.material=material;else for(const source of sources)kept.add(copies.get(source));}for(const [o,value]of hidden)o.visible=value;for(const [o,value,shadow]of culling){o.frustumCulled=value;o.castShadow=shadow;}for(const material of copies.values())if(!kept.has(material))material.dispose();copies.clear();map.dispose();}
  function tick(dt){if(done)return {done:true,settled,total:plan.count};elapsed+=Number.isFinite(dt)?Math.max(0,dt):0;
   const frame=Math.floor(elapsed*30);if(frame===lastFrame)return {done:false,settled,total:plan.count};lastFrame=frame;
   let ready=0;const progress=Array.from({length:plan.count},(_,n)=>Math.max(0,Math.min(1,(elapsed-n*plan.interval)/plan.duration)));
