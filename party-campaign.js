@@ -1,4 +1,4 @@
-import {WEAPON_CATALOG} from './weapon-forge.js?v=b258c395560209e8026ca4d5dec71424998d0de6';
+import {WEAPON_CATALOG} from './weapon-forge.js?v=48c9690caaf071685197edd79934df66b444bc3a';
 export const CAMPAIGN_STORAGE_KEY = 'hollow:party-campaign:v1';
 export const INVENTORY_LIMIT = 16;
 const MAX_GOLD = 1_000_000_000, MAX_OBJECTIVES = 1024;
@@ -103,8 +103,11 @@ function readSnapshot(value) {
     if(a.torchFuel!==undefined&&(!Number.isFinite(a.torchFuel)||a.torchFuel<0||a.torchFuel>120)||a.torchLit!==undefined&&typeof a.torchLit!=='boolean'||a.offhand!==undefined&&!['shield','magic','torch'].includes(a.offhand))return null;
     const torchFields={...(a.torchFuel!==undefined?{torchFuel:a.torchFuel}:{}),...(a.torchLit!==undefined?{torchLit:a.torchLit}:{}),...(a.offhand!==undefined?{offhand:a.offhand}:{})};
     const items = a.inventory.map(loot), gear = equipment(a.equipment), location = position(a.position);
+    if(a.stamina!==undefined&&(!Number.isFinite(a.stamina)||a.stamina<0||a.stamina>(a.maxStamina??100))||a.maxStamina!==undefined&&(!Number.isFinite(a.maxStamina)||a.maxStamina<1||a.maxStamina>10000))return null;
+    if(a.kills!==undefined&&!integer(a.kills,0,1000000))return null;
+    const staminaFields={...(a.kills!==undefined?{kills:a.kills}:{}),...(a.stamina!==undefined?{stamina:a.stamina}:{}),...(a.maxStamina!==undefined?{maxStamina:a.maxStamina}:{})};
     if (items.some(item => !item) || !gear || !location) return null;
-    actors.push({...torchFields,id: a.id, classId, health: a.health, mana: a.mana, maxHealth: a.maxHealth, maxMana: profile.maxMana,
+    actors.push({...torchFields,...staminaFields,id: a.id, classId, health: a.health, mana: a.mana, maxHealth: a.maxHealth, maxMana: profile.maxMana,
       alive: a.alive, escaped: a.escaped, gold: a.gold, inventory: items, equipment: gear, position: location, yaw: a.yaw, pitch: a.pitch});
   }
   const bossWin=s.endReason==='bossDefeated';if(s.endReason!==undefined&&s.endReason!==null&&s.endReason!=='bossDefeated')return null;const living = actors.filter(a => a.alive), complete = s.objectives.length >= s.requiredObjectives;
@@ -172,6 +175,7 @@ export function createPartyCampaign(options = {}) {
       if (!a.alive) { a.gold = 0; a.inventory = []; a.equipment = defaultEquipment(a.classId); }
       a.maxHealth = profile.maxHealth; a.maxMana = profile.maxMana; a.health = a.maxHealth; a.mana = a.maxMana;
       a.alive = true; a.escaped = false; Object.assign(a.position, location); a.yaw = 0; a.pitch = 0;
+      a.stamina=a.maxStamina??100;a.fainted=false;a.kills=0;
     }
     delete state.endReason;state.phase = 'active'; state.seed = seed; state.runNumber++; state.requiredObjectives = requiredObjectives; state.objectives.clear();
     persist(); return state;
@@ -179,7 +183,7 @@ export function createPartyCampaign(options = {}) {
   function damage(id, amount) {
     const a = actor(id);
     if (canAct(a) && positive(amount)) {
-      a.health = Math.max(0, a.health - amount);
+      a.health = a.stamina===0?0:Math.max(0, a.health - amount);
       if (a.health === 0) { a.alive = false; a.mana = 0; }
       evaluate(); persist();
     }

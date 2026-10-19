@@ -7,6 +7,22 @@ const point=id=>{const [floor,index]=String(id).split(':').map(Number);return {f
 const ARRIVAL_RADIUS=.55;
 const CAST_RANGE=Object.freeze({min:3,preferred:4.5,max:6.5}),BOW_RANGE=Object.freeze({min:3.5,preferred:5,max:7.5});
 
+// Small checked steps let companions leave a shared spawn/goal without moving
+// the human or claiming a formation slot that could block a narrow corridor.
+export function findBotSeparation(bot,actors,canTraverse){
+ const others=actors.filter(a=>a!==bot&&alive(a)&&Math.abs((a.position.y??0)-(bot.position.y??0))<.6);
+ const nearest=others.reduce((best,a)=>!best||distance(bot.position,a.position)<distance(bot.position,best.position)?a:best,null);
+ if(!nearest||distance(bot.position,nearest.position)>=.72)return null;
+ const dx=bot.position.x-nearest.position.x,dz=bot.position.z-nearest.position.z;
+ const angle=Math.hypot(dx,dz)>.001?Math.atan2(dz,dx):String(bot.id).localeCompare(String(nearest.id))<0?0:Math.PI;
+ const score=p=>Math.min(...others.map(a=>distance(p,a.position))),before=score(bot.position);
+ for(const turn of [Math.PI/4,-Math.PI/4,0,Math.PI/2,-Math.PI/2]){
+  const p={x:bot.position.x+Math.cos(angle+turn)*.18,y:bot.position.y??0,z:bot.position.z+Math.sin(angle+turn)*.18},after=score(p);
+  if(after>before+.001&&canTraverse(bot.position,p))return p;
+ }
+ return null;
+}
+
 export function findBotPath(start,goal,neighbors,limit=1024){
   if(start===goal)return [start];
   const previous=new Map([[start,null]]),queue=[start];
@@ -176,6 +192,13 @@ export function createLocalAutoplay(adapter){
       if(stuck>.8){inputs[bot.id].forward=.5;inputs[bot.id].side=Math.floor(stuck/2)%2?.8:-.8;}
     }
     status=(mode==='adventurer'?'AI DM + bot companions':'Bot expedition')+(controlled?' · '+controlled+' manual control':'')+' · '+(route.length?'route '+Math.min(cursor+1,route.length)+' / '+route.length:'no completion route')+(blocked?' · route blocked — inspect dungeon or take control':'');
+    if(navigates())for(const bot of bots){
+      // Stable right of way prevents two bots from repeatedly yielding into
+      // each other's route. The manually controlled hero always has priority.
+      const neighbors=s.actors.filter(a=>a===bot||a.id===controlled||String(a.id)<String(bot.id));
+      const aim=findBotSeparation(bot,neighbors,(a,b)=>typeof adapter.canTraverse==='function'?traverse(bot,a,b):findBotWalkPath(a,b,p=>stand(bot,p),{limit:1})?.length===2);
+      if(aim){adapter.face(bot,aim);inputs[bot.id]={forward:.55,side:0};walkPaths.delete(bot.id);}
+    }
     return snapshot();
   }
   function snapshot(){return {mode,paused,inputs,botIds,status};}

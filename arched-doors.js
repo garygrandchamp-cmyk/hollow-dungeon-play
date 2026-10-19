@@ -1,10 +1,14 @@
-import {openingHeightAt,openingTopPoints} from './wall-mesh.js?v=b258c395560209e8026ca4d5dec71424998d0de6';
-import {batchStaticGroup} from './mesh-batch.js?v=b258c395560209e8026ca4d5dec71424998d0de6';
+import {openingHeightAt,openingTopPoints} from './wall-mesh.js?v=48c9690caaf071685197edd79934df66b444bc3a';
+import {batchStaticGroup} from './mesh-batch.js?v=48c9690caaf071685197edd79934df66b444bc3a';
+import {acquireDoorMaterials} from './door-materials.js?v=48c9690caaf071685197edd79934df66b444bc3a';
+import {applyPhysicalUVs} from './pixel-density.js?v=48c9690caaf071685197edd79934df66b444bc3a';
 
 // Root wall X scaling is cancelled for hinges, then baked into leaf widths so
 // doors retain their real width as they rotate rather than squashing in depth.
 export function addArchedDoors({THREE,group,params:p,wood,iron,box,key,xScale=1}) {
+  const finish=acquireDoorMaterials(THREE,wood,iron);wood=finish.wood;iron=finish.iron;
   const assembly=new THREE.Group();assembly.name='arched-door-assembly';assembly.scale.x=1/xScale;group.add(assembly);
+  assembly.userData.disposeMaterials=finish.dispose;
   const gap=.018,min=p.offset-p.width/2+gap,max=p.offset+p.width/2-gap,bottom=p.sill+.015,depth=.12;
   const leaves=p.style==='double'?[[min,p.offset,min,-1],[p.offset,max,max,1]]:[[min,max,min,-1]],result=[];
   for(const[left,right,pivot,sign]of leaves){
@@ -38,7 +42,7 @@ export function addArchedDoors({THREE,group,params:p,wood,iron,box,key,xScale=1}
     // leave frozen closed-pose AABBs in the architecture collider collection.
     hinge.traverse(o=>{if(o.isMesh)delete o.userData.solidObstacle;});
     batchStaticGroup(THREE,hinge);delete hinge.userData.collisionBoxes;
-    hinge.traverse(o=>{if(o.isMesh){o.userData.dynamic=true;o.castShadow=o.receiveShadow=true;}});
+    hinge.traverse(o=>{if(o.isMesh){if(!o.userData.ownGeometry){o.geometry=o.geometry.clone();o.userData.ownGeometry=true;}applyPhysicalUVs(o.geometry,o.material);o.userData.dynamic=true;o.castShadow=o.receiveShadow=true;}});
     hinge.userData.doorProfile=points;hinge.userData.doorDepth=depth;
     result.push({hinge,key,sign});
   }

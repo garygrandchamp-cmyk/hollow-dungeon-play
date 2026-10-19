@@ -1,8 +1,10 @@
-import {MONSTER_KINDS,MONSTER_CATALOG} from './monster-sprites.js?v=b258c395560209e8026ca4d5dec71424998d0de6';
+import {MONSTER_KINDS,MONSTER_CATALOG} from './monster-sprites.js?v=48c9690caaf071685197edd79934df66b444bc3a';
 
 // Production catalog drives the roster. Only explicitly exercised sandboxes get
 // a combat link; the animation viewer does not imply combat test coverage.
 const behavior=Object.freeze({
+ 'crypt-guardian':{path:'dm-boss-lab.html',description:'Killable heavy guardian: warned sweep, missed counters and real damage. Reuses Drowned art.'},
+ 'deathless-pursuer':{path:'dm-boss-lab.html',description:'Cannot kill: outrun, hide behind the wall for 3 seconds, or strike to repel and pass. Reuses Wraith art.'},
  slime:{path:'encounter-lab.html',description:'Circular burst, party spacing and missed counters.'},
  bat:{path:'encounter-lab.html',description:'Committed dive, sidestep and sideways recovery.'},
  spider:{path:'encounter-lab.html',description:'Crouch warning, fixed pounce and interruption.'},

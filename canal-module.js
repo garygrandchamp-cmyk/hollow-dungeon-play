@@ -30,8 +30,9 @@ const inBounds=(x,z,[left,right,near,far])=>x>=left&&x<=right&&z>=near&&z<=far;
 
 // Point support query using the exact same footprints as rendered mortar,
 // banks and bridge decks. The host may probe more points for an avatar radius.
-export function moduleFloorContains({sockets,x,z,pit=false}){
- if(!validSockets(sockets)||!Number.isFinite(x)||!Number.isFinite(z)||typeof pit!=='boolean'||x< -1.2||x>1.2||z< -1.2||z>1.2)return false;
+export function moduleFloorContains({sockets,x,z,pit=false,pitHalfSize=.4}){
+ if(!validSockets(sockets)||!Number.isFinite(x)||!Number.isFinite(z)||typeof pit!=='boolean'||!Number.isFinite(pitHalfSize)||pitHalfSize<.4||pitHalfSize>.9||x< -1.2||x>1.2||z< -1.2||z>1.2)return false;
+ if(pit&&pitHalfSize>.4&&sockets.every(v=>v===1))return !(Math.abs(x)<pitHalfSize&&Math.abs(z)<pitHalfSize);
  if(pit&&Math.abs(x)<.4&&Math.abs(z)<.4)return false;
  const wet=wetCells(sockets,pit);
  for(let a=0;a<3;a++)for(let b=0;b<3;b++)if(!(pit&&a===1&&b===1)&&!wet.has(a+':'+b)&&inBounds(x,z,supportBounds(a,b,pit)))return true;
@@ -41,11 +42,12 @@ export function moduleFloorContains({sockets,x,z,pit=false}){
 // Local 2.4 m floor only; the host scales X/Z to its 4.8 m world module.
 // All meshes are direct children of `group`. Box parts use the supplied shared
 // geometry; small owned top surfaces seal the bevels at exact module corners.
-export function buildModuleFloor({THREE,group,box,mat,sockets,floorStyle='flagstone',surfaceMaps,waterMaterial,seed='module',pit=false}){
+export function buildModuleFloor({THREE,group,box,mat,sockets,floorStyle='flagstone',surfaceMaps,waterMaterial,seed='module',pit=false,pitHalfSize=.4}){
  if(!THREE||!group||typeof box!=='function'||typeof mat!=='function')throw TypeError('Module floor needs THREE, group, box, and mat.');
  if(!validSockets(sockets))throw TypeError('Module floor needs four typed sockets.');
  if(!['flagstone','mosaic','timber'].includes(floorStyle))throw RangeError('Unknown module floor style.');
  if(typeof pit!=='boolean')throw TypeError('Pit must be a boolean.');
+ if(!Number.isFinite(pitHalfSize)||pitHalfSize<.4||pitHalfSize>.9)throw RangeError('Invalid pit opening.');
  const hasWater=sockets.includes(2),waterCount=sockets.filter(s=>s===2).length;
  const meshes=[],pavers=[],water=[],beds=[],banks=[],bridges=[],backing=[],foundations=[],surfaces=[];
  const foundationMaterial=mat('module-foundation',0x302c26),mortar=mat('module-floor-mortar',0x454337);
@@ -91,6 +93,17 @@ export function buildModuleFloor({THREE,group,box,mat,sockets,floorStyle='flagst
   // Ankle-low coping follows only water-facing edges. It is a step-over
   // detail (6 cm above the deck), never a non-colliding full-height railing.
   for(let d=0;d<4;d++)if(sockets[d]===2){const [dx,dz]=DIRS[d],curb=add('bridge-coping',dx*.395,.171,dz*.395,dx?.06:.86,.06,dz?.06:.86,bridgeStone,bridges);curb.userData.stepOver=true;}
+ }
+ // Large dry trap pits retain a supported rim while opening a 3.2m square
+ // in the production 4.8m tile. Legacy canal/pit masks keep their .4m opening.
+ if(pit&&pitHalfSize>.4&&sockets.every(v=>v===1)){
+  const h=pitHalfSize;
+  for(const [l,r,n,f]of [[-1.2,-h,-1.2,1.2],[h,1.2,-1.2,1.2],[-h,h,-1.2,-h],[-h,h,h,1.2]]){
+   add('foundation',(l+r)/2,-.7,(n+f)/2,r-l,.6,f-n,foundationMaterial,foundations);
+   add('backing',(l+r)/2,-.1625,(n+f)/2,r-l,.475,f-n,mortar,backing);
+   add('paver',(l+r)/2,-.17,(n+f)/2,r-l,.54,f-n,floor,pavers);
+  }
+  return {group,meshes,foundation:foundations[0],foundations,pavers,water,beds,banks,bridges,backing,surfaces,pit,waterMaterial:waterSurface,canalKind:'none'};
  }
  if(!pit)add('foundation',0,-.7,0,2.4,.6,2.4,foundationMaterial,foundations);
  else for(let a=0;a<3;a++)for(let b=0;b<3;b++)if(a!==1||b!==1)add('foundation',CENTERS[a],-.7,CENTERS[b],.8,.6,.8,foundationMaterial,foundations);

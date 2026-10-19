@@ -44,12 +44,12 @@
 <footer>Shipped atlases · 128 × 128 cells · nearest-neighbor pixels · shared foot row 120<br>Runtime clip lengths and derived/reused poses are preserved. This viewer adds no animation frames.<br>
 <a href="assets/enemies/enemy-contact-sheet.png" target="_blank" rel="noopener">Skeleton/goblin contact sheet</a> · <a id="atlasLink" href="assets/enemies/skeleton-atlas.png" target="_blank" rel="noopener">Current transparent atlas</a></footer>
 <script type="module">
-  import {MONSTER_CATALOG,MONSTER_KINDS,MONSTER_SPRITE_CLIPS} from './monster-sprites.js?v=b258c395560209e8026ca4d5dec71424998d0de6';
-  import {ENEMY_SPRITE_CLIPS} from './enemy-sprites.js?v=b258c395560209e8026ca4d5dec71424998d0de6';
-  import {decodeEnemyAtlas} from './enemy-atlas-data.js?v=b258c395560209e8026ca4d5dec71424998d0de6';
-  import {decodeMonsterAtlas} from './monster-atlas-data.js?v=b258c395560209e8026ca4d5dec71424998d0de6';
-  import {decodeListenerAtlas} from './listener-atlas-data.js?v=b258c395560209e8026ca4d5dec71424998d0de6';
-  import {wirePreviewNavigation} from './preview-navigation.js?v=b258c395560209e8026ca4d5dec71424998d0de6';
+  import {MONSTER_CATALOG,MONSTER_KINDS,MONSTER_SPRITE_CLIPS} from './monster-sprites.js?v=48c9690caaf071685197edd79934df66b444bc3a';
+  import {ENEMY_SPRITE_CLIPS} from './enemy-sprites.js?v=48c9690caaf071685197edd79934df66b444bc3a';
+  import {decodeEnemyAtlas} from './enemy-atlas-data.js?v=48c9690caaf071685197edd79934df66b444bc3a';
+  import {decodeMonsterAtlas} from './monster-atlas-data.js?v=48c9690caaf071685197edd79934df66b444bc3a';
+  import {decodeListenerAtlas} from './listener-atlas-data.js?v=48c9690caaf071685197edd79934df66b444bc3a';
+  import {wirePreviewNavigation} from './preview-navigation.js?v=48c9690caaf071685197edd79934df66b444bc3a';
   wirePreviewNavigation();
   const $ = id => document.getElementById(id);
   const profiles=kind=>['skeleton','goblin'].includes(kind)?ENEMY_SPRITE_CLIPS:MONSTER_SPRITE_CLIPS;
@@ -58,7 +58,7 @@
   const canvas=$('preview'),ctx=canvas.getContext('2d'),images={};
   let playing=true,elapsed=0,last=0,index=0;
   function load(kind){
-    const source=kind==='ceiling-widow'?'spider':kind;if(images[source])return images[source];
+    const source=MONSTER_CATALOG[kind]?.sprite??(kind==='ceiling-widow'?'spider':kind);if(images[source])return images[source];
     const decoded=['skeleton','goblin'].includes(source)?decodeEnemyAtlas(source):source==='listener'?decodeListenerAtlas():decodeMonsterAtlas(source);
     const atlas=document.createElement('canvas');atlas.width=decoded.width;atlas.height=decoded.height;const context=atlas.getContext('2d'),pixels=context.createImageData(decoded.width,decoded.height);pixels.data.set(decoded.data);context.putImageData(pixels,0,0);
     images[source]={canvas:atlas,standingPixels:decoded.standingPixels??104};return images[source];
@@ -76,9 +76,9 @@
     $('frameLabel').textContent=`${index+1} / ${clip.frames}`;
     $('scaleLabel').textContent=`${scale}×`;$('speedLabel').textContent=`${$('speed').value}×`;
     $('play').textContent=playing?'Pause':'Play';
-    const source=kind==='ceiling-widow'?'spider':kind;
+    const source=MONSTER_CATALOG[kind]?.sprite??(kind==='ceiling-widow'?'spider':kind);
     $('atlasLink').href=source==='listener'?'assets/monsters/listener/atlas.png':`assets/${['skeleton','goblin'].includes(source)?'enemies':'monsters'}/${source}-atlas.png`;
-    $('status').textContent=`${MONSTER_CATALOG[kind].name} · ${$('clip').value} · ${clip.fps} fps · frame ${index+1}/${clip.frames} · standing ${image.standingPixels}px${kind==='ceiling-widow'?' · original spider atlas alias; perch/capture not simulated':''}`;
+    $('status').textContent=`${MONSTER_CATALOG[kind].name} · ${$('clip').value} · ${clip.fps} fps · frame ${index+1}/${clip.frames} · standing ${image.standingPixels}px${MONSTER_CATALOG[kind]?.sprite?' · reused '+MONSTER_CATALOG[kind].sprite+' atlas; behavior not simulated':kind==='ceiling-widow'?' · original spider atlas alias; perch/capture not simulated':''}`;
   }
   function restart(){elapsed=0;index=0;draw();}
   $('play').onclick=()=>{playing=!playing;draw();};$('restart').onclick=restart;
@@ -103,4 +103,5 @@
   }
   draw();requestAnimationFrame(tick);
 </script>
+<script type="module" src="./build-label.js?v=48c9690caaf071685197edd79934df66b444bc3a"></script>
 </html>

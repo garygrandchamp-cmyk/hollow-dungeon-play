@@ -1,4 +1,4 @@
-import { decodeEnemyAtlas } from './enemy-atlas-data.js?v=b258c395560209e8026ca4d5dec71424998d0de6';
+import { decodeEnemyAtlas } from './enemy-atlas-data.js?v=48c9690caaf071685197edd79934df66b444bc3a';
 
 export const ENEMY_SPRITE_CLIPS = Object.freeze({
   idle: { row: 0, frames: 4, fps: 4, loop: true },
@@ -97,9 +97,10 @@ export function makeEnemySprite(THREE, { kind = 'skeleton', height = 1.7, seed =
     time = Number.isFinite(time) ? time : lastTime;
     if (state !== name || restart) { state = name; started = time; frame(state, 0); }
   }
+  root.userData.spriteClips = ENEMY_SPRITE_CLIPS;
   root.userData.setAnimation = setAnimation;
   root.userData.faceCamera = faceCamera;
-  root.userData.animate = ({ time = 0, moving = false, attacking = false, hurt = false, dead = false, state: requested, camera } = {}) => {
+  root.userData.animate = ({ time = 0, moving = false, attacking = false, hurt = false, dead = false, state: requested, attackFrame = null, camera } = {}) => {
     time = Number.isFinite(time) ? time : lastTime;
     if (time < lastTime) started = time;
     lastTime = time;
@@ -113,6 +114,11 @@ export function makeEnemySprite(THREE, { kind = 'skeleton', height = 1.7, seed =
         const next = attacking ? 'attack' : moving ? 'walk' : 'idle';
         setAnimation(next, time, state === next && finished);
       }
+    }
+    if (!dead && !hurt && Number.isInteger(attackFrame) && attackFrame >= 0 && attackFrame < ENEMY_SPRITE_CLIPS.attack.frames) {
+      setAnimation('attack', time); frame('attack', attackFrame);
+      if (camera) faceCamera(camera);
+      return;
     }
     const clip = ENEMY_SPRITE_CLIPS[state];
     const elapsed = Math.max(0, time - started);

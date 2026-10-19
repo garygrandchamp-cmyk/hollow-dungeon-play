@@ -244,7 +244,8 @@ body dialog button { border-radius: 0 !important; }
 #dmPalette:is(.open,.is-open,[data-open=true],[aria-hidden=false]),
 body:is(.dm-open,.dm-drawer-open) #dmPalette { display: block; }
 #dmPalette :is(.panel,.architecture-panel,#editorPanel,#surfaceOptions,#adventureOptions,#audioOptions) { margin: 6px 0; }
-#partyResult {
+:is(#partyResult,#soloResult) {
+  box-sizing: border-box;
   position: fixed; left: 50%; top: 50%; transform: translate(-50%,-50%);
   width: min(540px,calc(100vw - 30px));
   max-height: calc(100dvh - 90px); overflow: auto;
@@ -254,11 +255,11 @@ body:is(.dm-open,.dm-drawer-open) #dmPalette { display: block; }
   box-shadow: 5px 5px 0 #020306;
   z-index: 180;
 }
-#partyResult :is(h1,h2,h3) { margin: 0 0 12px; font-size: 19px; color: #d7b87e; }
-#partyResult :is(p,li) { font-size: 12px; line-height: 1.5; }
-#partyResult :is(table,.result-rows) { width: 100%; border-collapse: collapse; margin: 12px 0; }
-#partyResult :is(th,td) { padding: 6px; text-align: left; border-bottom: 1px solid #4d4b46; font-size: 11px; }
-#partyResult:is(.dm-victory,[data-result=dmVictory]) { border-color: #a96e60; }
+:is(#partyResult,#soloResult) :is(h1,h2,h3) { margin: 0 0 12px; font-size: 19px; color: #d7b87e; }
+:is(#partyResult,#soloResult) :is(p,li) { font-size: 12px; line-height: 1.5; }
+:is(#partyResult,#soloResult) :is(table,.result-rows) { width: 100%; border-collapse: collapse; margin: 12px 0; }
+:is(#partyResult,#soloResult) :is(th,td) { padding: 6px; text-align: left; border-bottom: 1px solid #4d4b46; font-size: 11px; }
+:is(#partyResult,#soloResult):is(.dm-victory,[data-result=dmVictory]) { border-color: #a96e60; }
 body.party-active #scene { position: fixed; inset: var(--retro-toolbar) 0 0; }
 body.party-active #scene canvas { width: 100% !important; height: 100% !important; }
 body.party-active > :is(header,.vignette,#viewMode,#world-label,#playbar,#adventureHud,#fpHint,#crosshair,#interactionContext,footer,#soundQuick) { display: none !important; }
@@ -267,7 +268,7 @@ body.party-active:is(.dm-open,.dm-drawer-open) aside,
 body.party-active aside:is(.open,.is-open,[data-open=true],[aria-hidden=false]) { display: block; }
 body.party-active #toast { left: 50%; bottom: 12px; transform: translateX(-50%); max-width: min(620px,calc(100vw - 24px)); z-index: 160; }
 body.party-active #buildUpdate { top: 73px; right: 9px; }
-body.party-active :is(#partyShell,#partyToolbar,#partyInventory,#dmPalette,#partyResult) { font-family: "Lucida Console", "Courier New", monospace; }
+body.party-active :is(#partyShell,#partyToolbar,#partyInventory,#dmPalette,:is(#partyResult,#soloResult)) { font-family: "Lucida Console", "Courier New", monospace; }
 @media (max-width:760px) {
   body .edition { display: none; }
   body aside { width: 260px; }
@@ -354,3 +355,7 @@ body:not(.mobile-game) .party-pane[data-focused="true"] .party-control-hint:not(
 .party-pane.damage-hit{box-shadow:inset 0 0 0 3px #754438}
 
 .party-damage-feedback.counter{color:#c9b786;border-color:#776744;background:#15130ed9}
+
+:is(#partyResult,#soloResult) .result-rows { overflow-x:auto; }
+:is(#partyResult,#soloResult) button { min-height:44px; font:inherit; }
+#soloResult { font-family:"Lucida Console","Courier New",monospace; }

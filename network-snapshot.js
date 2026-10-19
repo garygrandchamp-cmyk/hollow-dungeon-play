@@ -1,4 +1,4 @@
-import {CLASSES} from './party-campaign.js?v=b258c395560209e8026ca4d5dec71424998d0de6';
+import {CLASSES} from './party-campaign.js?v=48c9690caaf071685197edd79934df66b444bc3a';
 const finite=(x,min,max)=>typeof x==='number'&&Number.isFinite(x)&&x>=min&&x<=max;
 const plain=x=>x&&typeof x==='object'&&!Array.isArray(x);
 const id=x=>typeof x==='string'&&/^[a-zA-Z0-9_.:-]{1,128}$/.test(x);
@@ -10,6 +10,7 @@ export function validateSessionState(value,size){
  for(const [index,a]of value.actors.entries()){
   if(!plain(a)||a.id!=='hero-'+(index+1)||!CLASSES[a.classId]||!plain(a.position)||!finite(a.position.x,-bound,bound)||!finite(a.position.z,-bound,bound)||!finite(a.position.y,-10,20)||!finite(a.yaw,-1e6,1e6)||!finite(a.pitch,-1.6,1.6)||!finite(a.maxHealth,1,11000)||!finite(a.health,0,a.maxHealth)||!finite(a.maxMana,1,10000)||!finite(a.mana,0,a.maxMana)||!finite(a.maxStamina,1,10000)||!finite(a.stamina,0,a.maxStamina)||typeof a.alive!=='boolean'||typeof a.escaped!=='boolean'||typeof a.fainted!=='boolean'||!Number.isSafeInteger(a.gold)||a.gold<0||a.gold>1e9||!plain(a.equipment))return false;
   if(a.offhand!==undefined&&!['shield','magic','torch'].includes(a.offhand)||a.torchFuel!==undefined&&!finite(a.torchFuel,0,120)||a.torchLit!==undefined&&typeof a.torchLit!=='boolean')return false;
+  if(a.kills!==undefined&&(!Number.isSafeInteger(a.kills)||a.kills<0||a.kills>1000000))return false;
   for(const slot of ['weapon','offhand'])if(!id(a.equipment[slot]?.id))return false;
  }
  if(!Array.isArray(value.open)||value.open.length!==2||value.open.some(f=>!Array.isArray(f)||f.length>size*size*4||f.some(k=>typeof k!=='string'||!/^\d+:\d+$/.test(k))))return false;

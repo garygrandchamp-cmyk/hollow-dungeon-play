@@ -1,4 +1,4 @@
-import {WIDOW_RULES} from './ceiling-widow.js?v=b258c395560209e8026ca4d5dec71424998d0de6';
+import {WIDOW_RULES} from './ceiling-widow.js?v=48c9690caaf071685197edd79934df66b444bc3a';
 
 // The caller owns floor visibility and adds group to the world. enemyPosition
 // is the widow's supported floor point (not its already elevated perch).

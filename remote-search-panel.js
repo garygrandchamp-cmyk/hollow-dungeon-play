@@ -1,5 +1,5 @@
-import {compatibleCurse} from './cursed-equipment.js?v=b258c395560209e8026ca4d5dec71424998d0de6';
-import {searchFeedback,searchRollStyles,lootDetails,appendSearchComparison} from './search-feedback.js?v=b258c395560209e8026ca4d5dec71424998d0de6';
+import {compatibleCurse} from './cursed-equipment.js?v=48c9690caaf071685197edd79934df66b444bc3a';
+import {searchFeedback,searchRollStyles,lootDetails,appendSearchComparison} from './search-feedback.js?v=48c9690caaf071685197edd79934df66b444bc3a';
 // Presentation only. Host snapshots own outcomes, stamina and loot grants.
 export function createRemoteSearchPanel({sendAction,sound=()=>{},drawIcon=null,document:doc=globalThis.document,now=()=>globalThis.performance?.now?.()??Date.now(),setInterval:startInterval=globalThis.setInterval,clearInterval:stopInterval=globalThis.clearInterval,setTimeout:startTimeout=globalThis.setTimeout,clearTimeout:stopTimeout=globalThis.clearTimeout}={}) {
   if(typeof sendAction!=='function'||!doc)throw Error('Remote search requires sendAction and a document.');
@@ -12,7 +12,7 @@ export function createRemoteSearchPanel({sendAction,sound=()=>{},drawIcon=null,d
   function clean(snapshot){
     if(!snapshot||typeof snapshot!=='object'||!idOK(snapshot.id)||!['ready','rolling','success','failed'].includes(snapshot.status)||!Number.isInteger(snapshot.dc)||snapshot.dc<1||snapshot.dc>20)return null;
     const result={id:snapshot.id,name:text(snapshot.name,'Container'),dc:snapshot.dc,status:snapshot.status,cost:8};
-    if(Number.isFinite(snapshot.total)&&Math.abs(snapshot.total)<=1000)result.total=snapshot.total;result.fainted=snapshot.fainted===true;
+    if(Number.isFinite(snapshot.total)&&Math.abs(snapshot.total)<=1000)result.total=snapshot.total;result.fainted=snapshot.fainted===true;result.exhausted=snapshot.exhausted===true;
     if(Number.isInteger(snapshot.roll)&&snapshot.roll>=1&&snapshot.roll<=20)result.roll=snapshot.roll;
     // Never inspect or retain contents for an unrevealed search, even if supplied.
     if(snapshot.status==='success'){
@@ -50,7 +50,7 @@ export function createRemoteSearchPanel({sendAction,sound=()=>{},drawIcon=null,d
       make('h3','CONTAINER CONTENTS').className='search-contents-title';const list=make('ul');if(!c.contents.length)make('li','Empty — everything has been taken.',list);
       for(const item of c.contents){const row=make('li',item.kind==='gold'&&item.amount!==undefined?`${item.amount} gold`:item.name,list),take=make('button','Take',row);make('small',lootDetails(item),row).className='search-item-details';if(drawIcon&&item.kind!=='gold'){const icon=make('canvas',undefined,row);icon.style.cssText='float:left;width:48px;height:48px;image-rendering:pixelated;margin:0 10px 6px 0';drawIcon(item,icon);}take.type='button';take.dataset.request='take';take.setAttribute('aria-label',`Take ${item.kind==='gold'&&item.amount!==undefined?item.amount+' gold':item.name}`);take.addEventListener('click',()=>{if(current?.id===c.id&&current.status==='success'&&current.contents.some(x=>x.id===item.id))request('take-item',item.id,token,take);});}
     }else if(c.status!=='rolling'){
-      const roll=make('button',c.fainted?'Exhausted — cannot search':c.status==='failed'?'Try again · 8 stamina':'Roll D20 · 8 stamina');roll.type='button';roll.dataset.request='roll';roll.disabled=c.fainted;roll.addEventListener('click',()=>{if(!c.fainted)request('search-roll',undefined,token,roll);});
+      const roll=make('button',c.fainted||c.exhausted?'Exhausted — cannot search':c.status==='failed'?'Try again · 8 stamina':'Roll D20 · 8 stamina');roll.type='button';roll.dataset.request='roll';roll.disabled=c.fainted||c.exhausted;roll.addEventListener('click',()=>{if(!c.fainted&&!c.exhausted)request('search-roll',undefined,token,roll);});
     }
     const done=make('button','Close');done.type='button';done.disabled=c.status==='rolling';done.addEventListener('click',()=>{if(token===epoch&&current?.id===c.id)api.close();});
   }

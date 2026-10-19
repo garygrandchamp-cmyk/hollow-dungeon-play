@@ -1,6 +1,6 @@
-import { decodeListenerAtlas } from './listener-atlas-data.js?v=b258c395560209e8026ca4d5dec71424998d0de6';
-import { decodeMonsterAtlas } from './monster-atlas-data.js?v=b258c395560209e8026ca4d5dec71424998d0de6';
-import { makeEnemySprite } from './enemy-sprites.js?v=b258c395560209e8026ca4d5dec71424998d0de6';
+import { decodeListenerAtlas } from './listener-atlas-data.js?v=48c9690caaf071685197edd79934df66b444bc3a';
+import { decodeMonsterAtlas } from './monster-atlas-data.js?v=48c9690caaf071685197edd79934df66b444bc3a';
+import { makeEnemySprite } from './enemy-sprites.js?v=48c9690caaf071685197edd79934df66b444bc3a';
 
 export const MONSTER_SPRITE_CLIPS = Object.freeze({
   idle: { row: 0, frames: 4, fps: 4, loop: true },
@@ -11,6 +11,8 @@ export const MONSTER_SPRITE_CLIPS = Object.freeze({
 });
 
 export const MONSTER_CATALOG = Object.freeze({
+  'crypt-guardian': {name:'Crypt Guardian · killable',height:1.75,hp:18,speed:.9,damage:20,sprite:'drowned',dmOnly:true},
+  'deathless-pursuer': {name:'Deathless Pursuer · cannot kill',height:1.9,hp:1,speed:2.5,damage:18,sprite:'wraith',dmOnly:true},
   skeleton: {name:'Skeleton',height:1.7,hp:2,speed:1.1,damage:8},
   goblin: {name:'Crypt goblin',height:1.7,hp:3,speed:1.6,damage:8},
   wraith: {name:'Wraith',height:1.9,hp:4,speed:1.4,damage:11},
@@ -66,6 +68,7 @@ function acquire(THREE, kind) {
  * Caller owns root movement/heading/scale and geometry cleanup.
  */
 export function makeMonsterSprite(THREE, { kind = 'wraith', height, seed = 0 } = {}) {
+  if(MONSTER_CATALOG[kind]?.sprite){const sprite=makeMonsterSprite(THREE,{kind:MONSTER_CATALOG[kind].sprite,height:height??MONSTER_CATALOG[kind].height,seed});sprite.name=kind+'-sprite-enemy';sprite.userData.encounterKind=kind;return sprite;}
   if (kind === 'skeleton' || kind === 'goblin') return makeEnemySprite(THREE, { kind, height: height ?? 1.7, seed });
   kind = ['ceiling-widow','wraith','spider','slime','rat','bat','crawler','skeletal-mage','drowned','listener'].includes(kind) ? kind : 'wraith';
   height = height ?? MONSTER_CATALOG[kind].height;
@@ -120,9 +123,10 @@ export function makeMonsterSprite(THREE, { kind = 'wraith', height, seed = 0 } =
     time = Number.isFinite(time) ? time : lastTime;
     if (state !== name || restart) { state = name; started = time; frame(state, 0); }
   }
+  root.userData.spriteClips = MONSTER_SPRITE_CLIPS;
   root.userData.setAnimation = setAnimation;
   root.userData.faceCamera = faceCamera;
-  root.userData.animate = ({ time = 0, moving = false, attacking = false, hurt = false, dead = false, state: requested, camera } = {}) => {
+  root.userData.animate = ({ time = 0, moving = false, attacking = false, hurt = false, dead = false, state: requested, attackFrame = null, camera } = {}) => {
     time = Number.isFinite(time) ? time : lastTime;
     if (time < lastTime) started = time;
     lastTime = time;
@@ -136,6 +140,11 @@ export function makeMonsterSprite(THREE, { kind = 'wraith', height, seed = 0 } =
         const next = attacking ? 'attack' : moving ? 'walk' : 'idle';
         setAnimation(next, time, state === next && finished);
       }
+    }
+    if (!dead && !hurt && Number.isInteger(attackFrame) && attackFrame >= 0 && attackFrame < MONSTER_SPRITE_CLIPS.attack.frames) {
+      setAnimation('attack', time); frame('attack', attackFrame);
+      if (camera) faceCamera(camera);
+      return;
     }
     const clip = MONSTER_SPRITE_CLIPS[state];
     const elapsed = Math.max(0, time - started);

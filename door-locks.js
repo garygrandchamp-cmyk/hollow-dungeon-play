@@ -79,11 +79,5 @@ export function createDoorLocks(){
  return {prepare,collect,unlock,hint,getLocks,getPickups,placeLock,placeKey,eraseLock,eraseKey,snapshot,applySnapshot,get keys(){return [...keys].filter(([,n])=>n>0);},reset};
 }
 
-export function makeKeyPickup(THREE,named=false){
- const n=32,pixels=new Uint8Array(n*n*4);for(let y=0;y<n;y++)for(let x=0;x<n;x++){
-  const ring=Math.abs(Math.hypot(x-9,y-21)-5)<1.6,shaft=x>=12&&x<=26&&y>=19&&y<=21,teeth=(x===22||x===25)&&y>=15&&y<=20;
-  if(ring||shaft||teeth){const shade=y%3===0?160:220;pixels.set(named?[shade*.7,shade*.8,255,255]:[shade,shade,shade*.9,255],(y*n+x)*4);}
- }
- const map=new THREE.DataTexture(pixels,n,n);map.magFilter=map.minFilter=THREE.NearestFilter;map.generateMipmaps=false;map.colorSpace=THREE.SRGBColorSpace;map.needsUpdate=true;
- const material=new THREE.MeshBasicMaterial({map,alphaTest:.5,side:THREE.DoubleSide,fog:true}),mesh=new THREE.Mesh(new THREE.PlaneGeometry(.7,.7),material);mesh.userData.dynamic=true;mesh.userData.ownGeometry=true;mesh.onBeforeRender=(r,s,c)=>{mesh.quaternion.copy(c.quaternion);};mesh.userData.disposeMaterials=()=>{map.dispose();material.dispose();};return mesh;
-}
+// Visual API remains compatible; lock rules above own no render resources.
+export {makeKeyPickup} from './world-pickups.js?v=48c9690caaf071685197edd79934df66b444bc3a';

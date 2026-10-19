@@ -1,4 +1,4 @@
-import {createPeerSession, MAX_CODE_LENGTH} from './peer-session.js?v=b258c395560209e8026ca4d5dec71424998d0de6';
+import {createPeerSession, MAX_CODE_LENGTH} from './peer-session.js?v=48c9690caaf071685197edd79934df66b444bc3a';
 
 // Callbacks start gameplay only after the player explicitly chooses a play button.
 // sessionFactory(peerOptions) may inject the application's message/authority hooks.
@@ -60,8 +60,8 @@ export function createStartScreen({onLocal = () => {}, onHost = () => {}, onJoin
     const guide=node('details');guide.className='hs-flow';guide.id='hs-first-run';
     node('summary','First run: prepare → explore → escape',guide);
     node('p','Setup: choose loadouts. The DM builds within budget and validates the dungeon before Start expedition.',guide);
-    node('p','Live: collect six relics across two floors, then escape. Walking is free; actions cost stamina. At zero stamina, you faint and are out of the expedition.',guide);
-    node('p','Next run: survivors keep found loot. Death or fainting loses carried equipment; class starters remain.',guide);
+    node('p','Live: collect six relics across two floors, then escape. Walking is free; actions cost stamina. At zero stamina, you are exhausted: searching stops and the next damaging hit kills. You can still move and fight.',guide);
+    node('p','Next run: survivors keep found loot. Death loses carried equipment; class starters remain. Exhausted survivors can still escape with their loot.',guide);
     const menu = node('div'); menu.className = 'hs-main';
     const choice=(id,label,description,action,parent=menu)=>{
       const row=node('div',undefined,parent);row.className='hs-choice';

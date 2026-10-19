@@ -1,4 +1,5 @@
-import {roomContainsWorld,roomCells} from './room-footprint.js?v=b258c395560209e8026ca4d5dec71424998d0de6';
+import {roomContainsWorld,roomCells} from './room-footprint.js?v=48c9690caaf071685197edd79934df66b444bc3a';
+import {createCeilingAtmosphere} from './ceiling-atmosphere.js?v=48c9690caaf071685197edd79934df66b444bc3a';
 // Local, low-level atmosphere: three batched draws, no canvas/assets/lights.
 const TAU=Math.PI*2;
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
@@ -8,12 +9,13 @@ const QUALITY={low:{mist:48,dust:12},medium:{mist:96,dust:24},high:{mist:144,dus
 export function createDungeonAtmosphere(THREE){
  const root=new THREE.Group();root.name='dungeon-atmosphere';root.visible=false;root.userData.atmosphere=true;
  let disposed=false,intensity=.45,batches=[],maps=[],heightAt=()=>0,elapsed=0,enabled=true,firstPerson=true;
+ let ceilingDetails=null,buildOptions=null;
  function stats(){root.userData.particleCount=batches.reduce((n,b)=>n+b.particles.length,0);root.userData.drawCalls=batches.length;root.userData.intensity=intensity;}
  function visibility(){root.visible=!disposed&&enabled&&firstPerson&&intensity>0&&batches.length>0;}
  function retire(){
   // May run inside world.traverse(): clear our children, never detach root or
   // mutate the parent's child list. Each owned resource is released once.
-  const old=batches;batches=[];root.clear();for(const b of old){b.geometry.dispose();b.material.dispose();}for(const map of maps)map.dispose();maps=[];stats();visibility();
+  ceilingDetails?.dispose();ceilingDetails=null;const old=batches;batches=[];root.clear();for(const b of old){b.geometry.dispose();b.material.dispose();}for(const map of maps)map.dispose();maps=[];stats();visibility();
  }
  root.userData.disposeMaterials=retire;
  function softMap(dust=false){
@@ -54,14 +56,16 @@ export function createDungeonAtmosphere(THREE){
  const api={
   root,
   build({size,moduleSize=4.8,architecture,seed='dungeon-mist',groundHeight,quality='medium'}={}){
-   if(disposed)return root;retire();elapsed=0;heightAt=typeof groundHeight==='function'?groundHeight:()=>0;
+   if(disposed)return root;retire();buildOptions={size,moduleSize,architecture,seed,groundHeight,quality};elapsed=0;heightAt=typeof groundHeight==='function'?groundHeight:()=>0;
    if(!Number.isInteger(size)||size<1||size>128||!Number.isFinite(moduleSize)||moduleSize<=0||moduleSize>32||quality==='off'||quality===false)return root;
    const rooms=roomsFor({size,moduleSize,architecture});if(!rooms.length)return root;
    const budget=typeof quality==='string'&&Object.hasOwn(QUALITY,quality)?QUALITY[quality]:QUALITY.medium,rng=random(seed),mist=softMap(),dust=softMap(true),primary=Math.ceil(budget.mist*.65);
    addBatch('low-cool-mist',primary,rooms,rng,mist,false,0,moduleSize);addBatch('thin-drifting-wisps',budget.mist-primary,rooms,rng,mist,false,1,moduleSize);addBatch('warm-room-dust',budget.dust,rooms,rng,dust,true,0,moduleSize);applyIntensity();return root;
   },
-  tick(dt,now,{enabled:show=true,firstPerson:fp=true,position}={}){
+  addCeilingDetails(options={}){if(disposed)return;ceilingDetails?.dispose();ceilingDetails=createCeilingAtmosphere(THREE);ceilingDetails.build({...buildOptions,...options});root.add(ceilingDetails.root);root.userData.ceilingDrawCalls=ceilingDetails.root.userData.drawCalls;},
+  tick(dt,now,{enabled:show=true,firstPerson:fp=true,position,paused=false}={}){
    if(disposed)return;enabled=show!==false;firstPerson=fp!==false;visibility();if(!root.visible)return;
+   ceilingDetails?.tick(dt,{paused,visible:root.visible});
    elapsed=Number.isFinite(now)?Math.max(0,now)*.001:elapsed+clamp(Number.isFinite(dt)?dt:0,0,.1);
    // Points face each actual render camera, including split-screen views. A
    // single optional player position never culls atmosphere for other heroes.

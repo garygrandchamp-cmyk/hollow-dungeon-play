@@ -1,6 +1,6 @@
-import {roomContainsTile} from './room-footprint.js?v=b258c395560209e8026ca4d5dec71424998d0de6';
-import {dungeonProgression} from './dungeon-progression.js?v=b258c395560209e8026ca4d5dec71424998d0de6';
-import {validateDungeon} from './progression-validator.js?v=b258c395560209e8026ca4d5dec71424998d0de6';
+import {roomContainsTile} from './room-footprint.js?v=48c9690caaf071685197edd79934df66b444bc3a';
+import {dungeonProgression} from './dungeon-progression.js?v=48c9690caaf071685197edd79934df66b444bc3a';
+import {validateDungeon} from './progression-validator.js?v=48c9690caaf071685197edd79934df66b444bc3a';
 
 export const BRIDGE_TURN_SECONDS=2.4;
 export const BRIDGE_DM_COST=8;

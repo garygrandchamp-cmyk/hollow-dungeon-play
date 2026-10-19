@@ -1,6 +1,8 @@
 // Small deterministic host state machines. Timers use simulation dt, never wall
 // clock deadlines, so menus, rebuilding and guest rendering cannot finish a hit.
 export const ENEMY_BEHAVIORS=Object.freeze({
+ 'crypt-guardian':Object.freeze({name:'guardian heavy sweep',trigger:2.35,reach:2.4,windup:1.2,recovery:2.8,damage:20,punish:1.75,arc:Math.PI*.7,radius:.34}),
+ 'deathless-pursuer':Object.freeze({name:'deathless grasp',trigger:2.05,reach:2.15,windup:1.1,recovery:2.4,damage:18,arc:Math.PI*.5,radius:.28}),
  spider:Object.freeze({name:'stalking pounce',trigger:2.2,reach:.78,windup:.9,lunge:.4,lungeSpeed:5,maxTravel:1.85,recovery:2.15,damage:7,punish:1.5,arc:Math.PI*.42,radius:.3,stalkRadius:5,stalkSpeed:2}),
  bat:Object.freeze({name:'diving pass',trigger:3,reach:.85,windup:.65,lunge:.55,lungeSpeed:6.2,maxTravel:3.4,overrun:.8,recovery:1.7,retreat:.7,retreatSpeed:2.5,peel:true,damage:5,punish:1.35,arc:Math.PI*.38,radius:.18}),
  slime:Object.freeze({name:'swelling burst',trigger:2.35,reach:2.4,windup:1.3,recovery:2.6,damage:10,punish:1.65,arc:Math.PI*2,radius:.38,radial:true}),

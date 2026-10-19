@@ -1,4 +1,4 @@
-import {pixelsForSpan,tagTextureDensity,applyPhysicalUVs} from './pixel-density.js?v=b258c395560209e8026ca4d5dec71424998d0de6';
+import {pixelsForSpan,tagTextureDensity,applyPhysicalUVs} from './pixel-density.js?v=48c9690caaf071685197edd79934df66b444bc3a';
 // Volumetric low-poly furnishings with synchronous, repeating pixel materials.
 const textureCaches=new WeakMap();
 const DEFAULTS={tomb:1,sarcophagus:1,chest:1,crate:.95,rubble:.45,barrel:1.1,bookshelf:1.9,basin:.8,cabinet:1.7,drawers:1.05,'rat-cage':.9,boulder:1.3,shrine:1.2};
@@ -119,6 +119,20 @@ export function makeTorchHardware(THREE,{height=1,projection=.3,seed=0}={}){
  const k=kit(THREE,'torch-hardware-'+seed),{root,part,box,beam,finish}=k;
  box(.13,height*.66,.035,'metal',{y:height*.35,z:.02,tint:0x716b5c});for(const y of [height*.1,height*.58])part(new THREE.SphereGeometry(.025,5,4),'metal',{y,z:.05,tint:0xa49a7d});
  beam([0,height*.25,.035],[0,height*.43,projection*.62],.018,'metal');beam([0,height*.43,projection*.62],[0,height*.8,projection*.62],.018,'metal');
+ part(new THREE.CylinderGeometry(.035,.028,height*.42,6),'wood',{y:height*.59,z:projection*.62,tint:0x82705b});
  part(new THREE.CylinderGeometry(.09,.055,height*.2,8),'metal',{y:height*.88,z:projection*.62,tint:0x5c574a});part(new THREE.CylinderGeometry(.07,.07,height*.02,8),'wood',{y:height*.99,z:projection*.62,tint:0x3a3027});
+ for(const [x,z]of [[-.065,0],[.065,0],[0,-.065],[0,.065]])beam([x,height*.81,projection*.62+z],[x*1.35,height,projection*.62+z*1.35],.011,'metal');
  finish();k.lifecycle();root.userData.solid=true;root.userData.projection=projection;return root;
+}
+
+/** Ground-local iron foot, wooden shaft and open basket; no wall plate. */
+export function makeStandingTorchHardware(THREE,{height=1,seed=0}={}){
+ height=Number.isFinite(height)?Math.max(.1,height):1;const k=kit(THREE,'standing-torch-'+seed),{root,part,beam,finish}=k;
+ part(new THREE.CylinderGeometry(.095,.16,height*.08,6),'metal',{y:height*.04,tint:0x6e6759});
+ part(new THREE.CylinderGeometry(.035,.045,height*.82,6),'wood',{y:height*.47,tint:0x82705b});
+ for(const y of [.16,.72])part(new THREE.CylinderGeometry(.05,.05,height*.04,6),'metal',{y:height*y,tint:0x706a5a});
+ part(new THREE.CylinderGeometry(.105,.06,height*.16,8),'metal',{y:height*.9,tint:0x5c574a});
+ part(new THREE.CylinderGeometry(.085,.085,height*.02,8),'wood',{y:height*.99,tint:0x3a3027});
+ for(const [x,z]of [[-.075,0],[.075,0],[0,-.075],[0,.075]])beam([x,height*.83,z],[x*1.35,height,z*1.35],.012,'metal');
+ finish();k.lifecycle();root.userData.solid=true;return root;
 }
