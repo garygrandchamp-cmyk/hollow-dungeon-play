@@ -1,6 +1,6 @@
-import {batchStaticGroup} from './mesh-batch.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
-import {applyPhysicalUVs,tagTextureDensity} from './pixel-density.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
-import {createWorldMaterial} from './graphics-compatibility.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
+import {batchStaticGroup} from './mesh-batch.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
+import {applyPhysicalUVs,tagTextureDensity} from './pixel-density.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
+import {createWorldMaterial} from './graphics-compatibility.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
 
 // 32px covers .5m: deliberate worn-metal/bone clusters at the shared 64px/m.
 const ramps={iron:[[59,63,61],[81,86,81],[105,109,102],[135,137,124]],bronze:[[65,56,40],[89,75,49],[114,96,62],[143,124,84]],bone:[[79,76,61],[103,98,77],[131,125,102],[155,148,121]]};

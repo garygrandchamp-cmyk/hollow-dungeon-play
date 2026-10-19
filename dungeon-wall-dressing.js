@@ -1,6 +1,6 @@
-import {createWallDressingFactory,PAINTINGS} from './wall-dressing.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
-import {decodeWallPainting} from './wall-painting-data.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
-import {tagTextureDensity} from './pixel-density.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
+import {createWallDressingFactory,PAINTINGS} from './wall-dressing.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
+import {decodeWallPainting} from './wall-painting-data.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
+import {tagTextureDensity} from './pixel-density.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
 
 export function createDungeonWallDressing(THREE,{plans=[],groundHeight=()=>0,graphicsProfile='normal'}={}){
  const root=new THREE.Group(),maps={};root.name='room-wall-dressing';

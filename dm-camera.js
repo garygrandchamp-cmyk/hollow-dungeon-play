@@ -1,4 +1,4 @@
-import {roomCells} from './room-footprint.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
+import {roomCells} from './room-footprint.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 /** Local presentation state only; never writes dungeon/actor/network state. */
 export function createDMCameraNavigation(THREE,{getBounds=()=>({size:18,moduleSize:4.8})}={}){

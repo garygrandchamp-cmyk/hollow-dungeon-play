@@ -1,4 +1,4 @@
-import {random} from './wfc.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
+import {random} from './wfc.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
 
 export const defaults=Object.freeze({height:2.4,thickness:.36,ruin:.18,weather:.3,opening:'none',width:1.1,openingHeight:1.7,sill:0,offset:0,style:'wood',growth:.15,history:'ancient',sightDamage:'none'});
 const limits={height:[.6,5],thickness:[.15,.9],ruin:[0,1],weather:[0,1],width:[.6,1.8],openingHeight:[.6,3],sill:[0,2.5],offset:[-.25,.25],growth:[0,1]};

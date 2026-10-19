@@ -1,4 +1,4 @@
-import {wallTorchMountAllowed} from './torch-mounts.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
+import {wallTorchMountAllowed} from './torch-mounts.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
 
 // The same solid-wall test used for torches also excludes doors, ingress grates
 // and moving/secret panels from wall-backed furniture. Called after entrances

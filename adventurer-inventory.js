@@ -1,7 +1,7 @@
-import {EQUIPMENT_CURSES,compatibleCurse,curseEffects,curseDescription} from './cursed-equipment.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
-import {random} from './wfc.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
-import {CLASSES} from './party-campaign.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
-import {WEAPON_CATALOG} from './weapon-forge.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
+import {EQUIPMENT_CURSES,compatibleCurse,curseEffects,curseDescription} from './cursed-equipment.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
+import {random} from './wfc.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
+import {CLASSES} from './party-campaign.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
+import {WEAPON_CATALOG} from './weapon-forge.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
 
 export const INVENTORY_STORAGE_KEY = 'hollow:adventurer-inventory:v1';
 export const GEAR_SLOTS = Object.freeze(['helm', 'chest', 'arms', 'legs', 'weapon', 'offhand']);
@@ -103,6 +103,7 @@ function normalizeHub(value){
  const last=receipts.at(-1);if(last.goldBefore!==value.previousGold||last.goldAfter!==value.gold)return false;
  return {epoch:value.epoch,sequence:value.sequence,gold:value.gold,previousGold:value.previousGold,pendingMirror:value.pendingMirror??true,receipts};
 }
+function normalizePreparationLoss(v){if(v==null)return null;if(!object(v)||Object.keys(v).sort().join(',')!=='epoch,goldBefore,pendingMirror,runNumber'||!hubToken(v.epoch,64)||!integer(v.runNumber,1,Number.MAX_SAFE_INTEGER)||!integer(v.goldBefore,0,1e9)||typeof v.pendingMirror!=='boolean')return false;return {...v};}
 function restore(payload) {
   if (payload?.version !== 1 || !Array.isArray(payload.actors) || payload.actors.length > 32) return null;
   const records = new Map();
@@ -110,8 +111,8 @@ function restore(payload) {
     if (!text(a?.id, 96) || records.has(a.id) || !Array.isArray(a.items) || a.items.length > INVENTORY_CAPACITY || !object(a.equipped)) return null;
     const items = a.items.map(normalizeItem);
     if(!Array.isArray(a.stored??[])||(a.stored??[]).length>HUB_STASH_CAPACITY)return null;
-    const stored=(a.stored??[]).map(normalizeItem),hub=normalizeHub(a.hub);
-    if(hub===false||stored.some(item=>!item)||items.some(item=>!item)||new Set([...items,...stored].map(item=>item.id)).size!==items.length+stored.length)return null;
+    const stored=(a.stored??[]).map(normalizeItem),hub=normalizeHub(a.hub),preparationLoss=normalizePreparationLoss(a.preparationLoss);
+    if(preparationLoss===false||preparationLoss?.pendingMirror&&hub||hub===false||stored.some(item=>!item)||items.some(item=>!item)||new Set([...items,...stored].map(item=>item.id)).size!==items.length+stored.length)return null;
     if (items.some(item => !item) || new Set(items.map(item => item.id)).size !== items.length || Object.keys(a.equipped).some(slot => !GEAR_SLOTS.includes(slot))) return null;
     const equipped = emptyGear();
     for (const slot of GEAR_SLOTS) {
@@ -119,7 +120,7 @@ function restore(payload) {
       if (id !== null && !items.some(item => item.id === id && item.slot === slot)) return null;
       equipped[slot] = id;
     }
-    records.set(a.id, {id: a.id, items, stored, hub, equipped});
+    records.set(a.id, {id: a.id, items, stored, hub, preparationLoss, equipped});
   }
   return records;
 }
@@ -127,7 +128,9 @@ function restore(payload) {
 /** Independent inventory authority. It does not mutate campaign actor.inventory,
  * actor.equipment, health or class maxima. Host supplies baseStats when needed,
  * consumes stats() for combat/max HP, and bridges campaign carry explicitly.
- * The fallback solo actor is used only when getActor is not provided. */
+ * The fallback solo actor is used only when getActor is not provided.
+ * allowEphemeralHub is an explicit private-preview opt-in for storage:null;
+ * hubDurable remains false. Ordinary hub transactions require storage. */
 export function createInventoryModel({getActor, storage, canChangeGear=()=>true,allowEphemeralHub=false} = {}) {
   if (getActor !== undefined && typeof getActor !== 'function') throw new TypeError('getActor must be a function.');
   const solo = {id: 'solo-hero', name: 'Adventurer', classId: 'adventurer', health: 100, maxHealth: 100, alive: true};
@@ -145,10 +148,10 @@ export function createInventoryModel({getActor, storage, canChangeGear=()=>true,
   function actor() {try {const a = getActor ? getActor() : solo; return a && text(a.id, 96) ? a : null;} catch {return null;}}
   function record() {
     const a = actor(); if (!a) return null;
-    if (!records.has(a.id)) {if (records.size >= 32) return null; records.set(a.id, {id: a.id, items: [],stored:[],hub:null, equipped: emptyGear()});}
+    if (!records.has(a.id)) {if (records.size >= 32) return null; records.set(a.id, {id: a.id, items: [],stored:[],hub:null,preparationLoss:null, equipped: emptyGear()});}
     return records.get(a.id);
   }
-  const recordData=r=>({id:r.id,items:r.items.map(copy),equipped:{...r.equipped},...(r.stored.length?{stored:r.stored.map(copy)}:{}),...(r.hub?{hub:copy(r.hub)}:{})});
+  const recordData=r=>({id:r.id,items:r.items.map(copy),equipped:{...r.equipped},...(r.stored.length?{stored:r.stored.map(copy)}:{}),...(r.hub?{hub:copy(r.hub)}:{}),...(r.preparationLoss?{preparationLoss:copy(r.preparationLoss)}:{})});
   function snapshot() {return {version: 1, actors: [...records.values()].map(recordData)};}
   function persist() {
     if (!storage) return false;
@@ -207,7 +210,7 @@ export function createInventoryModel({getActor, storage, canChangeGear=()=>true,
   // retry receipts together. No subscriber sees a partially moved item.
   function commitHubRecord(value,{expected}={}){
    const a=actor(),r=record();if(!a||a.alive===false||!r||canChangeGear(a)!==true||value?.id!==a.id||JSON.stringify(recordData(r))!==JSON.stringify(expected))return false;
-   const checked=restore({version:1,actors:[value]});if(!checked||!checked.get(a.id).hub||!hubStorageCurrent())return false;
+   const checked=restore({version:1,actors:[value]});if(!checked||!checked.get(a.id).hub||JSON.stringify(checked.get(a.id).preparationLoss)!==JSON.stringify(r.preparationLoss)||!hubStorageCurrent())return false;
    const next=new Map(records);next.set(a.id,checked.get(a.id));const serialized=JSON.stringify({version:1,actors:[...next.values()].map(recordData)});
    if(serialized.length>262144-32)return false;
    try{storage?.setItem(INVENTORY_STORAGE_KEY,serialized);}catch{persistenceError='Hub transaction could not be saved; no items or gold were moved.';return false;}
@@ -219,7 +222,19 @@ export function createInventoryModel({getActor, storage, canChangeGear=()=>true,
    if(raw.length>262144)return false;
    try{storage?.setItem(INVENTORY_STORAGE_KEY,raw);}catch{return false;}records=next;persistedRaw=raw;return true;
   }
-  return {applySnapshot,grantLoot, equip, unequip, stats, reset, persist, snapshot, getEquipped,commitHubRecord,acknowledgeHubMirror,hubStorageCurrent,hubRecord:()=>record()?recordData(record()):null, generateLoot: generateInventoryLoot,
+  // A death-loss checkpoint is separate from shop receipts. Items/equipment,
+  // zero-gold intent and once-per-run proof commit together; stash is retained.
+  function commitPreparationLoss(value,{expected}={}){
+   const a=actor(),r=record(),loss=normalizePreparationLoss(value);
+   if(!storage||!a||a.alive!==false||a.health!==0||!r||!loss||!loss.pendingMirror||r.hub?.pendingMirror||r.preparationLoss?.pendingMirror||r.preparationLoss?.runNumber>=loss.runNumber||JSON.stringify(recordData(r))!==JSON.stringify(expected)||!hubStorageCurrent())return false;
+   const next=new Map(records);next.set(a.id,{...r,items:[],equipped:emptyGear(),hub:null,preparationLoss:loss});const raw=JSON.stringify({version:1,actors:[...next.values()].map(recordData)});if(raw.length>262144-32)return false;
+   try{storage.setItem(INVENTORY_STORAGE_KEY,raw);}catch{persistenceError='Preparation death loss could not be saved.';return false;}records=next;persistedRaw=raw;persistenceError=null;notify();return true;
+  }
+  function acknowledgePreparationLoss(epoch,runNumber){
+   const a=actor(),r=record();if(!storage||!a||!r?.preparationLoss||r.preparationLoss.epoch!==epoch||r.preparationLoss.runNumber!==runNumber||!hubStorageCurrent())return false;if(!r.preparationLoss.pendingMirror)return true;
+   const next=new Map(records);next.set(a.id,{...r,preparationLoss:{...r.preparationLoss,pendingMirror:false}});const raw=JSON.stringify({version:1,actors:[...next.values()].map(recordData)});if(raw.length>262144)return false;try{storage.setItem(INVENTORY_STORAGE_KEY,raw);}catch{return false;}records=next;persistedRaw=raw;return true;
+  }
+  return {commitPreparationLoss,acknowledgePreparationLoss,applySnapshot,grantLoot, equip, unequip, stats, reset, persist, snapshot, getEquipped,commitHubRecord,acknowledgeHubMirror,hubStorageCurrent,hubRecord:()=>record()?recordData(record()):null, generateLoot: generateInventoryLoot,
     subscribe(fn) {if (typeof fn !== 'function') throw new TypeError('Inventory subscriber must be a function.'); listeners.add(fn); return () => listeners.delete(fn);},
     get actor() {return actor();}, get items() {return record()?.items.map(copy) ?? [];},get stored(){return record()?.stored.map(copy)??[];}, get equipped() {return {...(record()?.equipped ?? emptyGear())};},
     get hubDurable(){return !!storage;},get persistenceError() {return persistenceError;}};

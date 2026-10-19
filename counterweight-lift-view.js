@@ -1,4 +1,4 @@
-import {batchStaticGroup} from './mesh-batch.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
+import {batchStaticGroup} from './mesh-batch.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
 export function buildCounterweightLift({THREE,world,box,mat,plan:p,surfaceMaps}){
  const root=new THREE.Group();root.name='counterweight-lift';world.add(root);if(!p)return {root,update(){}};
  const frame=new THREE.Group(),deck=new THREE.Group(),weight=new THREE.Group();root.add(frame,deck,weight);deck.userData.dynamic=weight.userData.dynamic=true;

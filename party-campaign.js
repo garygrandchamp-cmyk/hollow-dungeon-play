@@ -1,4 +1,4 @@
-import {WEAPON_CATALOG} from './weapon-forge.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
+import {WEAPON_CATALOG} from './weapon-forge.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
 export const CAMPAIGN_STORAGE_KEY = 'hollow:party-campaign:v1';
 export const INVENTORY_LIMIT = 16;
 const MAX_GOLD = 1_000_000_000, MAX_OBJECTIVES = 1024;
@@ -166,13 +166,15 @@ export function createPartyCampaign(options = {}) {
     else if (state.objectives.size >= state.requiredObjectives && living.every(a => a.escaped)) state.phase = 'partyVictory';
     return state.phase;
   }
-  function beginRun({seed, spawn, requiredObjectives = 6} = {}) {
+  function beginRun({seed, spawn, requiredObjectives = 6,preparedActorIds=[]} = {}) {
     const location = position(spawn);
+    if(!Array.isArray(preparedActorIds)||preparedActorIds.length>3||new Set(preparedActorIds).size!==preparedActorIds.length||preparedActorIds.some(id=>!actors.some(a=>a.id===id)))throw TypeError('Invalid prepared actors.');
+    const prepared=new Set(preparedActorIds);
     if (typeof seed !== 'string' || seed.length > 256 || !location || !integer(requiredObjectives, 0, MAX_OBJECTIVES)) throw new TypeError('Invalid run options.');
     if (state.runNumber >= Number.MAX_SAFE_INTEGER) throw new RangeError('Campaign run limit reached.');
     for (const a of actors) {
       const profile = CLASSES[a.classId];
-      if (!a.alive) { a.gold = 0; a.inventory = []; a.equipment = defaultEquipment(a.classId); }
+      if (!a.alive&&!prepared.has(a.id)) { a.gold = 0; a.inventory = []; a.equipment = defaultEquipment(a.classId); }
       a.maxHealth = profile.maxHealth; a.maxMana = profile.maxMana; a.health = a.maxHealth; a.mana = a.maxMana;
       a.alive = true; a.escaped = false; Object.assign(a.position, location); a.yaw = 0; a.pitch = 0;
       a.stamina=a.maxStamina??100;a.fainted=false;a.kills=0;

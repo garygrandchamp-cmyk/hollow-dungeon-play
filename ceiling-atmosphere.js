@@ -1,6 +1,6 @@
-import {roomPerimeter} from './room-footprint.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
-import {wallTorchMountAllowed} from './torch-mounts.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
-import {tagTextureDensity,applyPhysicalUVs} from './pixel-density.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
+import {roomPerimeter} from './room-footprint.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
+import {wallTorchMountAllowed} from './torch-mounts.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
+import {tagTextureDensity,applyPhysicalUVs} from './pixel-density.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
 
 const DIRS=[[0,-1],[1,0],[0,1],[-1,0]],LIMITS={low:2,medium:3,high:4};
 function random(seed){let n=2166136261;for(const c of String(seed))n=Math.imul(n^c.charCodeAt(0),16777619);return()=>{n|=0;n=n+0x6d2b79f5|0;let t=Math.imul(n^n>>>15,1|n);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}

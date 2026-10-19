@@ -1,4 +1,4 @@
-import {createDungeonSampleBank} from './audio-samples.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
+import {createDungeonSampleBank} from './audio-samples.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
 // Local CC0 recordings with procedural fallback. Audio starts on a gesture.
 export function createDungeonAudio(){
  let samples=null,context=null,master=null,ambience=null,music=null,enabled=false,volume=.35,lastStep=0,nextDrip=0,nextNote=0,noteIndex=0,noise=null,eventBus=null;

@@ -1,9 +1,9 @@
-import * as THREE from './vendor/three.module.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
-import {createGame} from './game.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
-import {DM_BOSS_ENCOUNTERS} from './dm-boss-encounters.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
-import {createRetroTextures} from './retro-textures.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
-import {makePlayerSprite} from './player-sprites.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
-import {wirePreviewNavigation} from './preview-navigation.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
+import * as THREE from './vendor/three.module.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
+import {createGame} from './game.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
+import {DM_BOSS_ENCOUNTERS} from './dm-boss-encounters.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
+import {createRetroTextures} from './retro-textures.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
+import {makePlayerSprite} from './player-sprites.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
+import {wirePreviewNavigation} from './preview-navigation.js?v=28087f36e96cab39a5b5228b003dd8e7b5ca069a';
 wirePreviewNavigation();
 const $=id=>document.getElementById(id),scene=new THREE.Scene(),world=new THREE.Group(),camera=new THREE.PerspectiveCamera(50,1,.1,100),renderer=new THREE.WebGLRenderer({antialias:false});scene.background=new THREE.Color(0x0a0d12);scene.add(world);renderer.setPixelRatio(Math.min(1,devicePixelRatio));$('view').appendChild(renderer.domElement);
 const retro=createRetroTextures(THREE),materials=new Map(),mat=(name,color=0xffffff,options={})=>{if(!materials.has(name))materials.set(name,new THREE.MeshStandardMaterial({color,...options}));return materials.get(name);};
