@@ -1,4 +1,4 @@
-import {pixelsForSpan,tagTextureDensity} from './pixel-density.js?v=637e9034956bdc32208d05c0403c280117b60bda';
+import {pixelsForSpan,tagTextureDensity} from './pixel-density.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
 /** Tiling pixel ripples: albedo, emission and normals share one moving UV flow. */
 export function createCanalWater(THREE){
  const n=pixelsForSpan(2.4),color=new Uint8Array(n*n*4),normal=new Uint8Array(n*n*4),tau=Math.PI*2;

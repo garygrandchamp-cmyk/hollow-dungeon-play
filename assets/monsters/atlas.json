@@ -35,5 +35,80 @@
       "row": 4,
       "frames": 4
     }
+  },
+  "perAtlas": {
+    "skeletal-mage": {
+      "standingPixels": 104,
+      "renderHeight": 1.8,
+      "clips": {
+        "idle": {
+          "row": 0,
+          "frames": 4,
+          "fps": 4,
+          "loop": true,
+          "indices": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        "walk": {
+          "row": 1,
+          "frames": 4,
+          "fps": 10,
+          "loop": true,
+          "indices": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        "attack": {
+          "row": 2,
+          "frames": 4,
+          "fps": 12,
+          "loop": false,
+          "indices": [
+            2,
+            4,
+            7,
+            8
+          ]
+        },
+        "hurt": {
+          "row": 3,
+          "frames": 4,
+          "fps": 12,
+          "loop": false,
+          "indices": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        "death": {
+          "row": 4,
+          "frames": 8,
+          "fps": 10,
+          "loop": false,
+          "indices": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ],
+          "holdFinal": true,
+          "settledSourceIndex": 8
+        }
+      },
+      "review": "skeletal-mage-reviewed.json"
+    }
   }
 }

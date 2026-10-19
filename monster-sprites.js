@@ -1,6 +1,6 @@
-import { decodeListenerAtlas } from './listener-atlas-data.js?v=637e9034956bdc32208d05c0403c280117b60bda';
-import { decodeMonsterAtlas } from './monster-atlas-data.js?v=637e9034956bdc32208d05c0403c280117b60bda';
-import { makeEnemySprite } from './enemy-sprites.js?v=637e9034956bdc32208d05c0403c280117b60bda';
+import { decodeListenerAtlas } from './listener-atlas-data.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
+import { decodeMonsterAtlas, getMonsterAtlasClips } from './monster-atlas-data.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
+import { makeEnemySprite } from './enemy-sprites.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
 
 export const MONSTER_SPRITE_CLIPS = Object.freeze({
   idle: { row: 0, frames: 4, fps: 4, loop: true },
@@ -27,6 +27,12 @@ export const MONSTER_CATALOG = Object.freeze({
   drowned: {name:'Drowned',height:1.75,hp:6,speed:.7,damage:10},
 });
 export const MONSTER_KINDS = Object.freeze(Object.keys(MONSTER_CATALOG));
+
+// Reviewed atlases may declare longer clips without changing legacy enemies.
+export function getMonsterSpriteClips(kind) {
+  const source = MONSTER_CATALOG[kind]?.sprite ?? (kind === 'ceiling-widow' ? 'spider' : kind);
+  return getMonsterAtlasClips(source) ?? MONSTER_SPRITE_CLIPS;
+}
 
 const caches = new WeakMap();
 function acquire(THREE, kind) {
@@ -80,6 +86,7 @@ export function makeMonsterSprite(THREE, { kind = 'wraith', height, seed = 0 } =
   root.add(billboard);
   const hover=(MONSTER_CATALOG[kind].hover??0)*height/MONSTER_CATALOG[kind].height;billboard.position.y=hover;
   const { map, release, standingPixels } = acquire(THREE, kind);
+  const clips = getMonsterSpriteClips(kind);
   const material = new THREE.MeshBasicMaterial({ map, alphaTest: 0.5, transparent: false,
     depthTest: true, depthWrite: true, fog: true, side: THREE.DoubleSide, toneMapped: false });
   const planeHeight = height * 128 / standingPixels;
@@ -112,25 +119,52 @@ export function makeMonsterSprite(THREE, { kind = 'wraith', height, seed = 0 } =
   const idlePhase = (hash >>> 0) % 4;
   let state = 'idle', started = 0, lastTime = 0, disposed = false;
   function frame(name, index) {
-    const clip = MONSTER_SPRITE_CLIPS[name];
+    const clip = clips[name];
     index = Math.max(0, Math.min(clip.frames - 1, Math.floor(index)));
     map.offset.set(index / 8, 1 - (clip.row + 1) / 5);
     root.userData.spriteState = name;
     root.userData.spriteFrame = index;
   }
   function setAnimation(name, time = lastTime, restart = false) {
-    if (!Object.hasOwn(MONSTER_SPRITE_CLIPS, name)) name = 'idle';
+    if (!Object.hasOwn(clips, name)) name = 'idle';
     time = Number.isFinite(time) ? time : lastTime;
-    if (state !== name || restart) { state = name; started = time; frame(state, 0); }
+    if (state !== name || restart) { state = name; started = time; lastTime = time; frame(state, 0); }
   }
-  root.userData.spriteClips = MONSTER_SPRITE_CLIPS;
+  root.userData.spriteClips = clips;
   root.userData.setAnimation = setAnimation;
+  root.userData.getDeathProgress = () => state === 'death' ? {
+    elapsed: Math.max(0, lastTime - started),
+    settled: root.userData.spriteFrame === clips.death.frames - 1 && (!hover || billboard.position.y === 0),
+  } : null;
+  root.userData.restoreDeathProgress = (progress, time = lastTime) => {
+    if (!progress || !Number.isFinite(progress.elapsed) || progress.elapsed < 0 || typeof progress.settled !== 'boolean') return false;
+    time = Number.isFinite(time) ? time : lastTime;
+    if (progress.settled) root.userData.settleDeath(time);
+    else {
+      setAnimation('death', time - progress.elapsed, true);
+      root.userData.animate({ time, dead: true });
+    }
+    return true;
+  };
+  // Reconstructed dead entities are already corpses, not new death events.
+  root.userData.settleDeath = (time = lastTime) => {
+    time = Number.isFinite(time) ? time : lastTime;
+    // A short clip can finish before the half-second hover descent does.
+    state = 'death'; started = time - Math.max(clips.death.frames / clips.death.fps, hover ? .5 : 0); lastTime = time;
+    frame('death', clips.death.frames - 1);
+    if (hover) billboard.position.y = 0;
+  };
   root.userData.faceCamera = faceCamera;
   root.userData.animate = ({ time = 0, moving = false, attacking = false, hurt = false, dead = false, state: requested, attackFrame = null, camera } = {}) => {
     time = Number.isFinite(time) ? time : lastTime;
-    if (time < lastTime) started = time;
+    if (time < lastTime) {
+      // RAF's frame timestamp can precede an immediate performance.now() call.
+      // A corpse must never replay its collapse because of that clock skew.
+      if (state === 'death') time = lastTime;
+      else started = time;
+    }
     lastTime = time;
-    const previous = MONSTER_SPRITE_CLIPS[state];
+    const previous = clips[state];
     const finished = !previous.loop && time - started >= previous.frames / previous.fps;
     if (requested) setAnimation(requested, time);
     else if (dead) setAnimation('death', time);
@@ -141,12 +175,12 @@ export function makeMonsterSprite(THREE, { kind = 'wraith', height, seed = 0 } =
         setAnimation(next, time, state === next && finished);
       }
     }
-    if (!dead && !hurt && Number.isInteger(attackFrame) && attackFrame >= 0 && attackFrame < MONSTER_SPRITE_CLIPS.attack.frames) {
+    if (!dead && !hurt && Number.isInteger(attackFrame) && attackFrame >= 0 && attackFrame < clips.attack.frames) {
       setAnimation('attack', time); frame('attack', attackFrame);
       if (camera) faceCamera(camera);
       return;
     }
-    const clip = MONSTER_SPRITE_CLIPS[state];
+    const clip = clips[state];
     const elapsed = Math.max(0, time - started);
     let index = Math.floor(elapsed * clip.fps);
     if (clip.loop) index = (index + (state === 'idle' ? idlePhase : 0)) % clip.frames;

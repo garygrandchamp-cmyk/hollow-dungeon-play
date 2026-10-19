@@ -1,7 +1,7 @@
-import {openingHeightAt,openingTopPoints} from './wall-mesh.js?v=637e9034956bdc32208d05c0403c280117b60bda';
-import {batchStaticGroup} from './mesh-batch.js?v=637e9034956bdc32208d05c0403c280117b60bda';
-import {acquireDoorMaterials} from './door-materials.js?v=637e9034956bdc32208d05c0403c280117b60bda';
-import {applyPhysicalUVs} from './pixel-density.js?v=637e9034956bdc32208d05c0403c280117b60bda';
+import {openingHeightAt,openingTopPoints} from './wall-mesh.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
+import {batchStaticGroup} from './mesh-batch.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
+import {acquireDoorMaterials} from './door-materials.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
+import {applyPhysicalUVs} from './pixel-density.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
 
 // Root wall X scaling is cancelled for hinges, then baked into leaf widths so
 // doors retain their real width as they rotate rather than squashing in depth.

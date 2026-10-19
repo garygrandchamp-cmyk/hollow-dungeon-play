@@ -219,5 +219,8 @@
       "atlasSHA256": "e59e78d81830737cc963ffbdcf3896095ebdee6ec925624bffc228d2df12c17a",
       "rgbaSHA256": "43eeb56d2dc4f953992774662496638629863b34a27b7bb9077aad0bf8f263b6"
     }
+  },
+  "replacements": {
+    "skeletal-mage": "skeletal-mage-reviewed.json"
   }
 }

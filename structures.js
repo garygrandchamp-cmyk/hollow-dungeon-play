@@ -1,4 +1,4 @@
-import {batchStaticGroup} from './mesh-batch.js?v=637e9034956bdc32208d05c0403c280117b60bda';
+import {batchStaticGroup} from './mesh-batch.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
 export function staircase({THREE,group,box,stone,trim,settings}){
  const n=settings.steps,rise=settings.rise,width=settings.width,shape=settings.shape??'curved';
  if(shape==='straight'){for(let j=0;j<n;j++){const h=(j+1)*rise/n;box(group,0,h/2,-1+j*2/n,width,h,2/n,trim);}if(settings.rails)for(const sign of [-1,1]){for(let j=0;j<5;j++)box(group,sign*(width/2+.1),.4+j*rise/4,-1+j*.5,.1,.8,.1,stone);const rail=box(group,sign*(width/2+.1),rise/2+.8,0,.12,.12,2.3,trim);rail.rotation.x=-Math.atan(rise/2);}return;}

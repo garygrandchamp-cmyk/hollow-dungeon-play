@@ -1,4 +1,4 @@
-import {MONSTER_KINDS,MONSTER_CATALOG} from './monster-sprites.js?v=637e9034956bdc32208d05c0403c280117b60bda';
+import {MONSTER_KINDS,MONSTER_CATALOG} from './monster-sprites.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
 
 // Production catalog drives the roster. Only explicitly exercised sandboxes get
 // a combat link; the animation viewer does not imply combat test coverage.
@@ -22,6 +22,7 @@ export function enemyPreviewHubHref(release){const version=previewRelease(releas
 export function mountEnemyPreview(doc=document,location=globalThis.location){
  const release=previewRelease(new URL(import.meta.url).searchParams.get('v'))??previewRelease(new URLSearchParams(location?.search??'').get('release'));
  const roster=doc.getElementById('enemyPreviewRoster'),status=doc.getElementById('enemyPreviewBuild');
+ const experimental=doc.getElementById('golemPreviewLink');if(experimental)experimental.href='./golem-preview.html'+(release?'?release='+release:'');
  if(!roster)return false;roster.replaceChildren();if(status)status.textContent=release?'Build '+release.slice(0,8):'Local development build';
  for(const enemy of ENEMY_PREVIEWS){
   const card=doc.createElement('article'),title=doc.createElement('h2');card.dataset.enemy=enemy.id;title.textContent=enemy.name;card.appendChild(title);

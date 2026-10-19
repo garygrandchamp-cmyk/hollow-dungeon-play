@@ -1,4 +1,4 @@
-import {ENEMY_BEHAVIORS} from './enemy-behavior.js?v=637e9034956bdc32208d05c0403c280117b60bda';
+import {ENEMY_BEHAVIORS} from './enemy-behavior.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
 
 // Presentation only: sample host-owned phases; never advance AI, damage or spells.
 // The first half prepares; the second half releases and recovers exactly once.

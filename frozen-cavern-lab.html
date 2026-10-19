@@ -19,8 +19,8 @@
 <div class="legend"><b>Orbit:</b> drag to turn, wheel to zoom.<br><b>First-person:</b> click the scene, WASD to walk, drag to look. Esc returns to orbit.<br><br><b>Canals:</b> dark frozen water is not walkable. Cross on the broad supported stone-and-ice deck. No bridge is invented for a bend.<br><br><b>Socket order:</b> north / east / south / west.<small>0 = sealed rock, 1 = passage, 2 = canal. The support and blocker queries come from the actual geometry recipe.</small></div>
 </aside><section id="stage" aria-label="Interactive frozen cavern preview"><div id="hud"></div></section></main>
 <script type="module">
-import * as THREE from './vendor/three.module.js?v=637e9034956bdc32208d05c0403c280117b60bda';
-import {createFrozenCavernTheme,frozenCanStand,FROZEN_PRESETS,FROZEN_CAVERN} from './frozen-cavern.js?v=637e9034956bdc32208d05c0403c280117b60bda';
+import * as THREE from './vendor/three.module.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
+import {createFrozenCavernTheme,frozenCanStand,FROZEN_PRESETS,FROZEN_CAVERN} from './frozen-cavern.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
 const $=id=>document.getElementById(id),stage=$('stage'),renderer=new THREE.WebGLRenderer({antialias:false});renderer.setPixelRatio(1);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;stage.prepend(renderer.domElement);
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x080c10);scene.fog=new THREE.FogExp2(0x080c10,.035);
 const camera=new THREE.PerspectiveCamera(60,1,.06,90);scene.add(new THREE.HemisphereLight(0x93aab1,0x22201e,1.15));const moon=new THREE.DirectionalLight(0xb1c4ce,2);moon.position.set(-4,9,5);scene.add(moon);const warm=new THREE.PointLight(0xb58b58,19,14,2);warm.position.set(3,2.7,3);scene.add(warm);const playerLamp=new THREE.PointLight(0xc4d0c7,8,6,1.7);scene.add(playerLamp);
@@ -66,5 +66,5 @@ rebuild();resize();function frame(now){requestAnimationFrame(frame);const dt=Mat
 }requestAnimationFrame(frame);
 window.addEventListener('pagehide',()=>{world?.userData.scaleGeometry?.dispose();world?.userData.scaleMaterial?.dispose();theme.dispose();renderer.dispose();},{once:true});
 </script>
-<script type="module" src="./build-label.js?v=637e9034956bdc32208d05c0403c280117b60bda"></script>
+<script type="module" src="./build-label.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a"></script>
 </html>

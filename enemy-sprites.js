@@ -1,4 +1,4 @@
-import { decodeEnemyAtlas } from './enemy-atlas-data.js?v=637e9034956bdc32208d05c0403c280117b60bda';
+import { decodeEnemyAtlas } from './enemy-atlas-data.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
 
 export const ENEMY_SPRITE_CLIPS = Object.freeze({
   idle: { row: 0, frames: 4, fps: 4, loop: true },
@@ -95,14 +95,38 @@ export function makeEnemySprite(THREE, { kind = 'skeleton', height = 1.7, seed =
   function setAnimation(name, time = lastTime, restart = false) {
     if (!Object.hasOwn(ENEMY_SPRITE_CLIPS, name)) name = 'idle';
     time = Number.isFinite(time) ? time : lastTime;
-    if (state !== name || restart) { state = name; started = time; frame(state, 0); }
+    if (state !== name || restart) { state = name; started = time; lastTime = time; frame(state, 0); }
   }
   root.userData.spriteClips = ENEMY_SPRITE_CLIPS;
   root.userData.setAnimation = setAnimation;
+  root.userData.getDeathProgress = () => state === 'death' ? {
+    elapsed: Math.max(0, lastTime - started),
+    settled: root.userData.spriteFrame === ENEMY_SPRITE_CLIPS.death.frames - 1,
+  } : null;
+  root.userData.restoreDeathProgress = (progress, time = lastTime) => {
+    if (!progress || !Number.isFinite(progress.elapsed) || progress.elapsed < 0 || typeof progress.settled !== 'boolean') return false;
+    time = Number.isFinite(time) ? time : lastTime;
+    if (progress.settled) root.userData.settleDeath(time);
+    else {
+      setAnimation('death', time - progress.elapsed, true);
+      root.userData.animate({ time, dead: true });
+    }
+    return true;
+  };
+  // Reconstructed dead entities are already corpses, not new death events.
+  root.userData.settleDeath = (time = lastTime) => {
+    time = Number.isFinite(time) ? time : lastTime;
+    state = 'death'; started = time - ENEMY_SPRITE_CLIPS.death.frames / ENEMY_SPRITE_CLIPS.death.fps; lastTime = time;
+    frame('death', ENEMY_SPRITE_CLIPS.death.frames - 1);
+  };
   root.userData.faceCamera = faceCamera;
   root.userData.animate = ({ time = 0, moving = false, attacking = false, hurt = false, dead = false, state: requested, attackFrame = null, camera } = {}) => {
     time = Number.isFinite(time) ? time : lastTime;
-    if (time < lastTime) started = time;
+    if (time < lastTime) {
+      // RAF can precede an immediate performance.now() call by a few ms.
+      if (state === 'death') time = lastTime;
+      else started = time;
+    }
     lastTime = time;
     const previous = ENEMY_SPRITE_CLIPS[state];
     const finished = !previous.loop && time - started >= previous.frames / previous.fps;

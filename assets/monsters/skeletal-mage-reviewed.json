@@ -1,0 +1,417 @@
+{
+  "kind": "skeletal-mage",
+  "clips": {
+    "idle": {
+      "row": 0,
+      "frames": 4,
+      "fps": 4,
+      "loop": true,
+      "indices": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    "walk": {
+      "row": 1,
+      "frames": 4,
+      "fps": 10,
+      "loop": true,
+      "indices": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    "attack": {
+      "row": 2,
+      "frames": 4,
+      "fps": 12,
+      "loop": false,
+      "indices": [
+        2,
+        4,
+        7,
+        8
+      ]
+    },
+    "hurt": {
+      "row": 3,
+      "frames": 4,
+      "fps": 12,
+      "loop": false,
+      "indices": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    "death": {
+      "row": 4,
+      "frames": 8,
+      "fps": 10,
+      "loop": false,
+      "indices": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "holdFinal": true,
+      "settledSourceIndex": 8
+    }
+  },
+  "registration": {
+    "x": 64,
+    "ground": 120,
+    "sourceShiftX": 0,
+    "sourceShiftY": -3
+  },
+  "quantizationApplied": false,
+  "status": "root-accepted-candidate-integration-awaiting-runtime-review",
+  "standingPixels": 104,
+  "renderHeight": 1.8,
+  "bodyReference": {
+    "source": "art-reviews/2026-10-18/candidate-frames/skeletal-mage/base.png",
+    "region": [
+      35,
+      0,
+      112,
+      128
+    ],
+    "measuredPixels": 108,
+    "physicalHeight": 1.8692307692307695,
+    "renderHeight": 1.8,
+    "heightContract": "Private comparison calibration retains current production pixel pitch 104/1.8; measured 108px reference pose therefore occupies 1.869230769m. Catalog reference remains 1.8m. This is a traced existing-render baseline, not final art-scale approval.",
+    "footRow": 122,
+    "targetFootRow": 119,
+    "reviewNote": "Body region excludes staff/ember; fixed -3px source registration across every clip. Actual foot/cloth contact is reviewed separately from bbox.",
+    "sourceSHA256": "92b19c4b8969da4124c701135f1114f99d656a8d4171c13bb400f2c52fa5db11",
+    "texelsPerMetre": 57.77777777777777,
+    "measuredReferencePixels": 108
+  },
+  "atlasSHA256": "1beed4d6aa013783b6a6244ac94f31961428285bdb3c72dc28f8eac6d3519e93",
+  "rgbaSHA256": "bbe7dbe3654647f6cbe5e496aa92c88659c63f1b24e830d5e1747e5c55f9cea8",
+  "selectedSourceManifest": "art-reviews/2026-10-18/enemy-helper-review/fullset-v1/manifest.json",
+  "sourceFrames": [
+    {
+      "clip": "idle",
+      "column": 0,
+      "sourceIndex": 0,
+      "source": "art-reviews/2026-10-18/candidate-frames/skeletal-mage/idle/00.png",
+      "sourceSHA256": "3b61959b259ec7a742f84477de69d3aa19f969a960aea5ae3557f5f79fe2ba05",
+      "sourceBounds": [
+        18,
+        11,
+        104,
+        123
+      ]
+    },
+    {
+      "clip": "idle",
+      "column": 1,
+      "sourceIndex": 1,
+      "source": "art-reviews/2026-10-18/candidate-frames/skeletal-mage/idle/01.png",
+      "sourceSHA256": "e24e1ade0cf17c0f9ed1ee2c2a128295f2187ec086519b486389abb704282f9a",
+      "sourceBounds": [
+        18,
+        11,
+        104,
+        123
+      ]
+    },
+    {
+      "clip": "idle",
+      "column": 2,
+      "sourceIndex": 2,
+      "source": "art-reviews/2026-10-18/candidate-frames/skeletal-mage/idle/02.png",
+      "sourceSHA256": "bb55edb95e53dcf1e35e6a3f7d0cb661ae7d8e4ff9b3c2257851c5d42a2c036e",
+      "sourceBounds": [
+        18,
+        9,
+        105,
+        123
+      ]
+    },
+    {
+      "clip": "idle",
+      "column": 3,
+      "sourceIndex": 3,
+      "source": "art-reviews/2026-10-18/candidate-frames/skeletal-mage/idle/03.png",
+      "sourceSHA256": "fa6747f32e55ffdb860d92461c3c9211842a22e60bdba86134135f81f8ea514e",
+      "sourceBounds": [
+        18,
+        11,
+        104,
+        123
+      ]
+    },
+    {
+      "clip": "walk",
+      "column": 0,
+      "sourceIndex": 0,
+      "source": "art-reviews/2026-10-18/candidate-frames/skeletal-mage/walk/00.png",
+      "sourceSHA256": "4547ba023f8effd57e6a0330314c35ad638faab23f5d5717f308b1b6db6be067",
+      "sourceBounds": [
+        18,
+        10,
+        104,
+        123
+      ]
+    },
+    {
+      "clip": "walk",
+      "column": 1,
+      "sourceIndex": 1,
+      "source": "art-reviews/2026-10-18/candidate-frames/skeletal-mage/walk/01.png",
+      "sourceSHA256": "888c7d7354f6803e7e647b3dd2a12c5771dc026121675a0992bc4b875fc4a877",
+      "sourceBounds": [
+        19,
+        10,
+        105,
+        124
+      ]
+    },
+    {
+      "clip": "walk",
+      "column": 2,
+      "sourceIndex": 2,
+      "source": "art-reviews/2026-10-18/candidate-frames/skeletal-mage/walk/02.png",
+      "sourceSHA256": "689e37063edd2ff4cfccaf52c625495c1b2e5ba8395d98b874b7ad1418762aa5",
+      "sourceBounds": [
+        21,
+        7,
+        106,
+        124
+      ]
+    },
+    {
+      "clip": "walk",
+      "column": 3,
+      "sourceIndex": 3,
+      "source": "art-reviews/2026-10-18/candidate-frames/skeletal-mage/walk/03.png",
+      "sourceSHA256": "ba99d778a7a6194e0ebabe5aef7303aeb845789c3238d41af2241a9d1eee783b",
+      "sourceBounds": [
+        20,
+        10,
+        105,
+        124
+      ]
+    },
+    {
+      "clip": "attack",
+      "column": 0,
+      "sourceIndex": 2,
+      "source": "art-reviews/2026-10-18/candidate-frames/skeletal-mage/attack/02.png",
+      "sourceSHA256": "a1bd8b157a0898efdf242d43ee5bf7785fe446a5f24f718a0449ee30345ab7fb",
+      "sourceBounds": [
+        19,
+        10,
+        98,
+        123
+      ]
+    },
+    {
+      "clip": "attack",
+      "column": 1,
+      "sourceIndex": 4,
+      "source": "art-reviews/2026-10-18/candidate-frames/skeletal-mage/attack/04.png",
+      "sourceSHA256": "01111401c1ee81123cda780a71cf7a586be0e7bc19fa5d70d7d1d5f19fb2cfdc",
+      "sourceBounds": [
+        19,
+        10,
+        98,
+        123
+      ]
+    },
+    {
+      "clip": "attack",
+      "column": 2,
+      "sourceIndex": 7,
+      "source": "art-reviews/2026-10-18/candidate-frames/skeletal-mage/attack/07.png",
+      "sourceSHA256": "fa29a5a8e762f2c3cb69c9c42e5fb17ff293277d329d446a98979a29c669fba7",
+      "sourceBounds": [
+        19,
+        10,
+        110,
+        123
+      ]
+    },
+    {
+      "clip": "attack",
+      "column": 3,
+      "sourceIndex": 8,
+      "source": "art-reviews/2026-10-18/candidate-frames/skeletal-mage/attack/08.png",
+      "sourceSHA256": "2ed7dcd587784bd4e5cf5881c5d63297ba293a314fa040c7d807b032e2586e76",
+      "sourceBounds": [
+        18,
+        10,
+        104,
+        123
+      ]
+    },
+    {
+      "clip": "hurt",
+      "column": 0,
+      "sourceIndex": 0,
+      "source": "art-reviews/2026-10-18/candidate-frames/skeletal-mage/hurt/00.png",
+      "sourceSHA256": "06a4fa30606cdd23d6e15cb475772bfbe018d16e9dbe9af5ebcc9d4876029476",
+      "sourceBounds": [
+        18,
+        10,
+        104,
+        123
+      ]
+    },
+    {
+      "clip": "hurt",
+      "column": 1,
+      "sourceIndex": 1,
+      "source": "art-reviews/2026-10-18/candidate-frames/skeletal-mage/hurt/01.png",
+      "sourceSHA256": "de14214b9123b76e150045cea17572ac86559e830bf2cb7a35f0cc1a11b88743",
+      "sourceBounds": [
+        19,
+        10,
+        104,
+        123
+      ]
+    },
+    {
+      "clip": "hurt",
+      "column": 2,
+      "sourceIndex": 2,
+      "source": "art-reviews/2026-10-18/candidate-frames/skeletal-mage/hurt/02.png",
+      "sourceSHA256": "8896059e0c9db6f40ef52b841372a97a4def5d5c3b1f68ead5052a17eabda13f",
+      "sourceBounds": [
+        22,
+        10,
+        105,
+        123
+      ]
+    },
+    {
+      "clip": "hurt",
+      "column": 3,
+      "sourceIndex": 3,
+      "source": "art-reviews/2026-10-18/candidate-frames/skeletal-mage/hurt/03.png",
+      "sourceSHA256": "2fa9b17ad69292ce58f0c7db51bf5525ad7a6559416517bae948e44c9919d314",
+      "sourceBounds": [
+        21,
+        10,
+        105,
+        123
+      ]
+    },
+    {
+      "clip": "death",
+      "column": 0,
+      "sourceIndex": 1,
+      "source": "art-reviews/2026-10-18/candidate-frames/skeletal-mage/death/01.png",
+      "sourceSHA256": "251ce62f52cde89e6207ea44d4fd17a5b73841aaa1ec3416a0e0581a5c5e7150",
+      "sourceBounds": [
+        22,
+        8,
+        106,
+        123
+      ]
+    },
+    {
+      "clip": "death",
+      "column": 1,
+      "sourceIndex": 2,
+      "source": "art-reviews/2026-10-18/candidate-frames/skeletal-mage/death/02.png",
+      "sourceSHA256": "6c9ff74de60368427173ce77e9701a6aafa7ec12d25d0b09a12873aea95030f2",
+      "sourceBounds": [
+        27,
+        10,
+        108,
+        123
+      ]
+    },
+    {
+      "clip": "death",
+      "column": 2,
+      "sourceIndex": 3,
+      "source": "art-reviews/2026-10-18/candidate-frames/skeletal-mage/death/03.png",
+      "sourceSHA256": "ac9adca3a7155a9b0e76d699fbde035af884afeead39f2f1f1f3bdac98754e8d",
+      "sourceBounds": [
+        26,
+        11,
+        110,
+        122
+      ]
+    },
+    {
+      "clip": "death",
+      "column": 3,
+      "sourceIndex": 4,
+      "source": "art-reviews/2026-10-18/candidate-frames/skeletal-mage/death/04.png",
+      "sourceSHA256": "5d8371bf22087f8e53361f9828de4c7fc38c040d973e4a1130365d4abe502bbf",
+      "sourceBounds": [
+        22,
+        10,
+        108,
+        124
+      ]
+    },
+    {
+      "clip": "death",
+      "column": 4,
+      "sourceIndex": 5,
+      "source": "art-reviews/2026-10-18/candidate-frames/skeletal-mage/death/05.png",
+      "sourceSHA256": "22c16c7d84b2cb8acaf28192f664e858ed9894a4c15ee3c07ac0d4bfff09e662",
+      "sourceBounds": [
+        13,
+        34,
+        104,
+        123
+      ]
+    },
+    {
+      "clip": "death",
+      "column": 5,
+      "sourceIndex": 6,
+      "source": "art-reviews/2026-10-18/candidate-frames/skeletal-mage/death/06.png",
+      "sourceSHA256": "4bc60b0a5bf5c1951dbc3250f95c5aea38071e99501b1e1ece8a79de1eb579a8",
+      "sourceBounds": [
+        11,
+        72,
+        113,
+        124
+      ]
+    },
+    {
+      "clip": "death",
+      "column": 6,
+      "sourceIndex": 7,
+      "source": "art-reviews/2026-10-18/candidate-frames/skeletal-mage/death/07.png",
+      "sourceSHA256": "3a5eeabdc835fa40c0127a580f43bf189f9943a493d728a66645ac39b08c259a",
+      "sourceBounds": [
+        12,
+        95,
+        120,
+        125
+      ]
+    },
+    {
+      "clip": "death",
+      "column": 7,
+      "sourceIndex": 8,
+      "source": "art-reviews/2026-10-18/candidate-frames/skeletal-mage/death/08.png",
+      "sourceSHA256": "ab33721caf2f05344e93162d0a9ee21252bd27f01d5a8e286ca4677b6cbee19d",
+      "sourceBounds": [
+        12,
+        98,
+        120,
+        125
+      ]
+    }
+  ]
+}

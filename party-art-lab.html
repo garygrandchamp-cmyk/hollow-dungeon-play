@@ -19,11 +19,11 @@
 </header>
 <main id="stage" aria-label="Six live class review viewports"><div id="labels"></div></main>
 <script type="module">
-import * as THREE from './vendor/three.module.js?v=637e9034956bdc32208d05c0403c280117b60bda';
-import {makePlayerSprite,PLAYER_SPRITE_CLASSES} from './player-sprites.js?v=637e9034956bdc32208d05c0403c280117b60bda';
-import {makeSolidProp} from './solid-props.js?v=637e9034956bdc32208d05c0403c280117b60bda';
-import {createRetroTextures} from './retro-textures.js?v=637e9034956bdc32208d05c0403c280117b60bda';
-import {applyWorldMaterialDensity} from './pixel-density.js?v=637e9034956bdc32208d05c0403c280117b60bda';
+import * as THREE from './vendor/three.module.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
+import {makePlayerSprite,PLAYER_SPRITE_CLASSES} from './player-sprites.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
+import {makeSolidProp} from './solid-props.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
+import {createRetroTextures} from './retro-textures.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
+import {applyWorldMaterialDensity} from './pixel-density.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
 
 const stage=document.querySelector('#stage'),labels=document.querySelector('#labels'),status=document.querySelector('#status');
 let renderer,stopped=false;
@@ -86,5 +86,5 @@ try{
  window.addEventListener('pagehide',()=>{stopped=true;for(const r of records){r.sprite.userData.disposeMaterials();r.sprite.traverse(o=>{if(o.userData.ownGeometry)o.geometry.dispose();});r.shrine.userData.dispose();}groundMaterial.dispose();renderer.dispose();},{once:true});
 }catch(error){stopped=true;document.querySelector('#error').textContent=error.stack||String(error);status.textContent='Review page failed to initialize.';console.error(error);}
 </script>
-<script type="module" src="./build-label.js?v=637e9034956bdc32208d05c0403c280117b60bda"></script>
+<script type="module" src="./build-label.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a"></script>
 </html>

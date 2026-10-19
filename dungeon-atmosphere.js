@@ -1,5 +1,5 @@
-import {roomContainsWorld,roomCells} from './room-footprint.js?v=637e9034956bdc32208d05c0403c280117b60bda';
-import {createCeilingAtmosphere} from './ceiling-atmosphere.js?v=637e9034956bdc32208d05c0403c280117b60bda';
+import {roomContainsWorld,roomCells} from './room-footprint.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
+import {createCeilingAtmosphere} from './ceiling-atmosphere.js?v=5d7531948dcd036925fc96b539d81165ba86fa3a';
 // Local, low-level atmosphere: three batched draws, no canvas/assets/lights.
 const TAU=Math.PI*2;
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
