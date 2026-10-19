@@ -1,13 +1,13 @@
-import * as THREE from './vendor/three.module.js?v=48c9690caaf071685197edd79934df66b444bc3a';
-import {CAPTURE_RULES,serializeCapture} from './creature-capture.js?v=48c9690caaf071685197edd79934df66b444bc3a';
-import {WIDOW_RULES,ceilingWidowPerch} from './ceiling-widow.js?v=48c9690caaf071685197edd79934df66b444bc3a';
-import {createWidowEncounters} from './widow-encounters.js?v=48c9690caaf071685197edd79934df66b444bc3a';
-import {makeWidowCaptureVisual} from './widow-visuals.js?v=48c9690caaf071685197edd79934df66b444bc3a';
-import {makeMonsterSprite,MONSTER_CATALOG} from './monster-sprites.js?v=48c9690caaf071685197edd79934df66b444bc3a';
-import {makePlayerSprite} from './player-sprites.js?v=48c9690caaf071685197edd79934df66b444bc3a';
-import {createRetroTextures} from './retro-textures.js?v=48c9690caaf071685197edd79934df66b444bc3a';
-import {applyWorldMaterialDensity} from './pixel-density.js?v=48c9690caaf071685197edd79934df66b444bc3a';
-import {combatTiming} from './combat-timing.js?v=48c9690caaf071685197edd79934df66b444bc3a';
+import * as THREE from './vendor/three.module.js?v=b62f91ca9ddcf47d5a6312b8f4025115d5dbd33a';
+import {CAPTURE_RULES,serializeCapture} from './creature-capture.js?v=b62f91ca9ddcf47d5a6312b8f4025115d5dbd33a';
+import {WIDOW_RULES,ceilingWidowPerch} from './ceiling-widow.js?v=b62f91ca9ddcf47d5a6312b8f4025115d5dbd33a';
+import {createWidowEncounters} from './widow-encounters.js?v=b62f91ca9ddcf47d5a6312b8f4025115d5dbd33a';
+import {makeWidowCaptureVisual} from './widow-visuals.js?v=b62f91ca9ddcf47d5a6312b8f4025115d5dbd33a';
+import {makeMonsterSprite,MONSTER_CATALOG} from './monster-sprites.js?v=b62f91ca9ddcf47d5a6312b8f4025115d5dbd33a';
+import {makePlayerSprite} from './player-sprites.js?v=b62f91ca9ddcf47d5a6312b8f4025115d5dbd33a';
+import {createRetroTextures} from './retro-textures.js?v=b62f91ca9ddcf47d5a6312b8f4025115d5dbd33a';
+import {applyWorldMaterialDensity} from './pixel-density.js?v=b62f91ca9ddcf47d5a6312b8f4025115d5dbd33a';
+import {combatTiming} from './combat-timing.js?v=b62f91ca9ddcf47d5a6312b8f4025115d5dbd33a';
 
 // A private, in-memory scene controller. No campaign, inventory or save APIs.
 // All capture transitions run through the actual production coordinator/core.

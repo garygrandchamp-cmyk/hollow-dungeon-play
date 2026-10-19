@@ -1,5 +1,5 @@
-import {makeTorchHardware,makeStandingTorchHardware} from './solid-props.js?v=48c9690caaf071685197edd79934df66b444bc3a';
-import {tagTextureDensity,applyPhysicalUVs} from './pixel-density.js?v=48c9690caaf071685197edd79934df66b444bc3a';
+import {makeTorchHardware,makeStandingTorchHardware} from './solid-props.js?v=b62f91ca9ddcf47d5a6312b8f4025115d5dbd33a';
+import {tagTextureDensity,applyPhysicalUVs} from './pixel-density.js?v=b62f91ca9ddcf47d5a6312b8f4025115d5dbd33a';
 
 const fireTextures=new WeakMap();
 function acquireFire(THREE){

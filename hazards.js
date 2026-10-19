@@ -1,8 +1,8 @@
-import {buildPendulumAxe,axeHitsActor} from './pendulum-axe.js?v=48c9690caaf071685197edd79934df66b444bc3a';
-import {roomContainsTile} from './room-footprint.js?v=48c9690caaf071685197edd79934df66b444bc3a';
-import {random} from './wfc.js?v=48c9690caaf071685197edd79934df66b444bc3a';
-import {makeDungeonProp as makePropSprite} from './dungeon-props.js?v=48c9690caaf071685197edd79934df66b444bc3a';
-import {batchStaticGroup} from './mesh-batch.js?v=48c9690caaf071685197edd79934df66b444bc3a';
+import {buildPendulumAxe,axeHitsActor} from './pendulum-axe.js?v=b62f91ca9ddcf47d5a6312b8f4025115d5dbd33a';
+import {roomContainsTile} from './room-footprint.js?v=b62f91ca9ddcf47d5a6312b8f4025115d5dbd33a';
+import {random} from './wfc.js?v=b62f91ca9ddcf47d5a6312b8f4025115d5dbd33a';
+import {makeDungeonProp as makePropSprite} from './dungeon-props.js?v=b62f91ca9ddcf47d5a6312b8f4025115d5dbd33a';
+import {batchStaticGroup} from './mesh-batch.js?v=b62f91ca9ddcf47d5a6312b8f4025115d5dbd33a';
 
 export const HAZARD_KINDS=Object.freeze(['pit','spikes','crate','rubble','swinging-axe','rolling-ball','rat-cage','wall-spikes']);
 const TRAPS=new Set(HAZARD_KINDS.filter(k=>!['crate','rubble'].includes(k)));

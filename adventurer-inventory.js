@@ -1,11 +1,13 @@
-import {EQUIPMENT_CURSES,compatibleCurse,curseEffects,curseDescription} from './cursed-equipment.js?v=48c9690caaf071685197edd79934df66b444bc3a';
-import {random} from './wfc.js?v=48c9690caaf071685197edd79934df66b444bc3a';
-import {CLASSES} from './party-campaign.js?v=48c9690caaf071685197edd79934df66b444bc3a';
-import {WEAPON_CATALOG} from './weapon-forge.js?v=48c9690caaf071685197edd79934df66b444bc3a';
+import {EQUIPMENT_CURSES,compatibleCurse,curseEffects,curseDescription} from './cursed-equipment.js?v=b62f91ca9ddcf47d5a6312b8f4025115d5dbd33a';
+import {random} from './wfc.js?v=b62f91ca9ddcf47d5a6312b8f4025115d5dbd33a';
+import {CLASSES} from './party-campaign.js?v=b62f91ca9ddcf47d5a6312b8f4025115d5dbd33a';
+import {WEAPON_CATALOG} from './weapon-forge.js?v=b62f91ca9ddcf47d5a6312b8f4025115d5dbd33a';
 
 export const INVENTORY_STORAGE_KEY = 'hollow:adventurer-inventory:v1';
 export const GEAR_SLOTS = Object.freeze(['helm', 'chest', 'arms', 'legs', 'weapon', 'offhand']);
 export const INVENTORY_CAPACITY = 16;
+export const HUB_STASH_CAPACITY = 32;
+export const HUB_RECEIPT_LIMIT = 32;
 const ARMOUR = ['helm', 'chest', 'arms', 'legs'];
 export const WEAPONS = Object.freeze(['sword', 'axe', 'mace', 'staff', 'bow', 'dagger', 'wand', 'hammer']);
 export const ARMOR_TYPES = Object.freeze(['leather','brigandine','chainmail','scale','iron','knight','bone','occult','frost','blight']);
@@ -89,12 +91,27 @@ function normalizeItem(value) {
   if (STAT_KEYS.some(key => !integer(stats[key], 0, key === 'hp' ? 500 : 250))) return null;
   result.stats = {...stats}; return result;
 }
+const hubToken=(s,max=128)=>typeof s==='string'&&s.length<=max&&/^[a-zA-Z0-9_.:-]+$/.test(s);
+function normalizeHub(value){
+ if(value===undefined||value===null)return null;
+ if(!object(value)||!hubToken(value.epoch,64)||!integer(value.sequence,1,Number.MAX_SAFE_INTEGER)||!integer(value.gold,0,1e9)||!integer(value.previousGold,0,1e9)||value.pendingMirror!==undefined&&typeof value.pendingMirror!=='boolean'||!Array.isArray(value.receipts)||value.receipts.length!==Math.min(value.sequence,HUB_RECEIPT_LIMIT))return false;
+ const receipts=[],ids=new Set();for(const [index,r]of value.receipts.entries()){
+  if(!object(r)||Object.keys(r).length!==7||!hubToken(r.id)||ids.has(r.id)||r.sequence!==value.sequence-value.receipts.length+index+1||!['deposit','withdraw','purchase','sell'].includes(r.kind)||!hubToken(r.targetId)||!hubToken(r.itemId)||!integer(r.goldBefore,0,1e9)||!integer(r.goldAfter,0,1e9))return false;
+  if(index&&r.goldBefore!==receipts[index-1].goldAfter||['deposit','withdraw'].includes(r.kind)&&r.goldBefore!==r.goldAfter||r.kind==='purchase'&&r.goldAfter>=r.goldBefore||r.kind==='sell'&&r.goldAfter<=r.goldBefore)return false;
+  ids.add(r.id);receipts.push({...r});
+ }
+ const last=receipts.at(-1);if(last.goldBefore!==value.previousGold||last.goldAfter!==value.gold)return false;
+ return {epoch:value.epoch,sequence:value.sequence,gold:value.gold,previousGold:value.previousGold,pendingMirror:value.pendingMirror??true,receipts};
+}
 function restore(payload) {
   if (payload?.version !== 1 || !Array.isArray(payload.actors) || payload.actors.length > 32) return null;
   const records = new Map();
   for (const a of payload.actors) {
     if (!text(a?.id, 96) || records.has(a.id) || !Array.isArray(a.items) || a.items.length > INVENTORY_CAPACITY || !object(a.equipped)) return null;
     const items = a.items.map(normalizeItem);
+    if(!Array.isArray(a.stored??[])||(a.stored??[]).length>HUB_STASH_CAPACITY)return null;
+    const stored=(a.stored??[]).map(normalizeItem),hub=normalizeHub(a.hub);
+    if(hub===false||stored.some(item=>!item)||items.some(item=>!item)||new Set([...items,...stored].map(item=>item.id)).size!==items.length+stored.length)return null;
     if (items.some(item => !item) || new Set(items.map(item => item.id)).size !== items.length || Object.keys(a.equipped).some(slot => !GEAR_SLOTS.includes(slot))) return null;
     const equipped = emptyGear();
     for (const slot of GEAR_SLOTS) {
@@ -102,7 +119,7 @@ function restore(payload) {
       if (id !== null && !items.some(item => item.id === id && item.slot === slot)) return null;
       equipped[slot] = id;
     }
-    records.set(a.id, {id: a.id, items, equipped});
+    records.set(a.id, {id: a.id, items, stored, hub, equipped});
   }
   return records;
 }
@@ -111,14 +128,15 @@ function restore(payload) {
  * actor.equipment, health or class maxima. Host supplies baseStats when needed,
  * consumes stats() for combat/max HP, and bridges campaign carry explicitly.
  * The fallback solo actor is used only when getActor is not provided. */
-export function createInventoryModel({getActor, storage, canChangeGear=()=>true} = {}) {
+export function createInventoryModel({getActor, storage, canChangeGear=()=>true,allowEphemeralHub=false} = {}) {
   if (getActor !== undefined && typeof getActor !== 'function') throw new TypeError('getActor must be a function.');
   const solo = {id: 'solo-hero', name: 'Adventurer', classId: 'adventurer', health: 100, maxHealth: 100, alive: true};
-  let records = new Map(), persistenceError = null;
+  let records = new Map(), persistenceError = null,persistedRaw=null;
   const baseCache = new Map(), listeners = new Set();
   try {if (storage === undefined) storage = globalThis.localStorage ?? null;} catch {storage = null; persistenceError = 'Inventory storage is unavailable.';}
   try {
     const raw = storage?.getItem(INVENTORY_STORAGE_KEY);
+    persistedRaw=raw??null;
     if (raw) {
       const parsed = typeof raw === 'string' && raw.length <= 262144 ? restore(JSON.parse(raw)) : null;
       if (parsed) records = parsed; else persistenceError = 'Saved inventory is invalid.';
@@ -127,16 +145,18 @@ export function createInventoryModel({getActor, storage, canChangeGear=()=>true}
   function actor() {try {const a = getActor ? getActor() : solo; return a && text(a.id, 96) ? a : null;} catch {return null;}}
   function record() {
     const a = actor(); if (!a) return null;
-    if (!records.has(a.id)) {if (records.size >= 32) return null; records.set(a.id, {id: a.id, items: [], equipped: emptyGear()});}
+    if (!records.has(a.id)) {if (records.size >= 32) return null; records.set(a.id, {id: a.id, items: [],stored:[],hub:null, equipped: emptyGear()});}
     return records.get(a.id);
   }
-  function snapshot() {return {version: 1, actors: [...records.values()].map(r => ({id: r.id, items: r.items.map(copy), equipped: {...r.equipped}}))};}
+  const recordData=r=>({id:r.id,items:r.items.map(copy),equipped:{...r.equipped},...(r.stored.length?{stored:r.stored.map(copy)}:{}),...(r.hub?{hub:copy(r.hub)}:{})});
+  function snapshot() {return {version: 1, actors: [...records.values()].map(recordData)};}
   function persist() {
     if (!storage) return false;
-    try {storage.setItem(INVENTORY_STORAGE_KEY, JSON.stringify(snapshot())); persistenceError = null; return true;}
+    try {const raw=JSON.stringify(snapshot());storage.setItem(INVENTORY_STORAGE_KEY,raw);persistedRaw=raw;persistenceError = null; return true;}
     catch {persistenceError = 'Inventory could not be saved. Your equipment is still available in this session.'; return false;}
   }
-  function changed() {persist(); for (const fn of listeners) {try {fn();} catch { /* UI listeners cannot undo a committed item. */ }}}
+  function notify(){for(const fn of listeners){try{fn();}catch{ /* UI listeners cannot undo a committed item. */ }}}
+  function changed() {persist();notify();}
   function baseStats(a) {
     if (!a) return zeros();
     const classId = String(a.classId ?? '').toLowerCase(), profile = Object.hasOwn(CLASSES, classId) ? CLASSES[classId] : null, base = a.baseStats;
@@ -161,7 +181,7 @@ export function createInventoryModel({getActor, storage, canChangeGear=()=>true}
   }
   function grantLoot(item) {
     const a = actor(), clean = normalizeItem(item), r = record();
-    if (!a || a.alive === false || !r || !clean || r.items.length >= INVENTORY_CAPACITY || r.items.some(existing => existing.id === clean.id)) return false;
+    if (!a || a.alive === false || !r || !clean || r.items.length >= INVENTORY_CAPACITY || [...r.items,...r.stored].some(existing => existing.id === clean.id)) return false;
     r.items.push(clean); changed(); return true;
   }
   function equip(id) {
@@ -177,16 +197,34 @@ export function createInventoryModel({getActor, storage, canChangeGear=()=>true}
   }
   function reset({keepLoot = false} = {}) {
     const r = record(); if (!r) return false;
-    if (!keepLoot) {r.items = []; r.equipped = emptyGear();}
+    if (!keepLoot) {r.items = []; r.equipped = emptyGear();r.hub=null;}
     changed(); return true;
   }
   function getEquipped(slot) {const r = record(), item = r?.items.find(item => item.id === r.equipped[slot]); return item ? copy(item) : null;}
   function applySnapshot(value){const next=restore(value);if(!next)return false;if(JSON.stringify(snapshot())===JSON.stringify(value))return true;records=next;changed();return true;}
-  return {applySnapshot,grantLoot, equip, unequip, stats, reset, persist, snapshot, getEquipped, generateLoot: generateInventoryLoot,
+  function hubStorageCurrent(){try{return storage?(storage.getItem(INVENTORY_STORAGE_KEY)??null)===persistedRaw:allowEphemeralHub===true;}catch{return false;}}
+  // Single durable write commits carried items, stash, wallet checkpoint and
+  // retry receipts together. No subscriber sees a partially moved item.
+  function commitHubRecord(value,{expected}={}){
+   const a=actor(),r=record();if(!a||a.alive===false||!r||canChangeGear(a)!==true||value?.id!==a.id||JSON.stringify(recordData(r))!==JSON.stringify(expected))return false;
+   const checked=restore({version:1,actors:[value]});if(!checked||!checked.get(a.id).hub||!hubStorageCurrent())return false;
+   const next=new Map(records);next.set(a.id,checked.get(a.id));const serialized=JSON.stringify({version:1,actors:[...next.values()].map(recordData)});
+   if(serialized.length>262144-32)return false;
+   try{storage?.setItem(INVENTORY_STORAGE_KEY,serialized);}catch{persistenceError='Hub transaction could not be saved; no items or gold were moved.';return false;}
+   records=next;persistedRaw=serialized;persistenceError=null;notify();return true;
+  }
+  function acknowledgeHubMirror(epoch,sequence){
+   const a=actor(),r=record();if(!a||!r?.hub||r.hub.epoch!==epoch||r.hub.sequence!==sequence||!hubStorageCurrent())return false;if(!r.hub.pendingMirror)return true;
+   const next=new Map(records);next.set(a.id,{...r,hub:{...r.hub,pendingMirror:false}});const raw=JSON.stringify({version:1,actors:[...next.values()].map(recordData)});
+   if(raw.length>262144)return false;
+   try{storage?.setItem(INVENTORY_STORAGE_KEY,raw);}catch{return false;}records=next;persistedRaw=raw;return true;
+  }
+  return {applySnapshot,grantLoot, equip, unequip, stats, reset, persist, snapshot, getEquipped,commitHubRecord,acknowledgeHubMirror,hubStorageCurrent,hubRecord:()=>record()?recordData(record()):null, generateLoot: generateInventoryLoot,
     subscribe(fn) {if (typeof fn !== 'function') throw new TypeError('Inventory subscriber must be a function.'); listeners.add(fn); return () => listeners.delete(fn);},
-    get actor() {return actor();}, get items() {return record()?.items.map(copy) ?? [];}, get equipped() {return {...(record()?.equipped ?? emptyGear())};},
-    get persistenceError() {return persistenceError;}};
+    get actor() {return actor();}, get items() {return record()?.items.map(copy) ?? [];},get stored(){return record()?.stored.map(copy)??[];}, get equipped() {return {...(record()?.equipped ?? emptyGear())};},
+    get hubDurable(){return !!storage;},get persistenceError() {return persistenceError;}};
 }
+export {normalizeItem as normalizeInventoryItem};
 
 const STYLE_ID = 'hollow-adventurer-inventory-style';
 function inventoryStyle(document) {
