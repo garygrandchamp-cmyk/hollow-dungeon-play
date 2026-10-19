@@ -1,5 +1,5 @@
-import {generateInventoryLoot} from './adventurer-inventory.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {curseEffects} from './cursed-equipment.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {generateInventoryLoot} from './adventurer-inventory.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {curseEffects} from './cursed-equipment.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
 
 // Initial host-owned tuning. Mundane replacements only; stronger, themed and
 // cursed equipment remains dungeon loot. Never derived from request fields.

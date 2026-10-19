@@ -1,11 +1,11 @@
-import * as THREE from './vendor/three.module.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {GOLEM_PREVIEW_DATA} from './golem-preview-data.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {createGolemPreviewModel,createGolemPlayerReference,GOLEM_PREVIEW_CLIPS,golemPreviewLinks} from './golem-preview-model.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {createGolemPreviewClock,GOLEM_REVIEW_LIGHTS,applyGolemReviewLighting,golemPoseLabel} from './golem-preview-state.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {createRetroTextures} from './retro-textures.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {chooseGraphicsProfile,createWorldMaterial,installGraphicsRecovery} from './graphics-compatibility.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {applyPhysicalUVs} from './pixel-density.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {renderPixelRatio} from './render-budget.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import * as THREE from './vendor/three.module.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {GOLEM_PREVIEW_DATA} from './golem-preview-data.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {createGolemPreviewModel,createGolemPlayerReference,GOLEM_PREVIEW_CLIPS,golemPreviewLinks} from './golem-preview-model.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {createGolemPreviewClock,GOLEM_REVIEW_LIGHTS,applyGolemReviewLighting,golemPoseLabel} from './golem-preview-state.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {createRetroTextures} from './retro-textures.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {chooseGraphicsProfile,createWorldMaterial,installGraphicsRecovery} from './graphics-compatibility.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {applyPhysicalUVs} from './pixel-density.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {renderPixelRatio} from './render-budget.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
 
 const $=id=>document.getElementById(id),links=golemPreviewLinks(location.search,import.meta.url);
 $('backHub').href=links.hub;$('backMain').href=links.main;

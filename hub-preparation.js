@@ -1,5 +1,5 @@
-import {createHubTransactions} from './hub-transactions.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {INVENTORY_CAPACITY,HUB_STASH_CAPACITY} from './adventurer-inventory.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {createHubTransactions} from './hub-transactions.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {INVENTORY_CAPACITY,HUB_STASH_CAPACITY} from './adventurer-inventory.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
 
 export const HUB_PREPARATION_KEY='hollow:hub-preparation:v1';
 const clone=value=>JSON.parse(JSON.stringify(value));

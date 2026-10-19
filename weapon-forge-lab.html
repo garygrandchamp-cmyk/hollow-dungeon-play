@@ -4,7 +4,7 @@
 <label>Class preset<select id="preset"><option value="">Custom</option></select></label><label>Family<select id="kind"></select></label><label>Blade / head / body<select id="blade"></select></label><label>Guard / grip / rim<select id="base"></select></label><label>Element<select id="theme"></select></label><label>Seed<input id="seed" value="crypt-001"></label><label>Custom pigment<input type="color" id="color" value="#8c9ca6"></label><label><input style="display:inline;width:auto" type="checkbox" id="custom">Use custom pigment</label><label>Shield view<select id="view"><option value="inventory">Outward / inventory</option><option value="firstPerson">Inside / first person</option></select></label><button id="shuffle">New seed</button> <button id="save">Save PNG</button></aside>
 <section><canvas id="preview" width="96" height="96" aria-label="Generated weapon sprite"></canvas><pre id="info"></pre><small>32 part combinations per family before themes. Inventory shields show their front; first-person shields show their straps, grip and rear arm.</small></section></main>
 <script type="module">
-import{generateWeapon,WEAPON_CATALOG,WEAPON_THEMES,CLASS_WEAPON_DEFAULTS}from'./weapon-forge.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import{generateWeapon,WEAPON_CATALOG,WEAPON_THEMES,CLASS_WEAPON_DEFAULTS}from'./weapon-forge.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
 const $=id=>document.getElementById(id),ctx=$('preview').getContext('2d');let recipe;
 const fill=(id,items)=>{$(id).replaceChildren(...items.map(v=>{const o=document.createElement('option');o.value=o.textContent=v;return o;}));};
 fill('kind',Object.keys(WEAPON_CATALOG));fill('theme',WEAPON_THEMES);
@@ -16,5 +16,5 @@ for(const id of['blade','base','theme','seed','color','custom','view'])$(id).oni
 $('shuffle').onclick=()=>{$('seed').value='forge-'+Date.now().toString(36);draw();};
 $('save').onclick=()=>{const a=document.createElement('a');a.href=$('preview').toDataURL('image/png');a.download=recipe.id+'.png';a.click();};
 parts();draw();
-</script><script type="module" src="./build-label.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec"></script>
+</script><script type="module" src="./build-label.js?v=84fc371936953c752f7d36674575129dbb0d8ea1"></script>
 </html>

@@ -1,4 +1,4 @@
-import {pursuerBlocks} from './dm-boss-encounters.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {pursuerBlocks} from './dm-boss-encounters.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
 // Navigation queries share the host's wall/floor rules and add body clearance
 // against tagged solid props and living enemies supplied by the host.
 export function createEnemyNavigation(THREE,{world,coord,canCross,getState,getEnemies=()=>getState().enemies??[]}){

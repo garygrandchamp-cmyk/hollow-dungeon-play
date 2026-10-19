@@ -6,9 +6,9 @@
 // billboard is hidden once the GLB has loaded and a skinned model plays clips chosen from the same
 // animate() inputs plus the host AI phase the game already stores on the group (userData.enemyIntent).
 // Presentation only: nothing here advances AI, damage or timers. If a GLB fails to load the sprite stays.
-import {makeCreature as makeSpriteCreature, MONSTER_CATALOG} from './monster-sprites.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {makePlayerSprite as makeSpritePlayer} from './player-sprites.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {ENEMY_BEHAVIORS} from './enemy-behavior.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {makeCreature as makeSpriteCreature, MONSTER_CATALOG} from './monster-sprites.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {makePlayerSprite as makeSpritePlayer} from './player-sprites.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {ENEMY_BEHAVIORS} from './enemy-behavior.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
 
 const STORAGE_KEY = 'hollow.models';
 
@@ -63,18 +63,18 @@ export const PLAYER_MODELS = Object.freeze({
 let toolsPromise = null;
 const gltfCache = new Map();
 function tools() {
-  toolsPromise ??= Promise.all([import('./vendor/GLTFLoader.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec'), import('./vendor/SkeletonUtils.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec')])
+  toolsPromise ??= Promise.all([import('./vendor/GLTFLoader.js?v=84fc371936953c752f7d36674575129dbb0d8ea1'), import('./vendor/SkeletonUtils.js?v=84fc371936953c752f7d36674575129dbb0d8ea1')])
     .then(([{GLTFLoader}, SkeletonUtils]) => ({loader: new GLTFLoader(), SkeletonUtils}));
   return toolsPromise;
 }
 function loadModel(THREE, name) {
   if (!gltfCache.has(name)) {
     gltfCache.set(name, tools().then(({loader}) => loader.loadAsync(new URL(`./assets/models/${name}.glb`, import.meta.url).href)).then((gltf) => {
-      // Pixel-art direction: keep texels crisp up close.
+      // Pixel-art direction: textures are pre-pixelated to 64 texels/metre (Models/viewer/slim_glb.py); sample them crisp.
       gltf.scene.traverse((o) => {
         if (!o.isMesh) return;
         for (const m of Array.isArray(o.material) ? o.material : [o.material]) {
-          if (m?.map) { m.map.magFilter = THREE.NearestFilter; m.map.needsUpdate = true; }
+          if (m?.map) { m.map.magFilter = THREE.NearestFilter; m.map.minFilter = THREE.NearestMipmapNearestFilter; m.map.anisotropy = 1; m.map.needsUpdate = true; }
         }
       });
       return gltf;
@@ -101,7 +101,24 @@ function propKey(o) {
 }
 
 // ------------------------------------------------------------------ hybrid actor
-function attachModel(THREE, sprite, spec, {height, hover = 0, enemyType = null}) {
+// Heroes share a spawn point before a run, and a full-size model can stand inside another hero's first-person
+// camera. A model whose root is closer than this to the camera being rendered is cut away for that view only
+// (per viewport, so split screen still shows it to everyone else).
+const NEAR_CAMERA_CULL = 0.75;
+function nearCameraMaterial(source, root) {
+  const m = source.clone();
+  m.onBeforeCompile = (shader) => {
+    shader.uniforms.uModelRoot = {value: root};
+    shader.fragmentShader = shader.fragmentShader.replace('void main() {',
+      `uniform vec3 uModelRoot;
+void main() {
+  if (distance(cameraPosition.xz, uModelRoot.xz) < ${NEAR_CAMERA_CULL.toFixed(3)}) discard;`);
+  };
+  m.customProgramCacheKey = () => 'near-camera-cull';
+  return m;
+}
+
+function attachModel(THREE, sprite, spec, {height, hover = 0, enemyType = null, nearCull = false}) {
   const billboard = sprite.children.find((c) => /billboard/.test(c.name)) ?? sprite.children[0];
   const pivot = new THREE.Group();
   pivot.name = 'model-pivot';
@@ -121,9 +138,16 @@ function attachModel(THREE, sprite, spec, {height, hover = 0, enemyType = null})
     const s = height / Math.max(1e-3, box.max.y - box.min.y);
     model.scale.setScalar(s);
     model.position.y = -box.min.y * s;
+    const root = new THREE.Vector3(), owned = new Map();
+    st.ownedMaterials = owned;
     model.traverse((o) => {
       if (o.isMesh) {
         o.frustumCulled = false;
+        if (nearCull) {
+          const swap = (m) => { if (!m) return m; if (!owned.has(m)) owned.set(m, nearCameraMaterial(m, root)); return owned.get(m); };
+          o.material = Array.isArray(o.material) ? o.material.map(swap) : swap(o.material);
+          o.onBeforeRender = () => { pivot.getWorldPosition(root); };
+        }
         const k = propKey(o);
         if (k.startsWith('Offhand_Torch') || (spec.hideProps ?? []).includes(k)) o.visible = false;
       }
@@ -256,7 +280,9 @@ function attachModel(THREE, sprite, spec, {height, hover = 0, enemyType = null})
     spriteDispose?.();
     st.disposed = true;
     st.mixer?.stopAllAction();
-    // Geometry, materials and textures are shared through the GLB cache; only the clone is dropped.
+    // Geometry, materials and textures are shared through the GLB cache; only the clone (and any near-camera
+    // material copies it owns) is dropped.
+    for (const m of st.ownedMaterials?.values() ?? []) m.dispose();
     pivot.removeFromParent();
   };
   sprite.userData.modelSpec = spec.model;
@@ -281,5 +307,5 @@ export function makePlayerSprite(THREE, options = {}) {
   const sprite = makeSpritePlayer(THREE, options);
   if (!modelsEnabled()) return sprite;
   const spec = PLAYER_MODELS[sprite.userData.classId] ?? PLAYER_MODELS.player;
-  return attachModel(THREE, sprite, spec, {height: Number.isFinite(options.height) ? options.height : 1.7});
+  return attachModel(THREE, sprite, spec, {height: Number.isFinite(options.height) ? options.height : 1.7, nearCull: true});
 }

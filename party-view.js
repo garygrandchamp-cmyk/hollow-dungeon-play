@@ -1,12 +1,12 @@
-import {combatTiming} from './combat-timing.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {stableChildCount} from './static-culling.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {createDMCameraNavigation} from './dm-camera.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {roomContainsTile} from './room-footprint.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {postGameSummary,renderPostGame} from './post-game.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {createDMEntranceOverlay} from './dm-entrance-overlay.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {CLASSES} from './party-campaign.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {createHeldInput} from './held-input.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {MONSTER_KINDS} from './monster-sprites.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {combatTiming} from './combat-timing.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {stableChildCount} from './static-culling.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {createDMCameraNavigation} from './dm-camera.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {roomContainsTile} from './room-footprint.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {postGameSummary,renderPostGame} from './post-game.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {createDMEntranceOverlay} from './dm-entrance-overlay.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {CLASSES} from './party-campaign.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {createHeldInput} from './held-input.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {MONSTER_KINDS} from './monster-sprites.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
 
 const HERO_IDS = ['hero-1', 'hero-2', 'hero-3'];
 const MOVEMENT = new Set(['w', 'a', 's', 'd', 'arrowup', 'arrowleft', 'arrowdown', 'arrowright']);

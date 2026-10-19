@@ -1,5 +1,5 @@
-import {WEAPON_CATALOG,generateWeapon} from './weapon-forge.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {magicEffectPixels,MAGIC_THEMES} from './equipment-magic.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {WEAPON_CATALOG,generateWeapon} from './weapon-forge.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {magicEffectPixels,MAGIC_THEMES} from './equipment-magic.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
 
 export const ARMOR_ART_TYPES=Object.freeze(['leather','brigandine','chainmail','scale','iron','knight','bone','occult','frost','blight']);
 export const ARMOR_ART_SLOTS=Object.freeze(['helm','chest','arms','legs']);

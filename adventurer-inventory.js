@@ -1,7 +1,7 @@
-import {EQUIPMENT_CURSES,compatibleCurse,curseEffects,curseDescription} from './cursed-equipment.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {random} from './wfc.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {CLASSES} from './party-campaign.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {WEAPON_CATALOG} from './weapon-forge.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {EQUIPMENT_CURSES,compatibleCurse,curseEffects,curseDescription} from './cursed-equipment.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {random} from './wfc.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {CLASSES} from './party-campaign.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {WEAPON_CATALOG} from './weapon-forge.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
 
 export const INVENTORY_STORAGE_KEY = 'hollow:adventurer-inventory:v1';
 export const INVENTORY_RECOVERY_KEY = 'hollow:adventurer-inventory:v1:recovery';

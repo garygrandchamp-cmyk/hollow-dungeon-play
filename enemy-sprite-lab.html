@@ -44,12 +44,12 @@
 <footer>Shipped atlases · 128 × 128 cells · nearest-neighbor pixels · shared foot row 120<br>Runtime clip lengths and derived/reused poses are preserved. This viewer adds no animation frames.<br>
 <a href="assets/enemies/enemy-contact-sheet.png" target="_blank" rel="noopener">Skeleton/goblin contact sheet</a> · <a id="atlasLink" href="assets/enemies/skeleton-atlas.png" target="_blank" rel="noopener">Current transparent atlas</a></footer>
 <script type="module">
-  import {MONSTER_CATALOG,MONSTER_KINDS,getMonsterSpriteClips} from './monster-sprites.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-  import {ENEMY_SPRITE_CLIPS} from './enemy-sprites.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-  import {decodeEnemyAtlas} from './enemy-atlas-data.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-  import {decodeMonsterAtlas} from './monster-atlas-data.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-  import {decodeListenerAtlas} from './listener-atlas-data.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-  import {wirePreviewNavigation} from './preview-navigation.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+  import {MONSTER_CATALOG,MONSTER_KINDS,getMonsterSpriteClips} from './monster-sprites.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+  import {ENEMY_SPRITE_CLIPS} from './enemy-sprites.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+  import {decodeEnemyAtlas} from './enemy-atlas-data.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+  import {decodeMonsterAtlas} from './monster-atlas-data.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+  import {decodeListenerAtlas} from './listener-atlas-data.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+  import {wirePreviewNavigation} from './preview-navigation.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
   wirePreviewNavigation();
   const $ = id => document.getElementById(id);
   const profiles=kind=>['skeleton','goblin'].includes(kind)?ENEMY_SPRITE_CLIPS:getMonsterSpriteClips(kind);
@@ -103,5 +103,5 @@
   }
   draw();requestAnimationFrame(tick);
 </script>
-<script type="module" src="./build-label.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec"></script>
+<script type="module" src="./build-label.js?v=84fc371936953c752f7d36674575129dbb0d8ea1"></script>
 </html>

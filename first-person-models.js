@@ -5,7 +5,7 @@
 // are split at load into right-arm and left-arm halves, so the weapon hand and the off hand run independently.
 // The 2D held sprites keep every bit of state (layout, torch fuel and light, magic theme); their materials are
 // only hidden once the model has loaded, and they come back if it fails or is disposed.
-import {PLAYER_MODELS, loadPlayerModel, modelTools} from './model-actors.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {PLAYER_MODELS, loadPlayerModel, modelTools} from './model-actors.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
 
 // Weapon kind (item.kind before loadout-equipment's sprite remap) -> clip family.
 const FAMILY = {sword: 'sword', axe: 'heavy', mace: 'heavy', hammer: 'heavy', dagger: 'dagger', staff: 'staff', wand: 'staff', bow: 'bow'};
@@ -20,6 +20,42 @@ const ATTACK = {sword: 'fp_r_attack_sword', heavy: 'fp_r_attack_heavy', dagger: 
 // camera not to push weapons through nearby walls (near plane is 0.1).
 const VIEW_SCALE = 0.5;
 const FADE = 0.12;
+// The camera lantern sits among the arms, and the 0.5x shrink halves their distance to it (about 4x the light), so
+// view-model materials scale direct light down and then cap its peak. Emissive glow (torch, spell) is unaffected.
+const DIRECT_LIGHT_SCALE = 0.3, DIRECT_LIGHT_CAP = 0.16;
+// Close-up gear uses 2x texel density (128 texels/metre, like the 128-px HUD hand art). slim_glb.py writes these
+// next to the 64 texels/metre world textures; if one is missing the world texture stays.
+const fpTextures = new Map();
+function fpTexture(THREE, name) {
+  if (!fpTextures.has(name)) {
+    fpTextures.set(name, new THREE.TextureLoader().loadAsync(new URL(`./assets/models/fp/${name}.png`, import.meta.url).href).then((t) => {
+      t.flipY = false; t.colorSpace = THREE.SRGBColorSpace; t.magFilter = THREE.NearestFilter; t.minFilter = THREE.NearestMipmapNearestFilter;
+      t.name = name; return t;
+    }).catch(() => null));
+  }
+  return fpTextures.get(name);
+}
+function viewModelMaterial(THREE, source, owned) {
+  const m = source.clone();
+  m.onBeforeCompile = (shader) => {
+    shader.fragmentShader = shader.fragmentShader.replace('#include <lights_fragment_end>', `#include <lights_fragment_end>
+      reflectedLight.directDiffuse *= ${DIRECT_LIGHT_SCALE.toFixed(3)}; reflectedLight.directSpecular *= ${DIRECT_LIGHT_SCALE.toFixed(3)};
+      {
+        // Scale (not clamp) so hue survives: only the brightest channel is held to the cap.
+        float fpPeak = max(max(reflectedLight.directDiffuse.r, reflectedLight.directDiffuse.g), reflectedLight.directDiffuse.b);
+        if (fpPeak > ${DIRECT_LIGHT_CAP.toFixed(3)}) { float k = ${DIRECT_LIGHT_CAP.toFixed(3)} / fpPeak; reflectedLight.directDiffuse *= k; reflectedLight.directSpecular *= k; }
+      }`);
+  };
+  m.customProgramCacheKey = () => 'fp-view-model';
+  owned.push(m);
+  const name = source.map?.name;
+  if (name) fpTexture(THREE, name).then((t) => { if (t && !m.userData.disposed) { m.map = t; m.needsUpdate = true; } });
+  return m;
+}
+function adoptMaterials(THREE, mesh, owned, cache) {
+  const swap = (src) => { if (!src) return src; if (!cache.has(src)) cache.set(src, viewModelMaterial(THREE, src, owned)); return cache.get(src); };
+  mesh.material = Array.isArray(mesh.material) ? mesh.material.map(swap) : swap(mesh.material);
+}
 
 function propRoot(o) {
   const p = o.parent;
@@ -41,6 +77,7 @@ export function attachFirstPersonModel(THREE, equipment, actor = {}, getKind = (
   let model = null, mixer = null, clips = null, bones = null, props = new Map(), disposed = false, lastTime = null;
   const actions = {r: null, l: null};
   const hidden = new Set();
+  const ownedMaterials = [], materialCache = new Map();
 
   function sprites() { return [equipment.right, equipment.leftShield, equipment.leftMagic, equipment.leftTorch].filter(Boolean); }
   function hideSprites() {
@@ -101,7 +138,8 @@ export function attachFirstPersonModel(THREE, equipment, actor = {}, getKind = (
       const mapped = o.skeleton.bones.map((b) => bones.get(b.name));
       if (mapped.some((b) => !b)) return;
       mesh.bind(new THREE.Skeleton(mapped, o.skeleton.boneInverses.map((m) => m.clone())), o.bindMatrix.clone());
-      mesh.name = group.name + '_' + group.children.length; mesh.frustumCulled = false; mesh.renderOrder = 900; group.add(mesh);
+      mesh.name = group.name + '_' + group.children.length; mesh.frustumCulled = false; mesh.renderOrder = 900;
+      adoptMaterials(THREE, mesh, ownedMaterials, materialCache); group.add(mesh);
     });
     model.add(group); props.set(key, group); showProps();
   }
@@ -144,7 +182,7 @@ export function attachFirstPersonModel(THREE, equipment, actor = {}, getKind = (
     const {SkeletonUtils} = await modelTools();
     model = SkeletonUtils.clone(gltf.scene);
     bones = new Map();
-    model.traverse((o) => { if (o.isBone) bones.set(o.name, o); if (o.isMesh) { o.frustumCulled = false; o.renderOrder = 900; } });
+    model.traverse((o) => { if (o.isBone) bones.set(o.name, o); if (o.isMesh) { o.frustumCulled = false; o.renderOrder = 900; adoptMaterials(THREE, o, ownedMaterials, materialCache); } });
     const handR = bones.get('handr'), handL = bones.get('handl'), head = bones.get('headx');
     if (!handR || !handL || !head) throw new Error('fp model missing arm bones');
     const sets = {r: armBones(handR), l: armBones(handL)};
@@ -213,7 +251,8 @@ export function attachFirstPersonModel(THREE, equipment, actor = {}, getKind = (
   function playBlockImpact() { return state.ready && state.left === 'shield' && play('l', 'fp_l_block_impact', true); }
   function dispose() {
     if (disposed) return;
-    disposed = true; restoreSprites(); delete right.visible; right.visible = rightVisible; mixer?.stopAllAction(); holder.removeFromParent();
+    disposed = true; restoreSprites();
+    for (const m of ownedMaterials) { m.userData.disposed = true; m.dispose(); } delete right.visible; right.visible = rightVisible; mixer?.stopAllAction(); holder.removeFromParent();
     for (const obj of props.values()) if (obj?.name?.startsWith('fp-borrowed-')) obj.traverse((o) => o.skeleton?.dispose?.());
   }
   const api = {root: holder, animate, playInteract, playBlockImpact, dispose, state, get clip() { return {r: actions.r?.getClip().name ?? null, l: actions.l?.getClip().name ?? null}; }};

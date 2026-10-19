@@ -1,4 +1,4 @@
-import {enemyPreviewHubHref} from './enemy-preview.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {enemyPreviewHubHref} from './enemy-preview.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
 export function createOptionsMenu({notify=()=>{},audioControl=null,diagnosticsControl=null}={}){
  const key='hollow:options:v1',settings={sensitivity:1,invertY:false,fov:72};let saved={};try{saved=JSON.parse(localStorage.getItem(key)??'{}')??{};}catch{}
  if(Number.isFinite(saved.sensitivity)&&saved.sensitivity>=.25&&saved.sensitivity<=3)settings.sensitivity=saved.sensitivity;if(typeof saved.invertY==='boolean')settings.invertY=saved.invertY;if(Number.isFinite(saved.fov)&&saved.fov>=55&&saved.fov<=100)settings.fov=saved.fov;

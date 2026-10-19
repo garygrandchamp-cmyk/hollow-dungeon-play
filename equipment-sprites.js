@@ -1,9 +1,9 @@
-import {createHeldTorchHeadMaterials,seatHeldTorchFlame} from './held-torch-head.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {impactPose} from './combat-impact.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {EQUIPMENT_SPRITE_DATA} from './equipment-sprite-data.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {createMagicLayer} from './equipment-magic.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {createHeldTorchHeadMaterials,seatHeldTorchFlame} from './held-torch-head.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {impactPose} from './combat-impact.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {EQUIPMENT_SPRITE_DATA} from './equipment-sprite-data.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {createMagicLayer} from './equipment-magic.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
 // Optional while the replacement art is produced; a reload picks up the new pack.
-const heldArtModule=await import('./held-art-data.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec').catch(()=>null);
+const heldArtModule=await import('./held-art-data.js?v=84fc371936953c752f7d36674575129dbb0d8ea1').catch(()=>null);
 const defaultHeldArtDecoder=heldArtModule?.decodeHeldArt??null;
 const uvPoint=value=>{const x=Array.isArray(value)?value[0]:value?.x,y=Array.isArray(value)?value[1]:value?.y;return Number.isFinite(x)&&Number.isFinite(y)&&x>=0&&x<=1&&y>=0&&y<=1?{x,y}:null;};
 

@@ -1,5 +1,5 @@
-import {roomPerimeter} from './room-footprint.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {wallTorchMountAllowed} from './torch-mounts.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {roomPerimeter} from './room-footprint.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {wallTorchMountAllowed} from './torch-mounts.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
 
 const directions=[[0,-1],[1,0],[0,1],[-1,0]];
 const themes={

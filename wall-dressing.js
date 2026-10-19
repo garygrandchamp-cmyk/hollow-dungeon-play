@@ -1,7 +1,7 @@
-import {createWorldMaterial as defaultCreateWorldMaterial} from './graphics-compatibility.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {createWorldMaterial as defaultCreateWorldMaterial} from './graphics-compatibility.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
 // Reviewed framed wall art and shallow solid wall props.
-import {batchStaticGroup} from './mesh-batch.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {applyPhysicalUVs,tagTextureDensity} from './pixel-density.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {batchStaticGroup} from './mesh-batch.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {applyPhysicalUVs,tagTextureDensity} from './pixel-density.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
 
 export const PAINTINGS=Object.freeze({
  ancestor:Object.freeze({width:1,height:1.25,title:'Ancestral portrait'}),

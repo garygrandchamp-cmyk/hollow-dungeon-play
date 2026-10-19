@@ -1,8 +1,8 @@
-import {createEquipmentSprites,HELD_PIXELS_PER_UNIT,sampleHeldPixels} from './equipment-sprites.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {generateWeapon,makeWeaponSprite,CLASS_WEAPON_DEFAULTS} from './weapon-forge.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {hydrateWeaponArt} from './loot-art.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {modelsEnabled} from './model-actors.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {attachFirstPersonModel} from './first-person-models.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {createEquipmentSprites,HELD_PIXELS_PER_UNIT,sampleHeldPixels} from './equipment-sprites.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {generateWeapon,makeWeaponSprite,CLASS_WEAPON_DEFAULTS} from './weapon-forge.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {hydrateWeaponArt} from './loot-art.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {modelsEnabled} from './model-actors.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {attachFirstPersonModel} from './first-person-models.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
 const kinds={wand:'staff',dagger:'sword'};
 // The fist establishes the grip axis. Keep swords slightly outward instead of
 // leaning their blades across the knuckles as the viewport becomes wider.

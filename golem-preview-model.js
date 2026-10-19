@@ -1,5 +1,5 @@
-import {GOLEM_PREVIEW_DATA} from './golem-preview-data.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {createWorldMaterial} from './graphics-compatibility.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {GOLEM_PREVIEW_DATA} from './golem-preview-data.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {createWorldMaterial} from './graphics-compatibility.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
 
 // Source frames are inclusive. Values and node TRS are never recentered,
 // rescaled, retargeted or replaced. Only clip-local time starts at zero.

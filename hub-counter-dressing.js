@@ -1,7 +1,7 @@
-import {createRetroTextures} from './retro-textures.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {createWorldMaterial} from './graphics-compatibility.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {applyPhysicalUVs,tagTextureDensity} from './pixel-density.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {batchStaticGroup} from './mesh-batch.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {createRetroTextures} from './retro-textures.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {createWorldMaterial} from './graphics-compatibility.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {applyPhysicalUVs,tagTextureDensity} from './pixel-density.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {batchStaticGroup} from './mesh-batch.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
 
 /** Static counter set accepted for the experimental local preparation hub.
  * Original code-native geometry; existing world-texture patches at 64px/m.

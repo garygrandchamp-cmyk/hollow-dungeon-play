@@ -1,4 +1,4 @@
-import {normalizeInventoryItem,INVENTORY_CAPACITY,HUB_STASH_CAPACITY,HUB_RECEIPT_LIMIT} from './adventurer-inventory.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {normalizeInventoryItem,INVENTORY_CAPACITY,HUB_STASH_CAPACITY,HUB_RECEIPT_LIMIT} from './adventurer-inventory.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
 const token=(v,max=128)=>typeof v==='string'&&v.length<=max&&/^[a-zA-Z0-9_.:-]+$/.test(v);
 const integer=(v,min=0,max=1e9)=>Number.isSafeInteger(v)&&v>=min&&v<=max;
 const clone=v=>JSON.parse(JSON.stringify(v));

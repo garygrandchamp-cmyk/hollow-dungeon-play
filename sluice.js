@@ -1,5 +1,5 @@
-import {planRotatingBridge} from './rotating-bridge.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {roomElevationAt,sampleRoomElevation} from './room-elevation.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {planRotatingBridge} from './rotating-bridge.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {roomElevationAt,sampleRoomElevation} from './room-elevation.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
 export const SLUICE_SECONDS=6,SLUICE_DM_COST=8;
 const fresh=()=>({level:1,target:1,moving:false,cooldown:0,serial:0});
 const living=a=>a&&a.alive!==false&&!a.fainted&&!a.escaped&&a.health>0;

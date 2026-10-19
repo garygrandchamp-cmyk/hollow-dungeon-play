@@ -1,4 +1,4 @@
-import {roomCells,roomCenterTile} from './room-footprint.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {roomCells,roomCenterTile} from './room-footprint.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
 
 let seedSequence=0;
 /** Called by the host/local new-world path only. Reconnect imports its snapshot. */

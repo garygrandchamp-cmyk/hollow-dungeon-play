@@ -1,9 +1,9 @@
-import {createHubPreparation} from './hub-preparation.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {createHubScene} from './hub-scene.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {createHubDeathLoss} from './hub-death-loss.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {createHubStock,hubSellPrice,compareHubOffer} from './hub-shop.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {CLASSES} from './party-campaign.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
-import {curseDescription} from './cursed-equipment.js?v=1d78ea79feefea23b13aa344fdb80a6c28d88fec';
+import {createHubPreparation} from './hub-preparation.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {createHubScene} from './hub-scene.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {createHubDeathLoss} from './hub-death-loss.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {createHubStock,hubSellPrice,compareHubOffer} from './hub-shop.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {CLASSES} from './party-campaign.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
+import {curseDescription} from './cursed-equipment.js?v=84fc371936953c752f7d36674575129dbb0d8ea1';
 
 const TRADE_COOLDOWN_MS=350;
 
