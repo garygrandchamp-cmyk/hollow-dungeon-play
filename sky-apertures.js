@@ -1,5 +1,5 @@
-import {random,DIRS} from './wfc.js?v=b62f91ca9ddcf47d5a6312b8f4025115d5dbd33a';
-import {roomContainsTile} from './room-footprint.js?v=b62f91ca9ddcf47d5a6312b8f4025115d5dbd33a';
+import {random,DIRS} from './wfc.js?v=637e9034956bdc32208d05c0403c280117b60bda';
+import {roomContainsTile} from './room-footprint.js?v=637e9034956bdc32208d05c0403c280117b60bda';
 
 export function skyOccupied(level,index,tiles,size){
  if(index<0||index>=size*size)return false;

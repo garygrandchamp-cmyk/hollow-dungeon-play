@@ -1,5 +1,5 @@
-import {tiles as workerTiles} from './wfc.js?v=b62f91ca9ddcf47d5a6312b8f4025115d5dbd33a';
-import {generateFloor} from './architecture.js?v=b62f91ca9ddcf47d5a6312b8f4025115d5dbd33a';
+import {tiles as workerTiles} from './wfc.js?v=637e9034956bdc32208d05c0403c280117b60bda';
+import {generateFloor} from './architecture.js?v=637e9034956bdc32208d05c0403c280117b60bda';
 
 export function normalizeGenerationOptions(value){
  if(!value||typeof value!=='object')throw TypeError('Generation options are required.');

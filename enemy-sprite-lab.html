@@ -44,12 +44,12 @@
 <footer>Shipped atlases · 128 × 128 cells · nearest-neighbor pixels · shared foot row 120<br>Runtime clip lengths and derived/reused poses are preserved. This viewer adds no animation frames.<br>
 <a href="assets/enemies/enemy-contact-sheet.png" target="_blank" rel="noopener">Skeleton/goblin contact sheet</a> · <a id="atlasLink" href="assets/enemies/skeleton-atlas.png" target="_blank" rel="noopener">Current transparent atlas</a></footer>
 <script type="module">
-  import {MONSTER_CATALOG,MONSTER_KINDS,MONSTER_SPRITE_CLIPS} from './monster-sprites.js?v=b62f91ca9ddcf47d5a6312b8f4025115d5dbd33a';
-  import {ENEMY_SPRITE_CLIPS} from './enemy-sprites.js?v=b62f91ca9ddcf47d5a6312b8f4025115d5dbd33a';
-  import {decodeEnemyAtlas} from './enemy-atlas-data.js?v=b62f91ca9ddcf47d5a6312b8f4025115d5dbd33a';
-  import {decodeMonsterAtlas} from './monster-atlas-data.js?v=b62f91ca9ddcf47d5a6312b8f4025115d5dbd33a';
-  import {decodeListenerAtlas} from './listener-atlas-data.js?v=b62f91ca9ddcf47d5a6312b8f4025115d5dbd33a';
-  import {wirePreviewNavigation} from './preview-navigation.js?v=b62f91ca9ddcf47d5a6312b8f4025115d5dbd33a';
+  import {MONSTER_CATALOG,MONSTER_KINDS,MONSTER_SPRITE_CLIPS} from './monster-sprites.js?v=637e9034956bdc32208d05c0403c280117b60bda';
+  import {ENEMY_SPRITE_CLIPS} from './enemy-sprites.js?v=637e9034956bdc32208d05c0403c280117b60bda';
+  import {decodeEnemyAtlas} from './enemy-atlas-data.js?v=637e9034956bdc32208d05c0403c280117b60bda';
+  import {decodeMonsterAtlas} from './monster-atlas-data.js?v=637e9034956bdc32208d05c0403c280117b60bda';
+  import {decodeListenerAtlas} from './listener-atlas-data.js?v=637e9034956bdc32208d05c0403c280117b60bda';
+  import {wirePreviewNavigation} from './preview-navigation.js?v=637e9034956bdc32208d05c0403c280117b60bda';
   wirePreviewNavigation();
   const $ = id => document.getElementById(id);
   const profiles=kind=>['skeleton','goblin'].includes(kind)?ENEMY_SPRITE_CLIPS:MONSTER_SPRITE_CLIPS;
@@ -103,5 +103,5 @@
   }
   draw();requestAnimationFrame(tick);
 </script>
-<script type="module" src="./build-label.js?v=b62f91ca9ddcf47d5a6312b8f4025115d5dbd33a"></script>
+<script type="module" src="./build-label.js?v=637e9034956bdc32208d05c0403c280117b60bda"></script>
 </html>

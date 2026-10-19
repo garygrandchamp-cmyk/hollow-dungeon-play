@@ -1,4 +1,4 @@
-import {MONSTER_KINDS,MONSTER_CATALOG} from './monster-sprites.js?v=b62f91ca9ddcf47d5a6312b8f4025115d5dbd33a';
+import {MONSTER_KINDS,MONSTER_CATALOG} from './monster-sprites.js?v=637e9034956bdc32208d05c0403c280117b60bda';
 
 // Production catalog drives the roster. Only explicitly exercised sandboxes get
 // a combat link; the animation viewer does not imply combat test coverage.
